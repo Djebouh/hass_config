@@ -1,0 +1,677 @@
+homeassistant:
+
+  customize:
+    switch.lock_home:
+      icon: mdi:lock-outline
+    automation.alert_monitor_intrusion:
+      icon: mdi:security
+    switch.lock_maindoor:
+      icon: mdi:home-lock
+    switch.lock_laundrydoor:
+      icon: mdi:home-lock
+    switch.lock_diningwindow:
+      icon: mdi:windows
+    binary_sensor.closed_and_locked:
+      icon: mdi:home-lock
+    binary_sensor.opening_window_living:
+      icon: mdi:door
+    binary_sensor.opening_window_kitchen:
+      icon: mdi:door
+    binary_sensor.opening_door_garage:
+      icon: mdi:door
+    binary_sensor.opening_door_2garage:
+      icon: mdi:door
+    binary_sensor.opening_door_entrance:
+      icon: mdi:door
+    binary_sensor.opening_door_laundry:
+      icon: mdi:door
+
+
+cover:
+  - platform: rflink
+    devices:
+      RTS_0F0F0F_0:
+        name: sun awning
+  - platform: mqtt
+    name: "shutters living"
+    command_topic: "shellies/shellyswitch25-008100/roller/0/command"
+    qos: 0
+    payload_open: "open"
+    payload_close: "close"
+    payload_stop: "stop"
+    retain: true
+
+
+timer:
+  no_message_for_lock:
+    duration: '00:05:00'
+
+
+group:
+  opening_sliding_window:
+    name: slidingWindows@Dinner
+    icon: mdi:door
+    entities:
+    - binary_sensor.opening_window_dining_left #left
+    - binary_sensor.opening_window_dining_right #right
+
+  openings:
+    name: Doors and Windows
+    icon: mdi:door
+    entities:
+    - binary_sensor.opening_door_entrance #house door
+    - group.opening_sliding_window
+    - binary_sensor.opening_window_living
+    - binary_sensor.opening_window_kitchen
+    # - binary_sensor.opening_door_2garage
+    - binary_sensor.opening_door_garage
+    - binary_sensor.opening_door_laundry #laundry
+
+  doors_monitored_by_safehome:
+    name: Doors and Windows monitored by Safehome
+    icon: mdi:security-home
+    control: hidden
+    entities:
+    - binary_sensor.opening_door_entrance #house door
+    - switch.lock_diningwindow
+    - binary_sensor.opening_window_living
+    - binary_sensor.opening_window_kitchen
+    - binary_sensor.opening_door_garage
+    - switch.lock_laundrydoor #laundry
+
+  locks_and_doors:
+    name: locks and openings
+    icon: mdi:home-lock
+    control: hidden
+    entities:
+    - switch.lock_maindoor #house door
+    - switch.lock_diningwindow
+    - binary_sensor.opening_window_living
+    - binary_sensor.opening_window_kitchen
+    - binary_sensor.opening_door_garage
+    - switch.lock_lauopenndrydoor #laundry
+
+switch:
+  - platform: template
+    switches:
+
+      lock_maindoor:
+        friendly_name: "lock@MainDoor"
+        value_template: >-
+          {{ not ( is_state('sensor.door_main', 'locked') ) }}
+        entity_id: sensor.door_main
+        turn_on:
+          service: lock.unlock
+          entity_id: lock.home_door
+        turn_off:
+        - condition: state
+          state: 'unlocked'
+          entity_id: sensor.door_main
+        - service: lock.lock
+          entity_id: lock.home_door
+
+      lock_laundrydoor:
+        friendly_name: "lock@LaundryDoor"
+        value_template: >-
+          {{ not ( is_state('sensor.door_laundry', 'locked') ) }}
+        entity_id: sensor.door_laundry
+        turn_on:
+          service: lock.unlock
+          entity_id: lock.polycontrol_danalock_v3_btze_locked
+        turn_off:
+        - condition: state
+          state: 'unlocked'
+          entity_id: sensor.door_laundry
+        - service: lock.lock
+          entity_id: lock.polycontrol_danalock_v3_btze_locked
+
+      lock_diningwindow:
+        friendly_name: "lock@DiningWindow"
+        value_template: >-
+          {{ not ( is_state('group.opening_sliding_window', 'off')) and not ( is_state('binary_sensor.opening_shutters_living', 'off') ) }}
+        entity_id:
+        - group.opening_sliding_window
+        - binary_sensor.opening_shutters_living
+        turn_on:
+        - condition: state
+          entity_id: group.opening_sliding_window
+          state: 'off'
+        - service: cover.open_cover
+          entity_id: cover.shutters_living
+        turn_off:
+        - condition: state
+          entity_id: cover.shutters_living
+          state: 'on'
+        - service: cover.close_cover
+          entity_id: cover.shutters_living
+
+      lock_home:
+        friendly_name: "lock Home"
+        value_template: >-
+          {{ is_state('switch.lock_maindoor', 'on') or
+            is_state('switch.lock_laundrydoor', 'on') or 
+            is_state('switch.lock_diningwindow', 'on') }}
+        entity_id:
+        - switch.lock_maindoor
+        - switch.lock_laundrydoor
+        - switch.lock_diningwindow
+        turn_on:
+          service: switch.turn_on
+          entity_id: switch.lock_maindoor
+        turn_off:
+        - service: switch.turn_off
+          entity_id: switch.lock_maindoor
+        - service: switch.turn_off
+          entity_id: switch.lock_laundrydoor
+        - service: switch.turn_off
+          entity_id: switch.lock_diningwindow
+
+
+sensor:
+  - platform: template
+    sensors:
+      door_main:
+        friendly_name: "Main Door"
+        value_template: >-
+          {% if is_state('binary_sensor.opening_door_entrance', 'on') %}
+            open
+          {% elif is_state('lock.home_door', 'locked') %}
+            locked
+          {% elif is_state('lock.home_door', 'unlocked') %}
+            unlocked
+          {% elif is_state('binary_sensor.opening_door_entrance', 'off') %}
+            closed
+          {% else %}
+            undefined
+          {% endif %}
+        entity_id:
+        - binary_sensor.opening_door_entrance
+        - lock.home_door
+
+      door_laundry:
+        friendly_name: "Laundry Door"
+        value_template: >-
+          {% if is_state('binary_sensor.opening_door_laundry', 'on') %}
+            open
+          {% elif is_state('lock.polycontrol_danalock_v3_btze_locked', 'locked') %}
+            locked
+          {% elif is_state('lock.polycontrol_danalock_v3_btze_locked', 'unlocked') %}
+            unlocked
+          {% elif is_state('binary_sensor.opening_door_laundry', 'off') %}
+            closed
+          {% else %}
+            undefined
+          {% endif %}
+        entity_id:
+        - binary_sensor.opening_door_laundry
+        - lock.polycontrol_danalock_v3_btze_locked
+
+
+binary_sensor:
+  - platform: template
+    sensors:
+
+      closed_and_locked:
+        friendly_name: "Home closed and locked"
+        device_class: door
+        entity_id: group.locks_and_doors
+        value_template: "{{ not(is_state('group.locks_and_doors', 'off')) }}"
+
+
+automation:
+
+  ############################################################
+  # Bar switch configuration
+  ############################################################
+  - alias: Switch Entrance 1 - Toggle door
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.switch_door_entrance
+        click_type: single
+    action:
+      service: switch.toggle
+      entity_id: switch.lock_maindoor
+
+  - alias: Switch Entrance 2 - Lock n Go
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.switch_door_entrance
+        click_type: double
+    action:
+      service: nuki.lock_n_go
+      entity_id: lock.home_door
+
+  - alias: Switch Entrance L - Switch off lights and Go
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.switch_door_entrance
+        click_type: long_click_press
+    action:
+      - service: nuki.lock_n_go
+        entity_id: lock.home_door
+      - delay:
+          seconds: 5
+      - service: light.turn_off
+        entity_id: light.lights_all
+
+      
+  ############################################################
+  # Housekeeping door
+  ############################################################
+
+  - alias: Housekeeping - Act Home Locking
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: LOCK_HOME
+    action:
+      - service: switch.turn_off
+        entity_id: switch.lock_home
+
+  - alias: Housekeeping - Act Doors Locking
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: LOCK_DOORS
+    action:
+      - service: switch.turn_off
+        entity_id: switch.lock_maindoor
+      - service: switch.turn_off
+        entity_id: switch.lock_laundrydoor
+
+  - alias: Housekeeping - Notify home not locked
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: HOUSE_TO_LOCK
+    condition:
+      condition: state
+      entity_id: timer.no_message_for_lock
+      state: 'idle'
+    action:
+      - service: notify.notify
+        data_template:
+          title: "{{ trigger.event.data.context }}"
+          message: &message >
+            {% if is_state('binary_sensor.closed_and_locked', 'off') %}
+              {% set text = "The house is locked" %}
+              {% if is_state('binary_sensor.opening_shutters_living', 'on') %}
+                {% set text = text ~ ". The shutters are open" %}
+              {%- endif %}
+            {% else %}
+              {% set text = "The house is NOT LOCKED" %}
+              {% set separ = ": " %}
+              {% if is_state('switch.lock_maindoor', 'on') %}
+                {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_main') %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('switch.lock_diningwindow', 'on') %}
+                {% set text = text ~ separ ~ "Sliding window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_window_living', 'on') %}
+                {% set text = text ~ separ ~ "Living window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_window_kitchen', 'on') %}
+                {% set text = text ~ separ ~ "Kitchen window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_door_garage', 'on') %}
+                {% set text = text ~ separ ~ "Garage is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('switch.lock_laundrydoor', 'on') %}
+                {% set text = text ~ separ ~ "Laundry door is " ~ states('sensor.door_laundry') %}
+                {% set separ = ", " %}
+              {% endif %}
+            {% endif %}
+            {{ text ~ "."}}
+          data:
+            push:
+              sound: "US-EN-Alexa-Front-Door-Opened.wav"
+              category: safehome
+      - service: timer.start
+        entity_id: timer.no_message_for_lock
+
+
+  - alias: Housekeeping - door not locked after leaving
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: group.presence
+        from: 'home'
+        to: 'not_home'
+        for:
+          minutes: 10
+      - platform: state
+        entity_id: group.openings
+        to: 'off'
+        for:
+          minutes: 10
+    condition:
+      - condition: state
+        entity_id: binary_sensor.closed_and_locked
+        state: 'on'
+      - condition: state
+        entity_id: group.presence
+        state: 'not_home'
+    action:
+      - event: HOUSE_TO_LOCK
+        event_data:
+          context: "House not locked after you left !"
+
+
+  - alias: Housekeeping - door open and not home
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.closed_and_locked
+        to: 'on'
+        for:
+          minutes: 30
+    condition:
+      condition: state
+      entity_id: group.presence
+      state: 'not_home'
+    action:
+      - event: HOUSE_TO_LOCK
+        event_data:
+          context: "House not locked and you are not at home !"
+
+
+  - alias: Housekeeping - notify door not locked at night, being upstairs
+    initial_state: 'off'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_stairs
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.closed_and_locked
+        state: 'on'
+    action:
+      - event: HOUSE_TO_LOCK
+        event_data:
+          context: "House not locked, while going upstairs !"
+
+
+  - alias: Housekeeping - notify door not locked at night, no movement
+    initial_state: 'off'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_home
+      to: 'off'
+      for:
+        minutes: 20
+    condition:
+      - condition: time
+        after: '22:00:01'
+        before: '00:05:00'
+      - condition: state
+        entity_id: binary_sensor.closed_and_locked
+        state: 'on'
+    action:
+      - event: HOUSE_TO_LOCK
+        event_data:
+          context: "House not locked, there is no movement !"
+
+
+  - alias: Housekeeping - close doors at night, at midnight
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.motion_home
+        to: 'off'
+        for:
+          minutes: 20
+      - platform: time
+        at: '00:30:00'
+    condition:
+      - condition: time
+        after: '00:05:01'
+        before: '06:00:00'
+      - condition: state
+        entity_id: binary_sensor.motion_home
+        state: 'off'
+        for:
+          minutes: 20
+      - condition: state
+        entity_id: binary_sensor.closed_and_locked
+        state: 'on'
+    action:
+      - event: HOUSE_TO_LOCK
+        event_data:
+          context: "House will be locked automatically in 5mn !"
+      - delay:
+          minutes: 5
+      - condition: state
+        entity_id: binary_sensor.motion_home
+        state: 'off'
+        for:
+          minutes: 25
+      - service: switch.turn_off
+        entity_id: switch.lock_home
+
+
+  ############################################################
+  # Shutters autoclose
+  ############################################################
+
+  - alias: Housekeeping - Act Shutters closing
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: CLOSE_SHUTTERS
+    action:
+      - service: cover.close_cover
+        entity_id: cover.shutters_living
+
+
+  - alias: Housekeeping - notify shutters still open
+    initial_state: 'off'
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: '02:00:00'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'on'
+      - condition: time
+        before: '22:00:00'
+    action:
+      - service: notify.notify
+        data_template:
+          # title: "Shutters still open !"
+          message: "Shutters are open, view message to close"
+          data:
+            push:
+              category: shutters_control
+
+  ############################################################
+  # auto shutters
+  ############################################################
+
+  - alias: Autoshutters - Open after 6:30 when motion
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.motion
+        event_data:
+          entity_id: binary_sensor.motion_stairs
+      - platform: time
+        at: '08:30:00'
+      - platform: sun
+        event: sunrise
+        offset: '02:00:00'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'off'
+      - condition: state
+        entity_id: group.opening_sliding_window
+        state: 'off'
+      - condition: time
+        after: '06:30:00'
+        before: '08:35:00'
+      # - condition: sun
+      #   after: sunrise
+    action:
+      - service: switch.turn_on
+        entity_id: switch.lock_diningwindow
+
+
+  - alias: Autoshutters - close shutters 1h after sunset or at 22:15
+    initial_state: 'on'
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: '01:00:00'
+      - platform: time
+        at: '22:15:00'
+      - platform: state
+        entity_id: group.opening_sliding_window
+        to: 'off'
+        from: 'on'
+        for:
+          seconds: 5
+    condition:
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'on'
+      - condition: state
+        entity_id: group.opening_sliding_window
+        state: 'off'
+      - condition: state
+        state: 'below_horizon'
+        entity_id: sun.sun
+    action:
+      - service: cover.close_cover
+        entity_id: cover.shutters_living
+
+
+  - alias: Autoshutters - stop when closed
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.opening_shutters_living
+        to: 'off'
+        from: 'on'
+        for:
+          seconds: 3
+    action:
+      - service: cover.stop_cover
+        entity_id: cover.shutters_living
+
+
+  ############################################################
+  # auto awning
+  ############################################################
+
+  - alias: Autoawning - Open awning
+    initial_state: 'on'
+    trigger:
+      # - platform: time
+      #   at: '08:30:00'
+      - platform: sun
+        event: sunrise
+        offset: '02:30:00'
+    condition:
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_precip_probability_0d
+        below: 20
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_daytime_high_temperature_0d
+        above: 25
+      - condition: state
+        entity_id: sensor.netatmo_rain_gauge_sum_rain_1
+        state: '0'
+    action:
+      - service: cover.close_cover
+        entity_id: cover.sun_awning
+      - service: notify.notify
+        data:
+          title: "Rolling awaning down"
+          message: "It will be hot today ({{states('sensor.dark_sky_daytime_high_temperature_0d')}}), with limited risk of rain ({{states('sensor.dark_sky_precip_probability_0d')}})"
+
+
+  - alias: Autoawning - Roll up as rain arrives
+    initial_state: 'on'
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.netatmo_rain_gauge_rain
+        above: 0
+      - platform: numeric_state
+        entity_id: sensor.dark_sky_precip_intensity_0h
+        above: 50
+        # for:
+        #   minutes: 15
+    action:
+      - service: cover.open_cover
+        entity_id: cover.sun_awning
+      - service: notify.notify
+        data_template:
+          title: "Rolling awaning up, as it rains"
+          message: 'Triggered by {{ trigger.trigger.entity_id }}'
+
+  - alias: Autoawning - Roll up at dusk
+    initial_state: 'on'
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: '-01:30:00'
+      - platform: numeric_state
+        entity_id: sun.sun
+        value_template: '{{ state.attributes.elevation }}'
+        below: 16.0
+      # - platform: time
+      #   at: '19:00:00'
+    action:
+    - service: cover.open_cover
+      entity_id: cover.sun_awning
+
+
+  ############################################################
+  # Night mode switched on, openings not closed
+  ############################################################
+
+  - alias: 'Give status when night mode is switched on'
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.night_mode
+        to: 'on'
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.closed_and_locked
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.opening_shutters_living
+          state: 'on'
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Entering NIGHT MODE"
+          message: *message
+          data:
+            push:
+              sound: "US-EN-Alexa-Good-Night.wav"
+              category: nightmode

@@ -1,0 +1,152 @@
+################################################################
+## Monitoring of critical devices
+##
+################################################################
+
+
+################################################
+## Customize
+################################################
+homeassistant:
+  customize:
+    ################################################
+    ## Node Anchors
+    ################################################
+    package.node_anchors:
+      customize: &customize
+        package: 'monitor_criticals'
+
+    ################################################
+    ## Group
+    ################################################
+    group.critical_devices:
+      <<: *customize
+
+    ################################################
+    ## Automation
+    ################################################
+    automation.alert_when_critical_device_not_available:
+      <<: *customize
+
+    ################################################
+    ## Binary sensor
+    ################################################
+    binary_sensor.problem_critical_devices:
+      <<: *customize
+      # icon: mdi:bluetooth
+
+
+
+################################################
+## Group
+################################################
+group:
+  critical_devices:
+    name: Devices used for monitoring
+    control: hidden
+    entities:
+      - binary_sensor.motion_kitchen
+      - binary_sensor.motion_bar
+      - binary_sensor.motion_living
+      - binary_sensor.motion_garage
+      - binary_sensor.motion_laundry
+      - binary_sensor.motion_stairs
+      - zwave.polycontrol_danalock_v3_btze
+      - lock.polycontrol_danalock_v3_btze_locked
+      - binary_sensor.opening_shutters_living
+      - binary_sensor.opening_window_dining_left
+      - binary_sensor.opening_window_dining_right
+      - binary_sensor.opening_window_living
+      - binary_sensor.opening_window_kitchen
+      - binary_sensor.opening_catflap
+      - binary_sensor.opening_door_entrance
+      - binary_sensor.opening_door_garage
+      - binary_sensor.opening_door_laundry
+      - binary_sensor.smoke_sensor
+      - camera.xiaofang
+      - lock.home_door
+
+
+
+################################################
+## Binary sensor
+################################################
+binary_sensor:
+  - platform: template
+    sensors:
+      problem_critical_devices:
+        friendly_name: "Critical devices status"
+        value_template: "{{ not(is_state('sensor.status_critical_devices', 'ok')) }}"
+        entity_id: sensor.status_critical_devices
+        device_class: problem
+
+sensor:
+  - platform: template
+    sensors:
+      status_critical_devices:
+        friendly_name: "Critical devices status"
+        value_template: >-
+          {% macro check_critical_devices() %}
+          {% for item in states.group.critical_devices.attributes.entity_id if (
+            (states(item) == 'unknown') or
+            is_state(item, 'unavailable') or
+            is_state(item, 'dead')
+          ) -%}
+            {{ item if (states(item) == 'unknown') else state_attr(item, "friendly_name") }} is unavailable
+          {% else %}
+            {{ 'ok' }}
+          {% endfor -%}
+          {% endmacro %}
+          {{ check_critical_devices() }}
+
+
+
+
+################################################
+## Automation
+################################################
+automation:
+  - alias: alert - critical device not available
+    initial_state: 'on'
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.problem_critical_devices
+      to: 'on'
+      from: 'off'
+      for:
+        minutes: 2
+    - platform: time
+      at: '10:00:00'
+    - platform: time
+      at: '20:30:00'
+    condition:
+    - condition: state
+      entity_id: binary_sensor.problem_critical_devices
+      state: 'on'
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Critical devices monitoring"
+          message: "{{ states('sensor.status_critical_devices') }}"
+      - service: persistent_notification.create
+        data_template:
+          title: "Critical devices failures"
+          message: "{{ states('sensor.status_critical_devices') }}"
+          notification_id: critical_device_alert
+
+############################################################
+# Monitor some sensors every 15' and after boot
+############################################################
+  - alias: 'update sensor states regularly'
+    initial_state: 'on'
+    trigger:
+      - platform: time_pattern
+        minutes: '/15'
+      - platform: event
+        event_type: 2MN_AFTER_HASS_START
+    action:
+      # - service: homeassistant.update_entity
+      #   entity_id: binary_sensor.problem_critical_devices
+      - service: homeassistant.update_entity
+        entity_id: sensor.status_critical_devices
+        

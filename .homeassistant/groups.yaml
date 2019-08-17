@@ -1,0 +1,174 @@
+presence:
+  name: Anyone @home
+  entities:
+  - person.corinne
+  - person.jerome
+
+
+motion_living:
+  name: Motion @Living
+  entities:
+  - binary_sensor.motion_bar #bar
+  - binary_sensor.motion_living #chimney
+  - binary_sensor.motion_kitchen #kitchen
+
+
+motion_home:
+  name: Motion
+  icon: mdi:run
+  entities:
+  - group.motion_living
+  - binary_sensor.motion_garage
+  - binary_sensor.motion_stairs
+  - binary_sensor.motion_laundry
+
+
+# garage:
+#   name: Garage
+#   icon: mdi:car
+#   control: hidden
+#   entities:
+#   - binary_sensor.opening_door_2garage
+#   - light.light_garage
+#   - sensor.illumination_garage
+#   - binary_sensor.motion_garage
+#   - light.light_laundry
+#   - sensor.illumination_laundry
+#   - binary_sensor.motion_laundry #laundry
+#   - switch.laundry_machines
+#   - sensor.laundry_machines
+
+
+# downstairs:
+#   name: Downstairs
+#   icon: mdi:sofa
+#   control: hidden
+#   entities:
+#   - switch.autoliving_blocker
+#   - switch.movie_mode
+#   - light.light_kitchen
+#   - light.light_bar
+#   - light.light_living
+#   - light.gateway_light
+#   - switch.mimies_spring
+#   - switch.wallswitch_shutters_up
+#   - switch.wallswitch_shutters_down
+#   - group.motion_living
+#   - sensor.illumination_gateway
+#   - climate.thermostat
+#   - binary_sensor.smoke_sensor_158d0001d835a3
+
+
+# home_summary:
+#   name: Home data
+#   icon: mdi:home-heart
+#   control: hidden
+#   entities:
+#   - device_tracker.jeromesiphone2
+#   - device_tracker.corinnesiphone
+#   - binary_sensor.motion_home
+#   - binary_sensor.monitor_critical_devices
+#   - binary_sensor.closed_and_locked
+#   - switch.lock_home
+#   - cover.shutters_living
+#   - automation.alert_monitor_intrusion
+#   - sensor.netatmo_living_room_temperature
+#   - sensor.temperature_bedroom
+#   - sensor.netatmo_garden_temperature
+
+
+# upstairs:
+#   name: Upstairs
+#   icon: mdi:stairs
+#   control: hidden
+#   entities:
+#   - sensor.temperature_bedroom
+#   - sensor.humidity_bedroom
+#   - light.bedroom_light
+#   - light.light_stairs
+#   - light.light_lou_bed
+#   - light.light_lou_ceiling
+#   - binary_sensor.motion_stairs
+#   - sensor.illumination_stairs
+
+
+# lights_view:
+#   name: Lights
+#   icon: mdi:lightbulb
+#   entities:
+#   - light.light_bar
+#   - light.light_kitchen
+#   - light.light_living
+#   - light.gateway_light
+#   - light.light_garage
+#   - light.light_laundry
+#   - light.light_stairs
+#   - light.light_bedroom
+#   - light.light_lou_bed
+#   - light.light_lou_ceiling
+
+# camera:
+#   entities:
+#   - camera.xiaofang
+#   - switch.webcam_plug
+
+# camera_show:
+#   entities:
+#   - script.show_webcam
+
+# default_view:
+#   view: yes
+#   icon: mdi:home
+#   entities:
+#   - group.home_summary
+#   - group.lights_view
+#   - group.camera
+#   - group.camera_show
+
+
+# home_view:
+#   name: Home detailed view
+#   icon: mdi:home-modern
+#   view: yes
+#   entities:
+#   - binary_sensor.opening_catflap
+#   - sensor.door_main
+#   - sensor.door_laundry
+#   - binary_sensor.vpn_status
+#   - group.downstairs
+#   - group.upstairs
+#   - group.garage
+#   - group.locks_and_doors
+#   - group.opening_sliding_window
+#   - climate.thermostat
+#   - media_player.samsung_qe55q7fam
+#   - media_player.bbox_miami
+#   # - media_player.samsung_q7_series_55_qe55q7fam
+
+
+# outdoor_view:
+#   name: Outdoor Conditions
+#   icon: mdi:flower
+#   view: yes
+#   entities:
+#   - sun.sun
+#   - sensor.netatmo_garden_temperature
+#   - sensor.humidity_outside
+#   - sensor.pressure_outside
+
+
+# automation_view:
+#   name: Home Automation
+#   icon: mdi:home-automation
+#   view: yes
+#   entities:
+#   - input_boolean.notify_intrusion
+#   - input_boolean.block_autolight_living
+#   - input_boolean.night_mode
+#   - group.all_automations
+#   - group.all_scripts
+#   - group.all_scenes
+#   - scene.kitchen_and_bar
+#   - scene.living_movie
+#   - scene.bar_brigth
+

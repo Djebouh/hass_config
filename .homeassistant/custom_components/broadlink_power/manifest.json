@@ -1,0 +1,12 @@
+{
+  "domain": "broadlink_power",
+  "name": "Broadlink_power",
+  "documentation": "https://github.com/algirdasc/homeassistant-backup/blob/master/custom_components/sensor/broadlink_power.py",
+  "requirements": [
+    "broadlink==0.8.0"
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@djebouh"
+  ]
+}

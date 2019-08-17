@@ -1,0 +1,361 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Olivaie
+  # Location required to calculate the time the sun rises and sets
+  latitude: !secret my_latitude
+  longitude: !secret my_longitude
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 69
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Paris
+  # Customization file
+  customize: !include customize.yaml
+  # Customization file
+  packages: !include_dir_named packages
+
+
+# Enables the frontend
+frontend:
+  # javascript_version: latest
+  themes: !include_dir_merge_named themes/
+
+
+# Enables configuration UI
+config:
+
+
+http:
+  # api_password: !secret http_password
+  ssl_certificate: !secret ssl_certificate
+  ssl_key: !secret ssl_key
+  base_url: !secret base_url
+
+
+updater:
+  include_used_components: true
+
+
+logger:
+  default: info
+  logs:
+    homeassistant.components.rflink: debug
+    homeassistant.custom_components.rachio: debug
+    aiohttp: error
+
+
+system_health:
+
+
+history:
+  include:
+    domains:
+      - sensor
+      - climate
+
+
+recorder:
+  purge_keep_days: 5
+  purge_interval: 1
+  exclude:
+    domains:
+      - battery_alert
+
+
+person:
+
+
+# View all events in a logbook
+logbook:
+  exclude:
+    entities:
+      - light.lights_all
+      - light.barentry_light
+      - light.barwindow_light
+      - light.stairs_light
+      - binary_sensor.motion_living
+      - binary_sensor.motion_bar
+      - binary_sensor.motion_kitchen
+      - binary_sensor.motion_home
+      - automation.battery_sensor_from_attributes
+      - automation.update_battery_status_group_members
+      - automation.battery_notification_clear
+      - automation.battery_notification
+      - automation.autolight_monitor
+      - light.lights_all
+    domains:
+      - battery_alert
+      - switch
+      - group
+  include:
+    entities:
+      - group.motion_living
+
+ 
+# Track the sun
+sun:
+
+
+weather:
+  - platform: darksky
+    api_key: !secret dark_sky_key
+    mode: daily
+
+
+device_tracker:
+  - platform: bbox
+    track_new_devices: false
+    # interval_seconds: 30
+    consider_home: 0:05
+
+
+hacs:
+  token: !secret hacs_git_token
+  python_script: true
+  theme: true
+
+
+breaking_changes:
+
+
+ios:
+  push:
+    categories:
+      - name: Safe home
+        identifier: 'safehome'
+        actions:
+          - identifier: 'LOCK_HOME'
+            title: 'Lock home'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'LOCK_DOORS'
+            title: 'Lock doors'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+      - name: Close shutters
+        identifier: 'shutters_control'
+        actions:
+          - identifier: 'CLOSE_SHUTTERS'
+            title: 'Close Shutters'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+      - name: Night Mode
+        identifier: 'nightmode'
+        actions:
+          - identifier: 'LOCK_HOME'
+            title: 'Lock home'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'LOCK_DOORS'
+            title: 'Lock doors'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'CLOSE_SHUTTERS'
+            title: 'Close Shutters'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+      - name: Private home
+        identifier: 'privacy'
+        actions:
+          - identifier: 'KEEP_PRIVACY'
+            title: 'Keep me Private'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+
+
+xiaomi_aqara:
+  discovery_retry: 20
+  gateways:
+   - host: lumi-gateway-v3_miio56297828
+     key: !secret mi_gateway_key
+     mac: !secret mi_gateway_mac
+
+
+vacuum:
+  - platform: xiaomi_miio
+    host: rockrobo
+    token: !secret AspiBot_token
+    name: AspiBot
+
+
+ffmpeg:
+
+camera:
+  - platform: ffmpeg
+    name: Xiaofang
+    input: -i rtsp://xiaofang/unicast
+    # input: -rtsp_transport tcp -i rtsp://xiaofang/unicast
+    # input: -stimeout 600 -rtsp_transport udp -i rtsp://xiaofang/unicast
+    extra_arguments: -an
+
+# stream:
+
+
+google_assistant:
+  project_id: !secret google_project_id
+  api_key: !secret google_home_key
+  expose_by_default: false
+  entity_config:
+    light.light_living:
+      name: lumiere du salon
+      expose: true
+      room: Living Room
+      aliases:
+        - living room light
+    light.light_bar:
+      name: lumiere du bar
+      expose: true
+      room: Kitchen
+      aliases:
+        - bar light
+    light.light_kitchen:
+      name: lumiere de la cuisine
+      expose: true
+      room: Kitchen
+      aliases:
+        - kitchen light
+    lock.home_door:
+      name: porte d'entree
+      expose: true
+      aliases:
+        - home door
+        - front door
+        - main door
+        - porte
+        - porte principale
+      room: Entrance
+    lock.polycontrol_danalock_v3_btze_locked:
+      name: porte de la buanderie
+      expose: true
+      room: Laundry
+      aliases:
+        - back door
+        - laundry door
+        - porte de derrière
+    cover.shutters_living:
+      name: volets roulants
+      expose: true
+      room: Living Room
+      aliases:
+        - shutters
+
+
+lock:
+  - platform: nuki
+    host: !secret nuki_ip
+    token: !secret nuki_token
+
+
+zwave:
+  usb_path: /dev/zwaveusbstick
+  network_key: !secret zwave_key
+
+
+rflink:
+  port: /dev/rflink
+
+
+mqtt:
+  broker: localhost
+  discovery: true
+  discovery_prefix: homeassistant
+
+
+# media_player:
+#   - platform: samsungtv
+#     host: 192.168.1.1
+#     port: 8001
+#     mac: d8:e0:e1:e0:c7:b7
+#     name: "Samsung QE55Q7FAM"
+  # - platform: cast
+  #   host: 192.168.1.3
+
+
+netatmo:
+  api_key: !secret netatmo_id
+  secret_key: !secret netatmo_secret
+  username: !secret netatmo_username
+  password: !secret netatmo_password
+
+
+tuya:
+  username: !secret tuya_username
+  password: !secret tuya_password
+  country_code: 33
+
+
+rachio:
+  api_key: !secret rachio_api_key
+  hass_url_override: !secret rachio_hass_url_override
+#   manual_run_mins: 3
+
+
+shell_command:
+  reboot_pi: 'sudo reboot'
+
+
+input_boolean:
+  night_mode:
+    name: Night Mode
+    initial: 'off'
+    icon: mdi:sleep
+
+
+binary_sensor:
+  # - platform: rachio
+
+  - platform: template
+    sensors:
+      motion_home:
+        friendly_name: Motion
+        device_class: motion
+        entity_id: group.motion_home
+        value_template: "{{ not(is_state('group.motion_home', 'off')) }}"
+
+  - platform: command_line
+    name: vpn status
+    device_class: connectivity
+    scan_interval: 600
+    command: /home/pi/scripts/check_vpn.sh
+
+
+yeelight:
+  devices:
+    yeelink-light-color1_miio56235794:
+      name: barEntry_light
+      use_music_mode: false
+      model: color1
+    yeelink-light-color1_miio56367227:
+      name: barWindow_light
+      use_music_mode: false
+      model: color1
+    yeelink-light-color1_miio54993037:
+      name: bedroom_light
+      use_music_mode: false
+      model: color1
+
+
+switch: !include switch.yaml
+light: !include light.yaml
+sensor: !include sensor.yaml
+group: !include groups.yaml
+scene: !include scenes.yaml
+script: !include scripts.yaml
+automation: !include automations.yaml
+# automation: !include_dir_merge_list automation/
+

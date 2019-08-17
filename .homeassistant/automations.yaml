@@ -1,0 +1,447 @@
+
+############################################################
+# Cube configuration
+############################################################
+- alias: Cube event flip90
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: flip90
+  action:
+    service: light.toggle
+    entity_id: light.light_living
+
+- alias: Cube event flip180
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: flip180
+  action:
+  - service: light.toggle
+    entity_id: light.light_bar
+
+- alias: Cube event tap_twice
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: tap_twice
+  action:
+  - service: light.toggle
+    entity_id: light.lights_downstairs
+
+- alias: Cube event move
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: move
+  action:
+    service: input_boolean.toggle
+    entity_id: input_boolean.block_autolight_living
+
+- alias: Cube event shake_air
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: shake_air
+  action:
+  - service: switch.toggle
+    entity_id: switch.movie_mode
+
+- alias: Cube event rotate
+  trigger:
+    platform: event
+    event_type: xiaomi_aqara.cube_action
+    event_data:
+      entity_id: binary_sensor.cube
+      action_type: rotate
+  action:
+    service: light.turn_on
+    entity_id: light.bulbs_bar
+    data_template:
+      brightness: >
+          {% set state = (states.light.barwindow_light.attributes.brightness + (trigger.event.data.action_value|int)*4) | int -%}
+          {%-  if state > 255 -%}
+             {%- set state  = 255 -%}
+          {%-  elif state < 0 -%}
+             {%- set state  = 0 -%}
+          {%- endif %}
+          {{ state }}
+
+
+
+############################################################
+# Notify when laundry machines stop
+############################################################
+- alias: Laundry - Monitor stop of laundry machines run
+  initial_state: 'off'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.laundry_machines
+    below: '10'
+    for:
+      seconds: 130
+  action:
+    - service: notify.notify
+      data_template:
+        title: "Laundry completed"
+        message: "The laundry is over"
+    - service: automation.turn_off
+      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
+    - service: automation.turn_on
+      entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+
+############################################################
+# Monitor when Laundry machnes start running
+############################################################
+- alias: Laundry - Monitor start of laundry machines run
+  initial_state: 'on'
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.laundry_machines
+    above: '150'
+    for:
+      seconds: 130
+  action:
+    - service: automation.turn_on
+      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
+    - service: automation.turn_off
+      entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+
+
+
+############################################################
+# Stop heating when open
+############################################################
+- alias: Housekeeping - Stop Heating when doors are open
+  trigger:
+    platform: state
+    entity_id: group.openings
+    to: 'on'
+    for:
+      minutes: 2
+  condition:
+    condition: template
+    value_template: "{{ state_attr('climate.thermostat', 'temperature') > 10 }}"
+  action:
+    - service: climate.set_away_mode
+      data:
+        entity_id: climate.thermostat
+        away_mode: True
+    - service: automation.turn_on
+      entity_id:
+        - automation.housekeeping_restart_heating_when_doors_are_closed
+
+- alias: Housekeeping - restart Heating when doors are closed
+  trigger:
+  - platform: state
+    entity_id: group.openings
+    to: 'off'
+    for:
+      minutes: 1
+  - platform: state
+    entity_id: automation.housekeeping_stop_heating_when_doors_are_open
+    to: 'on'
+  action:
+    - service: climate.set_away_mode
+      data:
+        entity_id: climate.thermostat
+        away_mode: False
+
+
+- alias: Housekeeping - on thermostat away on 
+  initial_state: 'on'
+  trigger:
+    platform: template
+    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'on') }}"
+  condition:
+    condition: template
+    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'on') }}"
+  action:
+    - service: automation.turn_off
+      entity_id:
+        - automation.housekeeping_stop_heating_when_doors_are_open
+
+
+- alias: Housekeeping - on thermostat away off
+  initial_state: 'on'
+  trigger:
+    platform: template
+    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'off') }}"
+  condition:
+    condition: template
+    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'off') }}"
+  action:
+    - service: automation.turn_on
+      entity_id:
+        - automation.housekeeping_stop_heating_when_doors_are_open
+    - service: automation.turn_off
+      entity_id:
+        - automation.housekeeping_restart_heating_when_doors_are_closed
+
+
+############################################################
+# Aspi automation
+############################################################
+
+- alias: Vacuum - Start
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: group.presence
+      to: 'no_home'
+      for:
+        minutes: 15
+    - platform: time
+      at: '11:00:05'
+  condition:
+    - condition: state
+      state: 'not_home'
+      entity_id: group.presence
+      for:
+        minutes: 10
+    - condition: time
+      after: '11:00:00'
+      before: '18:00:00'
+      weekday:
+        - mon
+        - fri
+  action:
+    - service: vacuum.start
+      entity_id: vacuum.aspibot
+    - service: automation.turn_off
+      entity_id:  automation.vacuum_start
+
+
+############################################################
+# Pool Management
+############################################################
+
+- alias: 'Pool - Notify on Cl Regulation start'
+  initial_state: 'on'
+  trigger:
+    platform: mqtt
+    topic: poolassistant/event/cl_regul_injection_automation/start
+  action:
+    - service: notify.notify
+      data_template:
+        title: "Pool Chlor regulation started"
+        message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
+
+- alias: 'Pool - Notify on Cl+ Injection stop'
+  trigger:
+    platform: mqtt
+    topic: poolassistant/event/cl_regul_injection/stop
+  action:
+    - service: notify.notify
+      data_template:
+        title: "Pool Cl+ injection stopped"
+        message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
+
+
+- alias: 'Pool - Notify on pH Regulation start'
+  initial_state: 'on'
+  trigger:
+    platform: mqtt
+    topic: poolassistant/event/ph_regul_injection_automation/start
+  action:
+    - service: notify.notify
+      data_template:
+        title: "Pool pH regulation started"
+        message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
+
+- alias: 'Pool - Notify on pH- Injection stop'
+  trigger:
+    platform: mqtt
+    topic: poolassistant/event/ph_regul_injection/stop
+  action:
+    - service: notify.notify
+      data_template:
+        title: "Pool ph- injection stopped"
+        message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
+
+
+
+
+############################################################
+# Start HomeKit 5mn after boot (to ensure all devices are well started)
+############################################################
+
+# - alias: 'Start HomeKit'
+#   initial_state: 'on'
+#   trigger:
+#     - platform: event
+#       event_type: 2MN_AFTER_HASS_START
+#     # platform: homeassistant
+#     # event: start
+#   action:
+#     # - delay: 00:05  # Waits 5 minutes
+#     - service: homekit.start
+
+
+- alias: 'Set HA theme for day and night'
+  trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sun.sun
+      to: above_horizon
+    - platform: state
+      entity_id: sun.sun
+      to: below_horizon
+  action:
+    - service_template: frontend.set_theme
+      data_template:
+        name: >
+          {% if states.sun.sun.state == "above_horizon" %}
+            default
+          {% else %}
+            BlueNight
+          {% endif %}
+
+
+############################################################
+# Control Sleep Mode
+############################################################
+
+- alias: 'Start Night Mode'
+  initial_state: 'on'
+  trigger:
+    - platform: event
+      event_type: 2MN_AFTER_HASS_START
+    # - platform: homeassistant
+    #   event: start
+    - platform: state
+      entity_id: group.presence
+      to: 'home'
+    - platform: time
+      at: '22:30:01'
+  condition:
+    - condition: time
+      after: '22:30:00'
+      before: '06:00:00'
+    - condition: state
+      entity_id: group.presence
+      state: 'home'
+  action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.night_mode
+
+- alias: 'Stop Night Mode'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: group.presence
+      to: 'not_home'
+    - platform: time
+      at: '06:00'
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.night_mode
+
+
+- alias: 'Start automation during Night Mode'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.night_mode
+      to: 'on'
+  action:
+    - service: automation.turn_on
+      entity_id:
+        - automation.alert_activate_safe_home
+        - automation.autolight_gateway
+        - automation.housekeeping_close_doors_at_night_at_midnight
+        - automation.housekeeping_notify_door_not_locked_at_night_being_upstairs
+        # - automation.housekeeping_notify_door_not_locked_at_night_no_movement
+    - service: automation.turn_off
+      entity_id:
+        - automation.housekeeping_stop_heating_when_doors_are_open
+        - automation.vacuum_start
+
+
+- alias: 'Stop automation during Night Mode'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.night_mode
+      to: 'off'
+  action:
+    - service: automation.turn_off
+      entity_id:
+        - automation.alert_activate_safe_home
+        - automation.autolight_gateway
+        - automation.housekeeping_close_doors_at_night_at_midnight
+        - automation.housekeeping_notify_door_not_locked_at_night_being_upstairs
+        - automation.housekeeping_notify_door_not_locked_at_night_no_movement
+    - service: automation.turn_on
+      entity_id:
+        - automation.housekeeping_stop_heating_when_doors_are_open
+        - automation.vacuum_start
+
+
+############################################################
+# Notify when new Home Assistant updates are available
+############################################################
+
+- alias: 'Update Available Notifications'
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: updater.updater
+  action:
+    service: notify.ios_jeromes_iphone
+    data:
+      message: 'Update for Home Assistant is available.'
+
+
+############################################################
+# Send event 2MN_AFTER_HASS_START, 2 mn after homeassistant started
+############################################################
+
+- alias: 'throw event 2 minute after homeassistant starts'
+  initial_state: 'on'
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+    - delay:
+        minutes: 2
+    - event: 2MN_AFTER_HASS_START
+
+
+
+
+
+############################################################
+# Notify on power problem
+############################################################
+
+- alias: Power Problem Notification
+  initial_state: 'on'
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.rpi_power_status
+    value_template: '{{ state.attributes.value }}'
+    above: 0
+    for:
+      minutes: 5
+  condition:
+  action:
+  - service: persistent_notification.create
+    data_template:
+      message: "RPI Power reported {{ states.sensor.rpi_power_status.state }}. The state had changed from {{ trigger.from_state.state }} "
+      title: Power Supply Issue
+  - service: notify.notify
+    data_template:
+      message: "RPI Power reported {{ states.sensor.rpi_power_status.state }}. The state had  changed from {{ trigger.from_state.state }}"
+      title: Power Supply Issue

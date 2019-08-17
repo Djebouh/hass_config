@@ -1,0 +1,52 @@
+- platform: broadlink_power
+  host: Broadlink_Outlet-T1-9d-34-30
+  mac: '34:ea:34:9d:34:30'
+  name: 'Laundry Machines'
+
+
+- platform: rpi_power
+  text_state: true
+
+
+- platform: linky
+  username: !secret enedis_user
+  password: !secret enedis_password
+
+
+- platform: darksky
+  api_key: !secret dark_sky_key
+  forecast:
+    - 0
+  hourly_forecast:
+    - 0
+  monitored_conditions:
+    - precip_type
+    - precip_intensity
+    - precip_probability
+    - wind_speed
+    - wind_gust
+    - uv_index
+    - temperature
+    - temperature_high
+  scan_interval:
+    minutes: 5
+
+
+- platform: template
+  sensors:
+    temperature_living:
+      friendly_name: "temperature@Living"
+      unit_of_measurement: "°C"
+      value_template: "{{ state_attr('climate.thermostat', 'current_temperature') }}"
+      entity_id: climate.thermostat
+      device_class: temperature
+
+
+
+# - platform: rest
+#   resource: http://poolpi.local:8123/api/states/sensor.28_02131213e3aa_temperature
+#   name: Temperature of Pool
+#   value_template: '{{ value_json.state }}'
+#   unit_of_measurement: "°C"
+#   device_class: temperature
+

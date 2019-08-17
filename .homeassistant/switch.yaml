@@ -1,0 +1,73 @@
+# - platform: rachio
+
+- platform: xiaomi_miio
+  name: Mimie's Spring
+  host: chuangmi-plug-m1_miio55288472
+  token: !secret xiaomi_miio_token
+
+# - platform: broadlink
+#   host: 192.168.1.15
+#   mac: '34:ea:34:9d:34:30'
+#   type: sp3
+#   friendly_name: 'Laundry Machines'
+
+    
+    # tv:
+    #   friendly_name: "Toggle TV"
+    #   value_template: >-
+    #     {{ is_state('media_player.samsung_qe55q7fam', 'on') }}
+    #   entity_id: media_player.samsung_qe55q7fam
+    #   turn_on:
+    #     service: media_player.turn_on
+    #     entity_id: media_player.samsung_qe55q7fam
+    #   turn_off:
+    #     service: media_player.turn_off
+    #     entity_id: media_player.samsung_qe55q7fam
+
+
+- platform: mqtt
+  name: "Pool - Cl Regulation"
+  command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
+  state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
+  state_on: "on"
+  state_off: "off"
+  icon: mdi:home-assistant
+  qos: 1
+  retain: true
+
+- platform: mqtt
+  name: "Pool - pH Regulation"
+  command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
+  state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
+  state_on: "on"
+  state_off: "off"
+  icon: mdi:home-assistant
+  qos: 1
+  retain: true
+
+- platform: mqtt
+  name: "Pool - pH- Injection"
+  command_topic: "poolassistant/switch/ph_injection/set"
+  state_topic: "poolassistant/switch/ph_injection/state"
+  state_on: "on"
+  state_off: "off"
+  icon: mdi:needle
+  qos: 1
+  retain: true
+
+- platform: mqtt
+  name: "Pool - Cl+ Injection"
+  command_topic: "poolassistant/switch/cl_injection/set"
+  state_topic: "poolassistant/switch/cl_injection/state"
+  state_on: "on"
+  state_off: "off"
+  icon: mdi:needle
+  qos: 1
+  retain: true
+
+- platform: tuya
+  name: webcam plug
+  host: 192.168.1.39
+  local_key: !secret tuya_local_key
+  device_id: !secret tuya_device_id
+  

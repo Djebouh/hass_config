@@ -1,0 +1,12 @@
+{
+  "domain": "parrot_platform",
+  "name": "Plant PARROT",
+  "documentation": "https://www.home-assistant.io/components/miflora",
+  "requirements": [],
+  "dependencies": [
+    "plant"
+  ],
+  "codeowners": [
+    "@djebouh"
+  ]
+}

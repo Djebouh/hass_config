@@ -1,0 +1,54 @@
+device_tracker.jeromes_iphone:
+  friendly_name: Jérôme
+  icon: mdi:gender-male
+person.jerome:
+  friendly_name: Jérôme
+  icon: mdi:gender-male
+device_tracker.redminote5redmi:
+  friendly_name: Lou
+  icon: mdi:human-male-girl
+person.lou:
+  friendly_name: Lou
+  icon: mdi:human-male-girl
+group.all_automations:
+  hidden: false
+group.all_scripts:
+  hidden: false
+group.motion_living:
+  device_class: moving
+sensor.netatmo_living_room_temperature:
+  icon: mdi:temperature-celsius
+sensor.netatmo_garden_temperature:
+  icon: mdi:thermometer-lines
+binary_sensor.opening_catflap:
+  icon: mdi:cat
+device_tracker.corinnesiphone:
+  friendly_name: Corinne
+  icon: mdi:gender-female
+person.corinne:
+  friendly_name: Corinne
+  icon: mdi:gender-female
+scene.light_kitchen:
+  icon: mdi:food
+scene.living_movie:
+  icon: mdi:filmstrip
+scene.kitchen_and_bar:
+  icon: mdi:food-fork-drink
+scene.bar_brigth:
+  icon: mdi:cup
+switch.mimies_spring:
+  icon: mdi:water
+switch.laundry_machines:
+  icon: mdi:washing-machine
+sensor.laundry_machines:
+  icon: mdi:washing-machine
+device_tracker.ble_de44d527ab76:
+  friendly_name: Mimie
+  icon: mdi:cat
+light.barentry_light:
+  hidden: true
+light.barwindow_light:
+  hidden: true
+automation.laundry_monitor_stop_of_laundry_machines_run:
+  icon: mdi:washing-machine
+  

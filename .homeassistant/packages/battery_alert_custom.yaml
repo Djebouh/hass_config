@@ -1,0 +1,158 @@
+################################################################
+## Battery Alert Package by NotoriousBDG
+##
+## Source: https://raw.githubusercontent.com/notoriousbdg/Home-AssistantConfig/master/packages/battery_alert.yaml
+################################################################
+
+################################################
+## Customize
+################################################
+homeassistant:
+  customize:
+
+    sensor.corinnes_iphone_battery_level:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.jeromes_ipad_battery_level:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.jeromes_iphone_battery_level:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    switch.wallswitch_light_bar:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_garage:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_kitchen:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_living:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_laundry:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_stairs:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_shutters_down:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_shutters_up:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_lou_ceiling:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_light_lou_bed:
+      battery_sensor_creation_disabled: true
+
+    vacuum.aspibot:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.miflora_4bc9:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.miflora_4bc9_battery:
+      battery_alert_disabled: true
+
+    plant.miflora_4cc3:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.miflora_4cc3_battery:
+      battery_alert_disabled: true
+
+    plant.miflora_6ec8:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.miflora_6ec8_battery:
+      battery_alert_disabled: true
+
+    plant.miflora_4835:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.miflora_4835_battery:
+      battery_alert_disabled: true
+
+    plant.miflora_3cb6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.miflora_3cb6_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_2872:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_2872_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_720a:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_720a_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_7c46:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_7c46_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_7eb9:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_7eb9_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_a293:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_a293_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_b4b6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_b4b6_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_c284:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_c284_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_c5c6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_c5c6_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_cc3e:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.parrotpot_cc3e_battery:
+      battery_alert_disabled: true
+
+
+      

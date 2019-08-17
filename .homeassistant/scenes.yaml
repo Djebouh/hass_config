@@ -1,0 +1,42 @@
+- name: living Movie
+  entities:
+    light.light_living: off
+    light.light_bar: on
+    light.bulbs_bar:
+      state: on
+      hs_color: [240, 78]
+      brightness: 255
+    light.light_kitchen: off
+
+- name: Kitchen and Bar
+  entities:
+    light.light_bar: on
+    light.bulbs_bar:
+      state: on
+      kelvin: 4000
+      brightness_pct: 100
+    light.light_kitchen: on
+
+- name: bar Bright
+  entities:
+    light.light_bar: on
+    light.bulbs_bar:
+      state: on
+      kelvin: 4000
+      brightness_pct: 100
+
+
+- name: bedroom Bright
+  entities:
+    light.bedroom_light:
+      state: on
+      kelvin: 4000
+      brightness: 255
+
+
+- name: bedroom Lite
+  entities:
+    light.bedroom_light:
+      state: on
+      kelvin: 2700
+      brightness: 1

@@ -1,0 +1,338 @@
+shell_command:
+  take_snapshot_webcam: 'bash /home/homeassistant/scripts/take_snapshot_webcam.sh'
+  transfer_snapshot: 'bash /home/homeassistant/scripts/transfer_snapshot.sh'
+
+
+input_boolean:
+  notify_intrusion:
+    name: Notify when there is motion detected at home
+    initial: 'on'
+
+
+timer:
+  force_show_webcam:
+    duration: '00:03:00'
+  block_big_brother:
+    duration: '00:05:00'
+
+
+script:
+  'webcam_snapshot':
+    alias: Take Webcam Snapshots
+    sequence:
+      - service: shell_command.take_snapshot_webcam
+      - service: shell_command.transfer_snapshot
+      - delay:
+          seconds: 10
+      - service: shell_command.transfer_snapshot
+      - delay:
+          seconds: 20
+      - service: shell_command.transfer_snapshot
+
+
+  'show_webcam':
+    alias: Show webcam
+    sequence:
+    - service: timer.start
+      entity_id: timer.force_show_webcam
+    - condition: state
+      state: 'home'
+      entity_id: group.presence
+    - service: notify.notify
+      data_template:
+        title: "Big brother is watching you"
+        message: "and you like it!"
+        data:
+          push:
+            sound: "US-EN-Morgan-Freeman-Starting-Movie-Mode.wav"
+            category: privacy
+
+
+automation:
+
+  ############################################################
+  # Activate monitoring after 10mn without motion
+  ############################################################
+  - alias: Alert - Activate Monitoring
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_home
+      from: 'on'
+      to: 'off'
+      for:
+        minutes: 10
+    condition:
+      condition: state
+      state: 'not_home'
+      entity_id: group.presence
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.notify_intrusion
+      - service: automation.turn_on
+        entity_id: automation.alert_monitor_intrusion
+
+
+
+  ############################################################
+  # Stop monitoring when back home
+  ############################################################
+  - alias: Alert - Stop Monitoring
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: group.presence
+      to: 'home'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.alert_monitor_intrusion
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.notify_intrusion
+
+
+  ############################################################
+  # Stop notification is door is unlocked
+  ############################################################
+  - alias: Alert - Stop Notification
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: lock.home_door
+      to: 'unlocked'
+    condition:
+      condition: state
+      state: 'on'
+      entity_id: input_boolean.notify_intrusion
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.notify_intrusion
+
+  ############################################################
+  # monitor and alert if intrusion when detection
+  ############################################################
+  - alias: Alert - Monitor intrusion
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.motion
+    condition:
+      condition: state
+      state: 'not_home'
+      entity_id: group.presence
+    action:
+      - service: automation.turn_off
+        entity_id: automation.alert_monitor_intrusion
+      - service: script.webcam_snapshot
+      - delay:
+          seconds: 90
+      - condition: state
+        state: 'not_home'
+        entity_id: group.presence
+      - condition: state
+        entity_id: binary_sensor.motion_home
+        state: 'on'
+        for:
+          seconds: 60
+      - service: script.webcam_snapshot
+      - delay:
+          seconds: 120
+      - condition: state
+        entity_id: binary_sensor.motion_home
+        state: 'on'
+        for:
+          seconds: 60
+      - service: script.webcam_snapshot
+      - condition: state
+        entity_id: input_boolean.notify
+        state: 'on'
+      - service: notify.notify
+        data:
+          title: "No one@Home but presence detected"
+          message: 'At {{now().strftime("%Y%m%d-%H%M%S")}}'
+          data:
+            attachment:
+              content-type: jpeg
+            push:
+              category: camera
+            entity_id: camera.xiaofang
+
+
+
+  ############################################################
+  # Activate monitoring after 10mn without motion
+  ############################################################
+  - alias: Alert - Activate Safe Home
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.locks_and_doors
+        to: 'off'
+      - platform: state
+        entity_id: automation.alert_activate_safe_home
+        to: 'on'
+      - platform: state
+        entity_id: group.motion_living
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 10
+    condition:
+      - condition: state
+        entity_id: group.locks_and_doors
+        state: 'off'
+      - condition: state
+        entity_id: group.motion_living
+        state: 'off'
+    action:
+      - service: automation.turn_on
+        entity_id: automation.alert_monitor_safe_home
+      - service: automation.turn_on
+        entity_id: automation.alert_stop_monitoring_safe_home
+
+
+
+  ############################################################
+  # Stop monitoring when movement inside home
+  ############################################################
+  - alias: Alert - Stop Monitoring Safe Home
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.motion_living
+        to: 'on'
+      - platform: state
+        entity_id: lock.home_door
+        to: 'unlocked'
+      - platform: state
+        entity_id: automation.alert_activate_safe_home
+        to: 'off'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.alert_monitor_safe_home
+      - service: automation.turn_off
+        entity_id: automation.alert_stop_monitoring_safe_home
+
+
+  ############################################################
+  # monitor and alert if intrusion when detection
+  ############################################################
+  - alias: Alert - Monitor Safe Home
+    initial_state: 'off'
+    trigger:
+      platform: state
+      entity_id: group.doors_monitored_by_safehome
+      to: 'on'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.alert_monitor_safe_home
+      - service: automation.turn_off
+        entity_id: automation.alert_stop_monitoring_safe_home
+      - service: light.turn_on
+        entity_id: light.lights_downstairs
+      - service: script.webcam_snapshot  
+      - service: notify.notify
+        data:
+          title: "Doors open while @home"
+          message: 'At {{now().strftime("%Y%m%d-%H%M%S")}}'
+          data:
+            attachment:
+              content-type: jpeg
+            push:
+              category: camera
+            entity_id: camera.xiaofang
+      - delay:
+          seconds: 20
+      - service: script.webcam_snapshot
+
+
+
+  ############################################################
+  # Do not display camera when at home
+  ############################################################
+  - alias: Camera - privacy@home
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: group.presence
+        to: 'home'
+      - platform: homeassistant
+        event: start
+    condition:
+      condition: state
+      state: 'home'
+      entity_id: group.presence
+    action:
+      - service: group.set_visibility
+        entity_id: group.camera
+        data:
+          visible: False
+      - service: group.set_visibility
+        entity_id: group.camera_show
+        data:
+          visible: True
+
+  - alias: Camera - watch if not@home
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: group.presence
+        to: 'not_home'
+      - platform: homeassistant
+        event: start
+    condition:
+      condition: state
+      state: 'not_home'
+      entity_id: group.presence
+    action:
+      - service: group.set_visibility
+        entity_id: group.camera
+        data:
+          visible: True
+      - service: group.set_visibility
+        entity_id: group.camera_show
+        data:
+          visible: False
+
+  - alias: Camera - Keep Privacy 
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: ios.notification_action_fired
+      event_data:
+        actionName: KEEP_PRIVACY
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Big brother can't watch"
+          message: "NOT NOW (k)"
+      - service: timer.start
+        entity_id: timer.block_big_brother
+      - service: timer.cancel
+        entity_id: timer.force_show_webcam
+
+
+  ############################################################
+  # Notify when webcam is displayed
+  ############################################################
+
+  - alias: 'Camera - Notify on webcam forced on'
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: timer.force_show_webcam
+        to: 'active'
+    condition:
+      - condition: state
+        entity_id: group.presence
+        state: 'home'
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Big brother is watching you"
+          message: "and you like it!"
+          data:
+            push:
+              sound: "US-EN-Morgan-Freeman-Starting-Movie-Mode.wav"
+              category: privacy
+
+
