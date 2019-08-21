@@ -1,0 +1,104 @@
+automation:
+  ############################################################
+  # Pool Management
+  ############################################################
+
+  - alias: 'Pool - Notify on Cl Regulation start'
+    initial_state: 'on'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/cl_regul_injection_automation/start
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool Chlor regulation started"
+          message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
+
+
+  - alias: 'Pool - Notify on Cl+ Injection stop'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/cl_regul_injection/stop
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool Cl+ injection stopped"
+          message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
+
+
+  - alias: 'Pool - Notify on pH Regulation start'
+    initial_state: 'on'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/ph_regul_injection_automation/start
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool pH regulation started"
+          message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
+
+
+  - alias: 'Pool - Notify on pH- Injection stop'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/ph_regul_injection/stop
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool ph- injection stopped"
+          message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
+
+
+  - alias: 'Pool - Notify on excess of Cl+ Injection'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/alert/cl_regul_max_reached
+    action:
+      - service: notify.notify
+        data:
+          title: "Pool Cl+ injection EXCESS"
+          message: 'Too much injection today'
+
+
+
+switch:
+  - platform: mqtt
+    name: "Pool - Cl Regulation"
+    command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH Regulation"
+    command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH- Injection"
+    command_topic: "poolassistant/switch/ph_injection/set"
+    state_topic: "poolassistant/switch/ph_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+
+  - platform: mqtt
+    name: "Pool - Cl+ Injection"
+    command_topic: "poolassistant/switch/cl_injection/set"
+    state_topic: "poolassistant/switch/cl_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+  

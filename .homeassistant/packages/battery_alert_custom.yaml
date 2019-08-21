@@ -154,5 +154,69 @@ homeassistant:
     sensor.parrotpot_cc3e_battery:
       battery_alert_disabled: true
 
+    plant.parrotpot_2872:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
 
+    plant.parrotpot_720a:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_7c46:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_7eb9:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_a293:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_b4b6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_c284:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_cc3e:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrotpot_c5c6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    plant.parrot_pot_test:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
       
+    sensor.parrot_platform_2872_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_720a_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_7c46_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_7eb9_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_a293_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_b4b6_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_c284_battery:
+      battery_alert_disabled: true
+
+    sensor.parrot_platform_cc3e_battery:
+      battery_alert_disabled: true
+      
+    sensor.parrot_platform_c5c6_battery:
+      battery_alert_disabled: true

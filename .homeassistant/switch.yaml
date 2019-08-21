@@ -25,45 +25,6 @@
     #     entity_id: media_player.samsung_qe55q7fam
 
 
-- platform: mqtt
-  name: "Pool - Cl Regulation"
-  command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
-  state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
-  state_on: "on"
-  state_off: "off"
-  icon: mdi:home-assistant
-  qos: 1
-  retain: true
-
-- platform: mqtt
-  name: "Pool - pH Regulation"
-  command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
-  state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
-  state_on: "on"
-  state_off: "off"
-  icon: mdi:home-assistant
-  qos: 1
-  retain: true
-
-- platform: mqtt
-  name: "Pool - pH- Injection"
-  command_topic: "poolassistant/switch/ph_injection/set"
-  state_topic: "poolassistant/switch/ph_injection/state"
-  state_on: "on"
-  state_off: "off"
-  icon: mdi:needle
-  qos: 1
-  retain: true
-
-- platform: mqtt
-  name: "Pool - Cl+ Injection"
-  command_topic: "poolassistant/switch/cl_injection/set"
-  state_topic: "poolassistant/switch/cl_injection/state"
-  state_on: "on"
-  state_off: "off"
-  icon: mdi:needle
-  qos: 1
-  retain: true
 
 - platform: tuya
   name: webcam plug

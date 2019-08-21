@@ -100,6 +100,7 @@
     - service: automation.turn_on
       entity_id: automation.laundry_monitor_start_of_laundry_machines_run
 
+
 ############################################################
 # Monitor when Laundry machnes start running
 ############################################################
@@ -133,10 +134,10 @@
     condition: template
     value_template: "{{ state_attr('climate.thermostat', 'temperature') > 10 }}"
   action:
-    - service: climate.set_away_mode
+    - service: climate.set_preset_mode
       data:
         entity_id: climate.thermostat
-        away_mode: True
+        preset_mode: 'away'
     - service: automation.turn_on
       entity_id:
         - automation.housekeeping_restart_heating_when_doors_are_closed
@@ -152,20 +153,20 @@
     entity_id: automation.housekeeping_stop_heating_when_doors_are_open
     to: 'on'
   action:
-    - service: climate.set_away_mode
+    - service: climate.set_preset_mode
       data:
         entity_id: climate.thermostat
-        away_mode: False
+        preset_mode: 'Schedule'
 
 
 - alias: Housekeeping - on thermostat away on 
   initial_state: 'on'
   trigger:
     platform: template
-    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'on') }}"
+    value_template: "{{ is_state_attr('climate.thermostat', 'preset_mode', 'away') }}"
   condition:
     condition: template
-    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'on') }}"
+    value_template: "{{ is_state_attr('climate.thermostat', 'preset_mode', 'away') }}"
   action:
     - service: automation.turn_off
       entity_id:
@@ -176,10 +177,10 @@
   initial_state: 'on'
   trigger:
     platform: template
-    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'off') }}"
+    value_template: "{{ is_state_attr('climate.thermostat', 'preset_mode', 'Schedule') }}"
   condition:
     condition: template
-    value_template: "{{ is_state_attr('climate.thermostat', 'away_mode', 'off') }}"
+    value_template: "{{ is_state_attr('climate.thermostat', 'preset_mode', 'Schedule') }}"
   action:
     - service: automation.turn_on
       entity_id:
@@ -223,56 +224,6 @@
 
 
 ############################################################
-# Pool Management
-############################################################
-
-- alias: 'Pool - Notify on Cl Regulation start'
-  initial_state: 'on'
-  trigger:
-    platform: mqtt
-    topic: poolassistant/event/cl_regul_injection_automation/start
-  action:
-    - service: notify.notify
-      data_template:
-        title: "Pool Chlor regulation started"
-        message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
-
-- alias: 'Pool - Notify on Cl+ Injection stop'
-  trigger:
-    platform: mqtt
-    topic: poolassistant/event/cl_regul_injection/stop
-  action:
-    - service: notify.notify
-      data_template:
-        title: "Pool Cl+ injection stopped"
-        message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
-
-
-- alias: 'Pool - Notify on pH Regulation start'
-  initial_state: 'on'
-  trigger:
-    platform: mqtt
-    topic: poolassistant/event/ph_regul_injection_automation/start
-  action:
-    - service: notify.notify
-      data_template:
-        title: "Pool pH regulation started"
-        message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
-
-- alias: 'Pool - Notify on pH- Injection stop'
-  trigger:
-    platform: mqtt
-    topic: poolassistant/event/ph_regul_injection/stop
-  action:
-    - service: notify.notify
-      data_template:
-        title: "Pool ph- injection stopped"
-        message: 'The injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
-
-
-
-
-############################################################
 # Start HomeKit 5mn after boot (to ensure all devices are well started)
 ############################################################
 
@@ -287,6 +238,10 @@
 #     # - delay: 00:05  # Waits 5 minutes
 #     - service: homekit.start
 
+
+############################################################
+# Theme management
+############################################################
 
 - alias: 'Set HA theme for day and night'
   trigger:
@@ -344,6 +299,10 @@
       to: 'not_home'
     - platform: time
       at: '06:00'
+  condition:
+    - condition: state
+      entity_id: input_boolean.night_mode
+      state: 'on'
   action:
     - service: input_boolean.turn_off
       entity_id: input_boolean.night_mode
@@ -417,9 +376,6 @@
     - delay:
         minutes: 2
     - event: 2MN_AFTER_HASS_START
-
-
-
 
 
 ############################################################

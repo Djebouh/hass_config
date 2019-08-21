@@ -73,7 +73,6 @@ automation:
         entity_id: automation.alert_monitor_intrusion
 
 
-
   ############################################################
   # Stop monitoring when back home
   ############################################################
@@ -106,6 +105,7 @@ automation:
     action:
       - service: input_boolean.turn_off
         entity_id: input_boolean.notify_intrusion
+
 
   ############################################################
   # monitor and alert if intrusion when detection
@@ -246,52 +246,57 @@ automation:
 
 
 
-  ############################################################
-  # Do not display camera when at home
-  ############################################################
-  - alias: Camera - privacy@home
-    initial_state: 'on'
-    trigger:
-      - platform: state
-        entity_id: group.presence
-        to: 'home'
-      - platform: homeassistant
-        event: start
-    condition:
-      condition: state
-      state: 'home'
-      entity_id: group.presence
-    action:
-      - service: group.set_visibility
-        entity_id: group.camera
-        data:
-          visible: False
-      - service: group.set_visibility
-        entity_id: group.camera_show
-        data:
-          visible: True
+  # ############################################################
+  # # Do not display camera when at home
+  # ############################################################
+  # - alias: Camera - privacy@home
+  #   initial_state: 'on'
+  #   trigger:
+  #     - platform: state
+  #       entity_id: group.presence
+  #       to: 'home'
+  #     - platform: homeassistant
+  #       event: start
+  #   condition:
+  #     condition: state
+  #     state: 'home'
+  #     entity_id: group.presence
+  #   action:
+  #     - service: group.set_visibility
+  #       entity_id: group.camera
+  #       data:
+  #         visible: False
+  #     - service: group.set_visibility
+  #       entity_id: group.camera_show
+  #       data:
+  #         visible: True
 
-  - alias: Camera - watch if not@home
-    initial_state: 'on'
-    trigger:
-      - platform: state
-        entity_id: group.presence
-        to: 'not_home'
-      - platform: homeassistant
-        event: start
-    condition:
-      condition: state
-      state: 'not_home'
-      entity_id: group.presence
-    action:
-      - service: group.set_visibility
-        entity_id: group.camera
-        data:
-          visible: True
-      - service: group.set_visibility
-        entity_id: group.camera_show
-        data:
-          visible: False
+  # - alias: Camera - watch if not@home
+  #   initial_state: 'on'
+  #   trigger:
+  #     - platform: state
+  #       entity_id: group.presence
+  #       to: 'not_home'
+  #     - platform: homeassistant
+  #       event: start
+  #   condition:
+  #     condition: state
+  #     state: 'not_home'
+  #     entity_id: group.presence
+  #   action:
+  #     - service: group.set_visibility
+  #       entity_id: group.camera
+  #       data:
+  #         visible: True
+  #     - service: group.set_visibility
+  #       entity_id: group.camera_show
+  #       data:
+  #         visible: False
+
+
+  ############################################################
+  # Block Camera
+  ############################################################
 
   - alias: Camera - Keep Privacy 
     initial_state: 'on'
