@@ -20,8 +20,8 @@
   name: light@Lou_Ceiling
   entity_id: switch.wallswitch_light_lou_ceiling
 - platform: switch
-  name: light@Lou_Bed
-  entity_id: switch.wallswitch_light_lou_bed
+  name: light@Lou_Desk
+  entity_id: switch.wallswitch_light_lou_wall
 
 
 - platform: template

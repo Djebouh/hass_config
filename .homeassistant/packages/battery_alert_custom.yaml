@@ -193,6 +193,10 @@ homeassistant:
     plant.parrot_pot_test:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
+
+    plant.parrotpot_0ef7:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
       
     sensor.parrot_platform_2872_battery:
       battery_alert_disabled: true
@@ -220,3 +224,7 @@ homeassistant:
       
     sensor.parrot_platform_c5c6_battery:
       battery_alert_disabled: true
+
+    sensor.parrot_platform_0ef7_battery:
+      battery_alert_disabled: true
+

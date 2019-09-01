@@ -116,66 +116,66 @@ hacs:
   theme: true
 
 
-breaking_changes:
+# breaking_changes:
 
 
-ios:
-  push:
-    categories:
-      - name: Safe home
-        identifier: 'safehome'
-        actions:
-          - identifier: 'LOCK_HOME'
-            title: 'Lock home'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-          - identifier: 'LOCK_DOORS'
-            title: 'Lock doors'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-      - name: Close shutters
-        identifier: 'shutters_control'
-        actions:
-          - identifier: 'CLOSE_SHUTTERS'
-            title: 'Close Shutters'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-      - name: Night Mode
-        identifier: 'nightmode'
-        actions:
-          - identifier: 'LOCK_HOME'
-            title: 'Lock home'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-          - identifier: 'LOCK_DOORS'
-            title: 'Lock doors'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-          - identifier: 'CLOSE_SHUTTERS'
-            title: 'Close Shutters'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
-      - name: Private home
-        identifier: 'privacy'
-        actions:
-          - identifier: 'KEEP_PRIVACY'
-            title: 'Keep me Private'
-            activationMode: 'background'
-            authenticationRequired: no
-            destructive: yes
-            behavior: 'default'
+# ios:
+#   push:
+#     categories:
+#       - name: Safe home
+#         identifier: 'safehome'
+#         actions:
+#           - identifier: 'LOCK_HOME'
+#             title: 'Lock home'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#           - identifier: 'LOCK_DOORS'
+#             title: 'Lock doors'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#       - name: Close shutters
+#         identifier: 'shutters_control'
+#         actions:
+#           - identifier: 'CLOSE_SHUTTERS'
+#             title: 'Close Shutters'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#       - name: Night Mode
+#         identifier: 'nightmode'
+#         actions:
+#           - identifier: 'LOCK_HOME'
+#             title: 'Lock home'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#           - identifier: 'LOCK_DOORS'
+#             title: 'Lock doors'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#           - identifier: 'CLOSE_SHUTTERS'
+#             title: 'Close Shutters'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
+#       - name: Privacy at home
+#         identifier: 'privacy'
+#         actions:
+#           - identifier: 'KEEP_PRIVACY'
+#             title: 'Keep me Private'
+#             activationMode: 'background'
+#             authenticationRequired: no
+#             destructive: yes
+#             behavior: 'default'
 
 
 xiaomi_aqara:
@@ -212,47 +212,79 @@ google_assistant:
   expose_by_default: false
   entity_config:
     light.light_living:
-      name: lumiere du salon
+      # name: lumiere du salon
       expose: true
       room: Living Room
       aliases:
+        - lumiere du salon
         - living room light
     light.light_bar:
-      name: lumiere du bar
+      # name: lumiere du bar
       expose: true
       room: Kitchen
       aliases:
+        - lumiere du bar
         - bar light
     light.light_kitchen:
-      name: lumiere de la cuisine
+      # name: lumiere de la cuisine
       expose: true
       room: Kitchen
       aliases:
+        - lumiere de la cuisine
         - kitchen light
-    lock.home_door:
-      name: porte d'entree
+    lock.front_door:
+      # name: porte d'entree
       expose: true
       aliases:
-        - home door
+        - porte d'entree
         - front door
         - main door
         - porte
         - porte principale
       room: Entrance
     lock.polycontrol_danalock_v3_btze_locked:
-      name: porte de la buanderie
+      # name: porte de la buanderie
       expose: true
       room: Laundry
       aliases:
+        - porte de la buanderie
         - back door
         - laundry door
         - porte de derrière
     cover.shutters_living:
-      name: volets roulants
+      # name: volets roulants
       expose: true
       room: Living Room
       aliases:
+        - volets roulants
         - shutters
+    cover.sun_awning:
+      # name: store
+      expose: true
+      room: Garden
+      aliases:
+        - store
+        - awning
+    light.light_lou_desk:
+      expose: true
+      room: Lou's bedroom
+      aliases:
+        - lumiere du bureau de Lou
+        - Lou's desk light
+    light.light_lou_ceiling:
+      expose: true
+      room: Lou's bedroom
+      aliases:
+        - lumiere principale de la chambre de Lou
+        - Lou's ceiling light
+        - Lou's bedroom main light
+    light.light_bedroom:
+      expose: true
+      room: Bedroom
+      aliases:
+        - lumiere de la chambre
+        - bedroom light
+
 
 
 lock:
@@ -299,10 +331,10 @@ tuya:
   country_code: 33
 
 
-rachio:
-  api_key: !secret rachio_api_key
-  hass_url_override: !secret rachio_hass_url_override
-#   manual_run_mins: 3
+# rachio:
+#   api_key: !secret rachio_api_key
+#   hass_url_override: !secret rachio_hass_url_override
+# #   manual_run_mins: 3
 
 
 shell_command:

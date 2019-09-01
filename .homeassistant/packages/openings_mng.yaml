@@ -1,3 +1,11 @@
+################################################################
+## Define home locks
+## Raise alert when leaving home and not well locked
+## Open and close shutters automatically
+## Open and close awning automatically, based on rain prevision
+################################################################
+
+
 homeassistant:
 
   customize:
@@ -10,11 +18,11 @@ homeassistant:
     switch.lock_laundrydoor:
       icon: mdi:home-lock
     switch.lock_diningwindow:
-      icon: mdi:windows
+      icon: mdi:home-lock
     binary_sensor.closed_and_locked:
       icon: mdi:home-lock
     binary_sensor.opening_window_living:
-      icon: mdi:door
+      icon: mdi:window
     binary_sensor.opening_window_kitchen:
       icon: mdi:door
     binary_sensor.opening_door_garage:
@@ -39,7 +47,7 @@ cover:
     payload_open: "open"
     payload_close: "close"
     payload_stop: "stop"
-    retain: true
+    retain: false 
 
 
 timer:
@@ -89,7 +97,7 @@ group:
     - binary_sensor.opening_window_living
     - binary_sensor.opening_window_kitchen
     - binary_sensor.opening_door_garage
-    - switch.lock_lauopenndrydoor #laundry
+    - switch.lock_laundrydoor #laundry
 
 switch:
   - platform: template
@@ -98,17 +106,17 @@ switch:
       lock_maindoor:
         friendly_name: "lock@MainDoor"
         value_template: >-
-          {{ not ( is_state('sensor.door_main', 'locked') ) }}
-        entity_id: sensor.door_main
+          {{ not ( is_state('sensor.door_front', 'locked') ) }}
+        entity_id: sensor.door_front
         turn_on:
           service: lock.unlock
-          entity_id: lock.home_door
+          entity_id: lock.front_door
         turn_off:
         - condition: state
           state: 'unlocked'
-          entity_id: sensor.door_main
+          entity_id: sensor.door_front
         - service: lock.lock
-          entity_id: lock.home_door
+          entity_id: lock.front_door
 
       lock_laundrydoor:
         friendly_name: "lock@LaundryDoor"
@@ -140,7 +148,7 @@ switch:
           entity_id: cover.shutters_living
         turn_off:
         - condition: state
-          entity_id: cover.shutters_living
+          entity_id: binary_sensor.opening_shutters_living
           state: 'on'
         - service: cover.close_cover
           entity_id: cover.shutters_living
@@ -170,14 +178,14 @@ switch:
 sensor:
   - platform: template
     sensors:
-      door_main:
-        friendly_name: "Main Door"
+      door_front:
+        friendly_name: "Front door"
         value_template: >-
           {% if is_state('binary_sensor.opening_door_entrance', 'on') %}
             open
-          {% elif is_state('lock.home_door', 'locked') %}
+          {% elif is_state('lock.front_door', 'locked') %}
             locked
-          {% elif is_state('lock.home_door', 'unlocked') %}
+          {% elif is_state('lock.front_door', 'unlocked') %}
             unlocked
           {% elif is_state('binary_sensor.opening_door_entrance', 'off') %}
             closed
@@ -186,10 +194,10 @@ sensor:
           {% endif %}
         entity_id:
         - binary_sensor.opening_door_entrance
-        - lock.home_door
+        - lock.front_door
 
       door_laundry:
-        friendly_name: "Laundry Door"
+        friendly_name: "Laundry door"
         value_template: >-
           {% if is_state('binary_sensor.opening_door_laundry', 'on') %}
             open
@@ -216,6 +224,56 @@ binary_sensor:
         device_class: door
         entity_id: group.locks_and_doors
         value_template: "{{ not(is_state('group.locks_and_doors', 'off')) }}"
+
+
+ios:
+  push:
+    categories:
+      - name: Safe home
+        identifier: 'safehome'
+        actions:
+          - identifier: 'LOCK_HOME'
+            title: 'Lock home'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'LOCK_DOORS'
+            title: 'Lock doors'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+      - name: Close shutters
+        identifier: 'shutters_control'
+        actions:
+          - identifier: 'CLOSE_SHUTTERS'
+            title: 'Close Shutters'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+      - name: Night Mode
+        identifier: 'nightmode'
+        actions:
+          - identifier: 'LOCK_HOME'
+            title: 'Lock home'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'LOCK_DOORS'
+            title: 'Lock doors'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+          - identifier: 'CLOSE_SHUTTERS'
+            title: 'Close Shutters'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
 
 
 automation:
@@ -245,7 +303,7 @@ automation:
         click_type: double
     action:
       service: nuki.lock_n_go
-      entity_id: lock.home_door
+      entity_id: lock.front_door
 
   - alias: Switch Entrance L - Switch off lights and Go
     initial_state: 'on'
@@ -257,7 +315,7 @@ automation:
         click_type: long_click_press
     action:
       - service: nuki.lock_n_go
-        entity_id: lock.home_door
+        entity_id: lock.front_door
       - delay:
           seconds: 5
       - service: light.turn_off
@@ -265,10 +323,10 @@ automation:
 
       
   ############################################################
-  # Housekeeping door
+  # iOS interaction
   ############################################################
 
-  - alias: Housekeeping - Act Home Locking
+  - alias: iOS Push - Act Home Locking
     initial_state: 'on'
     trigger:
       platform: event
@@ -279,7 +337,7 @@ automation:
       - service: switch.turn_off
         entity_id: switch.lock_home
 
-  - alias: Housekeeping - Act Doors Locking
+  - alias: iOS Push - Act Doors Locking
     initial_state: 'on'
     trigger:
       platform: event
@@ -292,7 +350,7 @@ automation:
       - service: switch.turn_off
         entity_id: switch.lock_laundrydoor
 
-  - alias: Housekeeping - Notify home not locked
+  - alias: iOS Push - Notify home not locked
     initial_state: 'on'
     trigger:
       - platform: event
@@ -315,7 +373,7 @@ automation:
               {% set text = "The house is NOT LOCKED" %}
               {% set separ = ": " %}
               {% if is_state('switch.lock_maindoor', 'on') %}
-                {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_main') %}
+                {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_front') %}
                 {% set separ = ", " %}
               {% endif %}
               {% if is_state('switch.lock_diningwindow', 'on') %}
@@ -348,7 +406,7 @@ automation:
         entity_id: timer.no_message_for_lock
 
 
-  - alias: Housekeeping - door not locked after leaving
+  - alias: iOS Notif - door not locked after leaving
     initial_state: 'on'
     trigger:
       - platform: state
@@ -375,7 +433,7 @@ automation:
           context: "House not locked after you left !"
 
 
-  - alias: Housekeeping - door open and not home
+  - alias: iOS Notif - door open and not home
     initial_state: 'on'
     trigger:
       - platform: state
@@ -393,7 +451,7 @@ automation:
           context: "House not locked and you are not at home !"
 
 
-  - alias: Housekeeping - notify door not locked at night, being upstairs
+  - alias: iOS Notif - notify door not locked at night, being upstairs
     initial_state: 'off'
     trigger:
       platform: state
@@ -409,7 +467,7 @@ automation:
           context: "House not locked, while going upstairs !"
 
 
-  - alias: Housekeeping - notify door not locked at night, no movement
+  - alias: iOS Notif - notify door not locked at night, no movement
     initial_state: 'off'
     trigger:
       platform: state
@@ -430,7 +488,7 @@ automation:
           context: "House not locked, there is no movement !"
 
 
-  - alias: Housekeeping - close doors at night, at midnight
+  - alias: iOS Notif - close doors at night, at midnight
     initial_state: 'off'
     trigger:
       - platform: state
@@ -574,7 +632,7 @@ automation:
         to: 'off'
         from: 'on'
         for:
-          seconds: 3
+          seconds: 5
     action:
       - service: cover.stop_cover
         entity_id: cover.shutters_living
@@ -651,7 +709,7 @@ automation:
   # Night mode switched on, openings not closed
   ############################################################
 
-  - alias: 'Give status when night mode is switched on'
+  - alias: 'iOS Notif - Give status when night mode is switched on'
     initial_state: 'on'
     trigger:
       - platform: state

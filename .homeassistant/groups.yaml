@@ -132,7 +132,7 @@ motion_home:
 #   view: yes
 #   entities:
 #   - binary_sensor.opening_catflap
-#   - sensor.door_main
+#   - sensor.door_front
 #   - sensor.door_laundry
 #   - binary_sensor.vpn_status
 #   - group.downstairs

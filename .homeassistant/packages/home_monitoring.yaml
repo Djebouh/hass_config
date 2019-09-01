@@ -1,3 +1,9 @@
+################################################################
+## Monitor home when not at home
+## Monitor intrusions at night when no motion (safe mode)
+## Do not display camera on HASS when someone is at home
+################################################################
+
 shell_command:
   take_snapshot_webcam: 'bash /home/homeassistant/scripts/take_snapshot_webcam.sh'
   transfer_snapshot: 'bash /home/homeassistant/scripts/transfer_snapshot.sh'
@@ -48,6 +54,20 @@ script:
             category: privacy
 
 
+ios:
+  push:
+    categories:
+      - name: Privacy at home
+        identifier: 'privacy'
+        actions:
+          - identifier: 'KEEP_PRIVACY'
+            title: 'Keep me Private'
+            activationMode: 'background'
+            authenticationRequired: no
+            destructive: yes
+            behavior: 'default'
+
+
 automation:
 
   ############################################################
@@ -96,7 +116,7 @@ automation:
     initial_state: 'on'
     trigger:
       platform: state
-      entity_id: lock.home_door
+      entity_id: lock.front_door
       to: 'unlocked'
     condition:
       condition: state
@@ -201,7 +221,7 @@ automation:
         entity_id: group.motion_living
         to: 'on'
       - platform: state
-        entity_id: lock.home_door
+        entity_id: lock.front_door
         to: 'unlocked'
       - platform: state
         entity_id: automation.alert_activate_safe_home
@@ -245,55 +265,6 @@ automation:
       - service: script.webcam_snapshot
 
 
-
-  # ############################################################
-  # # Do not display camera when at home
-  # ############################################################
-  # - alias: Camera - privacy@home
-  #   initial_state: 'on'
-  #   trigger:
-  #     - platform: state
-  #       entity_id: group.presence
-  #       to: 'home'
-  #     - platform: homeassistant
-  #       event: start
-  #   condition:
-  #     condition: state
-  #     state: 'home'
-  #     entity_id: group.presence
-  #   action:
-  #     - service: group.set_visibility
-  #       entity_id: group.camera
-  #       data:
-  #         visible: False
-  #     - service: group.set_visibility
-  #       entity_id: group.camera_show
-  #       data:
-  #         visible: True
-
-  # - alias: Camera - watch if not@home
-  #   initial_state: 'on'
-  #   trigger:
-  #     - platform: state
-  #       entity_id: group.presence
-  #       to: 'not_home'
-  #     - platform: homeassistant
-  #       event: start
-  #   condition:
-  #     condition: state
-  #     state: 'not_home'
-  #     entity_id: group.presence
-  #   action:
-  #     - service: group.set_visibility
-  #       entity_id: group.camera
-  #       data:
-  #         visible: True
-  #     - service: group.set_visibility
-  #       entity_id: group.camera_show
-  #       data:
-  #         visible: False
-
-
   ############################################################
   # Block Camera
   ############################################################
@@ -318,6 +289,7 @@ automation:
 
   ############################################################
   # Notify when webcam is displayed
+  # (the camera is normally not shown when someone is at home)
   ############################################################
 
   - alias: 'Camera - Notify on webcam forced on'

@@ -638,7 +638,7 @@ automation:
     - service: mqtt.publish
       data_template:
         topic: "homeassistant/sensor/{{ trigger.event.data.entity_id.split('.')[1] }}_battery/config"
-        retain: true
+        retain: false
         payload: &config_payload >-
           {
             {% if trigger.event.data.new_state.attributes.battery_level is defined -%}
@@ -687,7 +687,7 @@ automation:
     - service: mqtt.publish
       data_template:
         topic: "homeassistant/sensor/{{ trigger.event.data.entity_id.split('.')[1] }}_battery/state"
-        retain: true
+        retain: false
         payload: >-
           {
             {% if trigger.event.data.new_state.attributes.battery_level is defined -%}
@@ -714,7 +714,7 @@ automation:
     - service: mqtt.publish
       data_template:
         topic: "homeassistant/sensor/{{ trigger.event.data.entity_id.split('.')[1] }}_battery/attributes"
-        retain: true
+        retain: false
         payload: >-
           {
             {% if trigger.event.data.new_state.attributes.battery_level is defined -%}
@@ -763,9 +763,10 @@ automation:
                   item.attributes.icon is not defined
                 ) and (
                   not is_state_attr(item.entity_id, 'battery_alert_disabled', true)
-                )
+                ) 
               )
             )
+            and ( not is_state(item.entity_id, 'unknown'))
           -%}
             {{ item.entity_id }}{% if not loop.last %}, {% endif %}
           {%- endfor -%}
@@ -783,16 +784,16 @@ automation:
     - service: mqtt.publish
       data_template:
         topic: "{{ states.input_text.delete_battery_sensor.state }}"
-        retain: true
+        retain: false
     - service: mqtt.publish
       data_template:
         topic: "{{ states.input_text.delete_battery_sensor.state }}/attributes"
-        retain: true
+        retain: false
     - service: mqtt.publish
       data_template:
         topic: "{{ states.input_text.delete_battery_sensor.state }}/state"
-        retain: true
+        retain: false
     - service: mqtt.publish
       data_template:
         topic: "{{ states.input_text.delete_battery_sensor.state }}/config"
-        retain: true
+        retain: false
