@@ -10,17 +10,17 @@
 homeassistant:
   customize:
 
-    sensor.corinnes_iphone_battery_level:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
+    # sensor.corinnes_iphone_battery_level:
+    #   battery_sensor_creation_disabled: true
+    #   battery_alert_disabled: true
 
-    sensor.jeromes_ipad_battery_level:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
+    # sensor.jeromes_ipad_battery_level:
+    #   battery_sensor_creation_disabled: true
+    #   battery_alert_disabled: true
 
-    sensor.jeromes_iphone_battery_level:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
+    # sensor.jeromes_iphone_battery_level:
+    #   battery_sensor_creation_disabled: true
+    #   battery_alert_disabled: true
 
     switch.wallswitch_light_bar:
       battery_sensor_creation_disabled: true
@@ -226,5 +226,36 @@ homeassistant:
       battery_alert_disabled: true
 
     sensor.parrot_platform_0ef7_battery:
+      battery_alert_disabled: true
+
+    sensor.battery_level:
+      battery_alert_disabled: true
+
+    sensor.battery_level_2:
+      battery_alert_disabled: true
+
+    sensor.battery_level_3:
+      battery_alert_disabled: true
+
+    sensor.battery_state:
+      battery_alert_disabled: true
+
+    sensor.battery_state_2:
+      battery_alert_disabled: true
+
+    sensor.battery_state_3:
+      battery_alert_disabled: true
+
+    sensor.netatmo_garden_battery:
+      battery_alert_disabled: true
+
+    sensor.netatmo_rain_gauge_battery:
+      battery_alert_disabled: true
+
+    sensor.netatmo_living_room_battery:
+      battery_alert_disabled: true
+
+    sensor.polycontrol_danalock_v3_btze_battery:
+      battery_sensor_creation_disabled: true
       battery_alert_disabled: true
 

@@ -2,10 +2,11 @@
   "domain": "parrot_platform",
   "name": "Plant PARROT",
   "documentation": "https://www.home-assistant.io/components/miflora",
-  "requirements": [],
-  "dependencies": [
-    "plant"
+  "requirements": [
+    "bluepy==1.1.4",
+    "btlewrap==0.0.4"
   ],
+  "dependencies": [],
   "codeowners": [
     "@djebouh"
   ]

@@ -15,26 +15,22 @@ binary_sensor:
 
 
 plant:
-  - platform: plant_from_sensors
-    name: parrot_pot_test
-    sensors:
-      battery: sensor.parrot_pot_2872_battery
-      conductivity: sensor.parrot_pot_2872_conductivity
-      brightness: sensor.parrot_pot_2872_light_intensity
-      moisture: sensor.parrot_pot_2872_moisture
-      temperature: sensor.parrot_pot_2872_temperature
-  - platform: plant_from_prefix
-    prefix: parrotpot_c5c6
-  - platform: plant_from_prefix
-    prefix: miflora_4cc3
-  - platform: plant_from_prefix
-    prefix: miflora_6ec8
-  - platform: plant_from_prefix
-    prefix: miflora_4835
+  # - platform: plant_from_sensors
+  #   name: parrot_pot_test
+  #   sensors:
+  #     battery: sensor.parrot_pot_2872_battery
+  #     conductivity: sensor.parrot_pot_2872_conductivity
+  #     brightness: sensor.parrot_pot_2872_light_intensity
+  #     moisture: sensor.parrot_pot_2872_moisture
+  #     temperature: sensor.parrot_pot_2872_temperature
+  # - platform: plant_from_prefix
+  #   prefix: parrotpot_c5c6
   - platform: plant_from_prefix
     prefix: miflora_3cb6
-  - platform: plant_parrot
-    mac: 'A0:14:3D:CD:7C:46'
+  - platform: plant_from_prefix
+    prefix: miflora_41fa
+  # - platform: plant_parrot
+  #   mac: 'A0:14:3D:CD:7C:46'
   # - platform: plant_parrot
   #   mac: 'A0:14:3D:CD:C2:84'
   # # - platform: plant_parrot
@@ -51,179 +47,169 @@ plant:
   #   mac: 'A0:14:3D:CD:CC:3E'
 
 parrot_platform:
-  # - mac: 'A0:14:3D:CD:7C:46'
+  # - mac: 'A0:14:3D:CD:7E:B9'
   - mac: 'A0:14:3D:CD:C2:84'
-  - mac: 'A0:14:3D:CD:72:0A'
-  - mac: 'A0:14:3D:CD:B4:B6'
   - mac: 'A0:14:3D:CD:A2:93'
-  - mac: 'A0:14:3D:CD:7E:B9'
-  # - mac: 'A0:14:3D:CD:CC:3E'
   - mac: 'A0:14:3D:CD:28:72'
+  - mac: 'A0:14:3D:CD:C5:C6'
+  - mac: 'A0:14:3D:CD:B4:B6'
+  - mac: 'A0:14:3D:CD:72:0A'
+  - mac: 'A0:14:3D:CD:7C:46'
   - mac: 'A0:14:3D:CD:0E:F7'
+  - mac: 'A0:14:3D:CD:1F:11'
+
 
 sensor:
-  - platform: mqtt
-    name: "Pool Redox"
-    state_topic: "poolassistant/sensor/redox/state"
-    unit_of_measurement: "mV"
-    force_update: true
+  - platform: miflora
+    mac: 'C4:7C:8D:6A:3C:B6'
+    name: MiFlora 3CB6
+  - platform: miflora
+    mac: 'C4:7C:8D:6A:41:FA'
+    name: MiFlora 41FA
 
-  - platform: mqtt
-    name: "Pool pH"
-    state_topic: "poolassistant/sensor/ph/state"
-    unit_of_measurement: "pH"
-    force_update: true
+# sensor:
+#   - platform: mqtt
+#     name: "MiFlora 4cc3 Temperature"
+#     state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/temperature"
+#     unit_of_measurement: "°C"
+#     device_class: temperature
+#     force_update: true
 
-  - platform: mqtt
-    name: "Pool Water Temperature"
-    state_topic: "poolassistant/sensor/pool_temperature/state"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4cc3 Moisture"
+#     state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/moisture"
+#     unit_of_measurement: "%"
+#     device_class: humidity
+#     force_update: true
 
+#   - platform: mqtt
+#     name: "MiFlora 4cc3 Brightness"
+#     state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/light"
+#     unit_of_measurement: "lx"
+#     device_class: illuminance
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 4cc3 Temperature"
-    state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/temperature"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4cc3 Conductivity"
+#     state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/conductivity"
+#     unit_of_measurement: "µS/cm"
+#     icon: mdi:flash-circle
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 4cc3 Moisture"
-    state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/moisture"
-    unit_of_measurement: "%"
-    device_class: humidity
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4cc3 Brightness"
-    state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/light"
-    unit_of_measurement: "lx"
-    device_class: illuminance
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4cc3 Conductivity"
-    state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/conductivity"
-    unit_of_measurement: "µS/cm"
-    icon: mdi:flash-circle
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4cc3 Battery"
-    state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/battery"
-    unit_of_measurement: "%"
-    device_class: battery
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4cc3 Battery"
+#     state_topic: "MiFlora/c4:7c:8d:6a:4c:c3/battery"
+#     unit_of_measurement: "%"
+#     device_class: battery
+#     force_update: true
 
 
-  - platform: mqtt
-    name: "MiFlora 6ec8 Temperature"
-    state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/temperature"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 6ec8 Temperature"
+#     state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/temperature"
+#     unit_of_measurement: "°C"
+#     device_class: temperature
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 6ec8 Moisture"
-    state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/moisture"
-    unit_of_measurement: "%"
-    device_class: humidity
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 6ec8 Moisture"
+#     state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/moisture"
+#     unit_of_measurement: "%"
+#     device_class: humidity
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 6ec8 Brightness"
-    state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/light"
-    unit_of_measurement: "lx"
-    device_class: illuminance
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 6ec8 Brightness"
+#     state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/light"
+#     unit_of_measurement: "lx"
+#     device_class: illuminance
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 6ec8 Conductivity"
-    state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/conductivity"
-    unit_of_measurement: "µS/cm"
-    icon: mdi:flash-circle
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 6ec8 Conductivity"
+#     state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/conductivity"
+#     unit_of_measurement: "µS/cm"
+#     icon: mdi:flash-circle
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 6ec8 Battery"
-    state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/battery"
-    unit_of_measurement: "%"
-    device_class: battery
-    force_update: true
-
-
-  - platform: mqtt
-    name: "MiFlora 4835 Temperature"
-    state_topic: "MiFlora/c4:7c:8d:6a:48:35/temperature"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4835 Moisture"
-    state_topic: "MiFlora/c4:7c:8d:6a:48:35/moisture"
-    unit_of_measurement: "%"
-    device_class: humidity
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4835 Brightness"
-    state_topic: "MiFlora/c4:7c:8d:6a:48:35/light"
-    unit_of_measurement: "lx"
-    device_class: illuminance
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4835 Conductivity"
-    state_topic: "MiFlora/c4:7c:8d:6a:48:35/conductivity"
-    unit_of_measurement: "µS/cm"
-    icon: mdi:flash-circle
-    force_update: true
-
-  - platform: mqtt
-    name: "MiFlora 4835 Battery"
-    state_topic: "MiFlora/c4:7c:8d:6a:48:35/battery"
-    unit_of_measurement: "%"
-    device_class: battery
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 6ec8 Battery"
+#     state_topic: "MiFlora/c4:7c:8d:6a:6e:c8/battery"
+#     unit_of_measurement: "%"
+#     device_class: battery
+#     force_update: true
 
 
-  - platform: mqtt
-    name: "MiFlora 3cb6 Temperature"
-    state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/temperature"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4835 Temperature"
+#     state_topic: "MiFlora/c4:7c:8d:6a:48:35/temperature"
+#     unit_of_measurement: "°C"
+#     device_class: temperature
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 3cb6 Moisture"
-    state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/moisture"
-    unit_of_measurement: "%"
-    device_class: humidity
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4835 Moisture"
+#     state_topic: "MiFlora/c4:7c:8d:6a:48:35/moisture"
+#     unit_of_measurement: "%"
+#     device_class: humidity
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 3cb6 Brightness"
-    state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/light"
-    unit_of_measurement: "lx"
-    device_class: illuminance
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4835 Brightness"
+#     state_topic: "MiFlora/c4:7c:8d:6a:48:35/light"
+#     unit_of_measurement: "lx"
+#     device_class: illuminance
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 3cb6 Conductivity"
-    state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/conductivity"
-    unit_of_measurement: "µS/cm"
-    icon: mdi:flash-circle
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4835 Conductivity"
+#     state_topic: "MiFlora/c4:7c:8d:6a:48:35/conductivity"
+#     unit_of_measurement: "µS/cm"
+#     icon: mdi:flash-circle
+#     force_update: true
 
-  - platform: mqtt
-    name: "MiFlora 3cb6 Battery"
-    state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/battery"
-    unit_of_measurement: "%"
-    device_class: battery
-    force_update: true
+#   - platform: mqtt
+#     name: "MiFlora 4835 Battery"
+#     state_topic: "MiFlora/c4:7c:8d:6a:48:35/battery"
+#     unit_of_measurement: "%"
+#     device_class: battery
+#     force_update: true
+
+
+#   - platform: mqtt
+#     name: "MiFlora 3cb6 Temperature"
+#     state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/temperature"
+#     unit_of_measurement: "°C"
+#     device_class: temperature
+#     force_update: true
+
+#   - platform: mqtt
+#     name: "MiFlora 3cb6 Moisture"
+#     state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/moisture"
+#     unit_of_measurement: "%"
+#     device_class: humidity
+#     force_update: true
+
+#   - platform: mqtt
+#     name: "MiFlora 3cb6 Brightness"
+#     state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/light"
+#     unit_of_measurement: "lx"
+#     device_class: illuminance
+#     force_update: true
+
+#   - platform: mqtt
+#     name: "MiFlora 3cb6 Conductivity"
+#     state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/conductivity"
+#     unit_of_measurement: "µS/cm"
+#     icon: mdi:flash-circle
+#     force_update: true
+
+#   - platform: mqtt
+#     name: "MiFlora 3cb6 Battery"
+#     state_topic: "MiFlora/c4:7c:8d:6a:3c:b6/battery"
+#     unit_of_measurement: "%"
+#     device_class: battery
+#     force_update: true
 
 
   # - platform: mqtt
@@ -394,47 +380,47 @@ sensor:
   #   icon: mdi:gauge
   #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Temperature"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/soil_temperature"
-    unit_of_measurement: "°C"
-    device_class: temperature
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Temperature"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/soil_temperature"
+  #   unit_of_measurement: "°C"
+  #   device_class: temperature
+  #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Moisture"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/moisture_cal"
-    unit_of_measurement: "%"
-    device_class: humidity
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Moisture"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/moisture_cal"
+  #   unit_of_measurement: "%"
+  #   device_class: humidity
+  #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Brightness"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/dli_cal"
-    unit_of_measurement: "lx"
-    device_class: illuminance
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Brightness"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/dli_cal"
+  #   unit_of_measurement: "lx"
+  #   device_class: illuminance
+  #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Conductivity"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/conductivity"
-    unit_of_measurement: "µS/cm"
-    icon: mdi:flash-circle
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Conductivity"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/conductivity"
+  #   unit_of_measurement: "µS/cm"
+  #   icon: mdi:flash-circle
+  #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Battery"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/battery"
-    unit_of_measurement: "%"
-    device_class: battery
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Battery"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/battery"
+  #   unit_of_measurement: "%"
+  #   device_class: battery
+  #   force_update: true
 
-  - platform: mqtt
-    name: "ParrotPot c5c6 Watertank Level"
-    state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/watertank_Level"
-    unit_of_measurement: "%"
-    icon: mdi:gauge
-    force_update: true
+  # - platform: mqtt
+  #   name: "ParrotPot c5c6 Watertank Level"
+  #   state_topic: "ParrotPot/a0:14:3d:cd:c5:c6/watertank_Level"
+  #   unit_of_measurement: "%"
+  #   icon: mdi:gauge
+  #   force_update: true
 
   # - platform: mqtt
   #   name: "ParrotPot 720a Temperature"
@@ -523,9 +509,9 @@ sensor:
   # - platform: miflora
   #   mac: 'c4:7c:8d:6a:45:02'
 
-  - platform: parrotpot
-    mac: 'A0:14:3D:CD:28:72'
-    name: "Parrot pot 2872"
+  # - platform: parrotpot
+  #   mac: 'A0:14:3D:CD:28:72'
+  #   name: "Parrot pot 2872"
 
   # - platform: parrotpot
   #   mac: 'A0:14:3D:CD:7E:B9'
@@ -570,64 +556,64 @@ automation:
     initial_state: 'on'
     trigger:
       platform: mqtt
-      topic: flora/+/moisture
+      topic: MiFlora/+/moisture
     action:
       - service: mqtt.publish
         data_template:
-          topic: "homeassistant/sensor/flora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_moisture/config"
+          topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_moisture/config"
           retain: false
           payload: >-
             {
-              "name": "Flora@{{ trigger.topic.split('/')[1] }} moisture",
-              "state_topic": "flora/{{ trigger.topic.split('/')[1] }}/moisture",
+              "name": "MiFlora@{{ trigger.topic.split('/')[1] }} moisture",
+              "state_topic": "MiFlora/{{ trigger.topic.split('/')[1] }}/moisture",
               "unit_of_measurement": "%",
               "device_class": "humidity",
               "force_update": "true"
             }
       - service: mqtt.publish
         data_template:
-          topic: "homeassistant/sensor/flora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_temperature/config"
+          topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_temperature/config"
           retain: false
           payload: >-
             {
-              "name": "Flora@{{ trigger.topic.split('/')[1] }} temperature",
-              "state_topic": "flora/{{ trigger.topic.split('/')[1] }}/temperature",
+              "name": "MiFlora@{{ trigger.topic.split('/')[1] }} temperature",
+              "state_topic": "MiFlora/{{ trigger.topic.split('/')[1] }}/temperature",
               "unit_of_measurement": "°C",
               "device_class": "temperature",
               "force_update": "true"
             }
       - service: mqtt.publish
         data_template:
-          topic: "homeassistant/sensor/flora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_light/config"
+          topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_light/config"
           retain: false
           payload: >-
             {
-              "name": "Flora@{{ trigger.topic.split('/')[1] }} light",
-              "state_topic": "flora/{{ trigger.topic.split('/')[1] }}/light",
+              "name": "MiFlora@{{ trigger.topic.split('/')[1] }} light",
+              "state_topic": "MiFlora/{{ trigger.topic.split('/')[1] }}/light",
               "unit_of_measurement": "lx",
               "device_class": "illuminance",
               "force_update": "true"
             }
       - service: mqtt.publish
         data_template:
-          topic: "homeassistant/sensor/flora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_conductivity/config"
+          topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_conductivity/config"
           retain: false
           payload: >-
             {
-              "name": "Flora@{{ trigger.topic.split('/')[1] }} conductivity",
-              "state_topic": "flora/{{ trigger.topic.split('/')[1] }}/conductivity",
+              "name": "MiFlora@{{ trigger.topic.split('/')[1] }} conductivity",
+              "state_topic": "MiFlora/{{ trigger.topic.split('/')[1] }}/conductivity",
               "unit_of_measurement": "µS/cm",
               "icon": "mdi:flash-circle",
               "force_update": "true"
             }
       - service: mqtt.publish
         data_template:
-          topic: "homeassistant/sensor/flora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_battery/config"
+          topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_battery/config"
           retain: false
           payload: >-
             {
-              "name": "Flora@{{ trigger.topic.split('/')[1] }} battery",
-              "state_topic": "flora/{{ trigger.topic.split('/')[1] }}/battery",
+              "name": "MiFlora@{{ trigger.topic.split('/')[1] }} battery",
+              "state_topic": "MiFlora/{{ trigger.topic.split('/')[1] }}/battery",
               "unit_of_measurement": "%",
               "device_class": "battery",
               "force_update": "true"

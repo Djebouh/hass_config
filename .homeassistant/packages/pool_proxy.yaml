@@ -2,6 +2,67 @@
 ## Proxy to the other raspberry, handling pool automation
 ################################################################
 
+sensor:
+  - platform: mqtt
+    name: "Pool Redox"
+    state_topic: "poolassistant/sensor/redox/state"
+    unit_of_measurement: "mV"
+    force_update: true
+
+  - platform: mqtt
+    name: "Pool pH"
+    state_topic: "poolassistant/sensor/ph/state"
+    unit_of_measurement: "pH"
+    force_update: true
+
+  - platform: mqtt
+    name: "Pool Water Temperature"
+    state_topic: "poolassistant/sensor/pool_temperature/state"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    force_update: true
+
+switch:
+  - platform: mqtt
+    name: "Pool - Cl Regulation"
+    command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH Regulation"
+    command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH- Injection"
+    command_topic: "poolassistant/switch/ph_injection/set"
+    state_topic: "poolassistant/switch/ph_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+
+  - platform: mqtt
+    name: "Pool - Cl+ Injection"
+    command_topic: "poolassistant/switch/cl_injection/set"
+    state_topic: "poolassistant/switch/cl_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+
 
 automation:
   ############################################################
@@ -63,47 +124,4 @@ automation:
         data:
           title: "Pool Cl+ injection EXCESS"
           message: 'Too much injection today'
-
-
-
-switch:
-  - platform: mqtt
-    name: "Pool - Cl Regulation"
-    command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
-    state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
-    state_on: "on"
-    state_off: "off"
-    icon: mdi:home-assistant
-    qos: 1
-    retain: true
-
-  - platform: mqtt
-    name: "Pool - pH Regulation"
-    command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
-    state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
-    state_on: "on"
-    state_off: "off"
-    icon: mdi:home-assistant
-    qos: 1
-    retain: true
-
-  - platform: mqtt
-    name: "Pool - pH- Injection"
-    command_topic: "poolassistant/switch/ph_injection/set"
-    state_topic: "poolassistant/switch/ph_injection/state"
-    state_on: "on"
-    state_off: "off"
-    icon: mdi:needle
-    qos: 1
-    retain: false
-
-  - platform: mqtt
-    name: "Pool - Cl+ Injection"
-    command_topic: "poolassistant/switch/cl_injection/set"
-    state_topic: "poolassistant/switch/cl_injection/state"
-    state_on: "on"
-    state_off: "off"
-    icon: mdi:needle
-    qos: 1
-    retain: false
   

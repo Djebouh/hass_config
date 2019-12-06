@@ -3,9 +3,7 @@
   "name": "Plant listening explicit sensors",
   "documentation": "https://www.home-assistant.io/components/miflora",
   "requirements": [],
-  "dependencies": [
-    // "plant"
-  ],
+  "dependencies": [],
   "codeowners": [
     "@djebouh"
   ]

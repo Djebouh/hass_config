@@ -10,17 +10,19 @@ motion_living:
   entities:
   - binary_sensor.motion_bar #bar
   - binary_sensor.motion_living #chimney
-  - binary_sensor.motion_kitchen #kitchen
+  # - binary_sensor.motion_kitchen #kitchen
 
 
 motion_home:
   name: Motion
   icon: mdi:run
+  control: hidden
   entities:
   - group.motion_living
   - binary_sensor.motion_garage
   - binary_sensor.motion_stairs
   - binary_sensor.motion_laundry
+#  - binary_sensor.motion_outside_north
 
 
 # garage:
@@ -55,7 +57,7 @@ motion_home:
 #   - switch.wallswitch_shutters_down
 #   - group.motion_living
 #   - sensor.illumination_gateway
-#   - climate.thermostat
+#   - climate.netatmo_living_room
 #   - binary_sensor.smoke_sensor_158d0001d835a3
 
 
@@ -140,7 +142,7 @@ motion_home:
 #   - group.garage
 #   - group.locks_and_doors
 #   - group.opening_sliding_window
-#   - climate.thermostat
+#   - climate.netatmo_living_room
 #   - media_player.samsung_qe55q7fam
 #   - media_player.bbox_miami
 #   # - media_player.samsung_q7_series_55_qe55q7fam

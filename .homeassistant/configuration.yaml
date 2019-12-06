@@ -5,7 +5,7 @@ homeassistant:
   latitude: !secret my_latitude
   longitude: !secret my_longitude
   # Impacts weather/sunrise data (altitude above sea level in meters)
-  elevation: 24
+  elevation: 25
   # metric for Metric, imperial for Imperial
   unit_system: metric
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -22,9 +22,43 @@ frontend:
   themes: !include_dir_merge_named themes/
 
 
+zone:
+
+  # - name: Work
+  #   latitude: 32.8753367
+  #   longitude: -117.2474053
+
+  # This will override the default home zone
+  - name: Home
+    latitude: !secret my_latitude
+    longitude: !secret my_longitude
+    radius: 17
+    icon: mdi:home
+
+  - name: 1A Sophia
+    latitude: 43.624068
+    longitude: 7.060657
+    radius: 200
+    icon: mdi:worker
+
+  - name: 1A Bel Air
+    latitude: 43.647358
+    longitude: 7.121510
+    radius: 80
+    icon: mdi:worker
+
+
+notify:
+  - name: ALL_MOBILES
+    platform: group
+    services:
+      - service: mobile_app_jerome_s_iphone
+      - service: mobile_app_corinnes_iphone
+
 # Enables configuration UI
 config:
 
+mobile_app:
 
 http:
   # api_password: !secret http_password
@@ -43,6 +77,7 @@ logger:
     homeassistant.components.rflink: debug
     homeassistant.custom_components.rachio: debug
     aiohttp: error
+    google_assistant: debug
 
 
 system_health:
@@ -82,8 +117,13 @@ logbook:
       - automation.update_battery_status_group_members
       - automation.battery_notification_clear
       - automation.battery_notification
+      - automation.battery_persistent_notification_clear
       - automation.autolight_monitor
+      - automation.battery_persistent_notification
       - light.lights_all
+      - automation.update_sensor_states_regularly
+      - device_tracker.corinnes_iphone
+      - device_tracker.jerome_s_iphone
     domains:
       - battery_alert
       - switch
@@ -119,65 +159,6 @@ hacs:
 # breaking_changes:
 
 
-# ios:
-#   push:
-#     categories:
-#       - name: Safe home
-#         identifier: 'safehome'
-#         actions:
-#           - identifier: 'LOCK_HOME'
-#             title: 'Lock home'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#           - identifier: 'LOCK_DOORS'
-#             title: 'Lock doors'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#       - name: Close shutters
-#         identifier: 'shutters_control'
-#         actions:
-#           - identifier: 'CLOSE_SHUTTERS'
-#             title: 'Close Shutters'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#       - name: Night Mode
-#         identifier: 'nightmode'
-#         actions:
-#           - identifier: 'LOCK_HOME'
-#             title: 'Lock home'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#           - identifier: 'LOCK_DOORS'
-#             title: 'Lock doors'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#           - identifier: 'CLOSE_SHUTTERS'
-#             title: 'Close Shutters'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-#       - name: Privacy at home
-#         identifier: 'privacy'
-#         actions:
-#           - identifier: 'KEEP_PRIVACY'
-#             title: 'Keep me Private'
-#             activationMode: 'background'
-#             authenticationRequired: no
-#             destructive: yes
-#             behavior: 'default'
-
-
 xiaomi_aqara:
   discovery_retry: 20
   gateways:
@@ -198,7 +179,8 @@ ffmpeg:
 camera:
   - platform: ffmpeg
     name: Xiaofang
-    input: -i rtsp://xiaofang/unicast
+    # input: -t 10 -rtsp_transport tcp -i rtsp://xiaofang/unicast
+    input: -rtsp_transport tcp -i rtsp://xiaofang/unicast
     # input: -rtsp_transport tcp -i rtsp://xiaofang/unicast
     # input: -stimeout 600 -rtsp_transport udp -i rtsp://xiaofang/unicast
     extra_arguments: -an
@@ -221,14 +203,14 @@ google_assistant:
     light.light_bar:
       # name: lumiere du bar
       expose: true
-      room: Kitchen
+      room: Living Room
       aliases:
         - lumiere du bar
         - bar light
     light.light_kitchen:
       # name: lumiere de la cuisine
       expose: true
-      room: Kitchen
+      room: Living Room
       aliases:
         - lumiere de la cuisine
         - kitchen light
@@ -241,7 +223,7 @@ google_assistant:
         - main door
         - porte
         - porte principale
-      room: Entrance
+      room: Living Room
     lock.polycontrol_danalock_v3_btze_locked:
       # name: porte de la buanderie
       expose: true
@@ -284,6 +266,46 @@ google_assistant:
       aliases:
         - lumiere de la chambre
         - bedroom light
+    climate.netatmo_living_room:
+      expose: true
+      room: Living Room
+      aliases:
+        - temperature
+        - temperature interieure
+        - temparature at home
+        - temperature inside
+    light.light_garage:
+      expose: true
+      room: Garage
+      aliases:
+        - lumiere du garage
+        - garage light
+    light.light_laundry:
+      expose: true
+      room: Laundry
+      aliases:
+        - lumiere de la buanderie
+        - laundry light
+    light.light_pool:
+      expose: true
+      room: Garden
+      aliases:
+        - lumiere de la piscine
+        - pool light
+    light.lights_trees:
+      expose: true
+      room: Garden
+      aliases:
+        - lumiere exterieure
+        - lumiere des arbres
+        - trees light
+    # sensor.netatmo_garden_temperature:
+    #   expose: true
+    #   room: Garden
+    #   aliases:
+    #     - temperature exterieure
+    #     - temparature in the Garden
+    #     - temperature outside
 
 
 
@@ -317,6 +339,14 @@ mqtt:
   # - platform: cast
   #   host: 192.168.1.3
 
+# media_player:
+#   - platform: samsungtv_custom
+#     host: 192.168.1.36
+#     mac: d8:e0:e1:e0:c7:b7
+#     port: 8002
+#     sourcelist: '{"Bouygues TV": "KEY_HDMI1", "Blue Ray": "KEY_HDMI2", "Nintendo Switch": "KEY_HDMI3"}'
+#     applist: "YouTube, Plex, Prime Video, Spotify"
+#     protocol: ctl_qled
 
 netatmo:
   api_key: !secret netatmo_id
@@ -381,6 +411,10 @@ yeelight:
       use_music_mode: false
       model: color1
 
+
+linky:
+  - username: !secret enedis_user
+    password: !secret enedis_password
 
 switch: !include switch.yaml
 light: !include light.yaml

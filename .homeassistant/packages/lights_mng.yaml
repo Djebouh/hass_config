@@ -222,7 +222,7 @@ automation:
   ############################################################
   # Lou's Bedroom light configuration
   ############################################################
-  - alias: Switch Lou 1 - Toggle Bed light
+  - alias: Switch Lou 1 - Turn ceiling light ON
     initial_state: 'on'
     trigger:
       platform: event
@@ -230,16 +230,43 @@ automation:
       event_data:
         entity_id: binary_sensor.switch_light_lou
         click_type: single
+    condition:
+      condition: and
+      conditions:
+      - condition: state
+        entity_id: light.light_lou_desk
+        state: 'off'
+      - condition: state
+        entity_id: light.light_lou_ceiling
+        state: 'off'
     action:
-    - service: light.toggle
-      entity_id: light.light_lou_bed
-    - condition: state
-      entity_id: light.light_lou_ceiling
-      state: 'on'
-    - service: light.turn_off
+    - service: light.turn_on
       entity_id: light.light_lou_ceiling
 
-  - alias: Switch Lou 2 - Toggle Ceiling light
+  - alias: Switch Lou 1 - Turn light OFF
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.switch_light_lou
+        click_type: single
+    condition:
+      condition: or
+      conditions:
+      - condition: state
+        entity_id: light.light_lou_desk
+        state: 'on'
+      - condition: state
+        entity_id: light.light_lou_ceiling
+        state: 'on'
+    action:
+    - service: light.turn_off
+      entity_id:
+        - light.light_lou_desk
+        - light.light_lou_ceiling
+
+  - alias: Switch Lou 2 - Turn Desk light ON
     initial_state: 'on'
     trigger:
       platform: event
@@ -247,9 +274,33 @@ automation:
       event_data:
         entity_id: binary_sensor.switch_light_lou
         click_type: double
+    condition:
+      - condition: state
+        entity_id: light.light_lou_desk
+        state: 'off'
     action:
-      service: light.toggle
+    - service: light.turn_on
+      entity_id: light.light_lou_desk
+    - service: light.turn_off
       entity_id: light.light_lou_ceiling
+
+  - alias: Switch Lou 2 - Turn Desk light OFF and Turn ceiling light ON
+    initial_state: 'on'
+    trigger:
+      platform: event
+      event_type: xiaomi_aqara.click
+      event_data:
+        entity_id: binary_sensor.switch_light_lou
+        click_type: double
+    condition:
+      - condition: state
+        entity_id: light.light_lou_desk
+        state: 'on'
+    action:
+    - service: light.turn_on
+      entity_id: light.light_lou_ceiling
+    - service: light.turn_off
+      entity_id: light.light_lou_desk
 
   - alias: Switch Lou L - Toggle stairs
     initial_state: 'on'
@@ -433,11 +484,20 @@ automation:
       - platform: state
         entity_id: light.lights_downstairs
         to: 'on'
-    action:
-      - service: automation.turn_off
+      - platform: state
         entity_id: automation.autolight_gateway_stop
+        to: 'on'
+        for:
+          minutes: 3
+    condition:
+      - condition: state
+        entity_id: binary_sensor.motion_living
+        state: 'off'
+    action:
       - service: light.turn_off
         entity_id: light.gateway_light
+      - service: automation.turn_off
+        entity_id: automation.autolight_gateway_stop
 
 
 
@@ -491,9 +551,18 @@ automation:
   - alias: Autolight - Living Stop
     initial_state: 'off'
     trigger:
-      platform: state
-      entity_id: group.motion_living
-      to: 'off'
+      - platform: state
+        entity_id: group.motion_living
+        to: 'off'
+      - platform: state
+        entity_id: automation.autolight_living_stop
+        to: 'on'
+        for:
+          minutes: 3
+    condition:
+      - condition: state
+        entity_id: binary_sensor.motion_living
+        state: 'off'
     action:
       service: light.turn_off
       entity_id: light.light_living
@@ -503,10 +572,13 @@ automation:
     trigger:
       - platform: state
         entity_id: light.light_kitchen
+        to: 'on'
       - platform: state
         entity_id: light.light_bar
+        to: 'on'
       - platform: state
         entity_id: light.light_living
+        to: 'off'
     action:
       - service: automation.turn_off
         entity_id: automation.autolight_living_stop
@@ -596,6 +668,11 @@ automation:
         to: 'off'
         for:
           minutes: 1
+      - platform: state
+        entity_id: automation.autolight_garage_stop
+        to: 'on'
+        for:
+          minutes: 1
     condition:
       - condition: state
         state: 'off'
@@ -644,16 +721,16 @@ automation:
   - alias: Lights monitoring - Garage
     initial_state: 'on'
     trigger:
-      platform: state
-      entity_id: binary_sensor.motion_garage
-      from: 'on'
-      to: 'off'
-      for:
-        minutes: 15
+      - platform: state
+        entity_id: binary_sensor.motion_garage
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 15
     condition:
-      condition: state
-      entity_id: light.light_garage
-      state: 'on'
+      - condition: state
+        entity_id: light.light_garage
+        state: 'on'
     action:
       - service: light.turn_off
         entity_id: light.light_garage
@@ -731,6 +808,15 @@ automation:
         entity_id: binary_sensor.motion_stairs
     condition:
       - condition: state
+        entity_id: light.bedroom_light
+        state: 'off'
+      - condition: state
+        entity_id: light.light_lou_ceiling
+        state: 'off'
+      - condition: state
+        entity_id: light.lights_downstairs
+        state: 'off'
+      - condition: state
         state: 'off'
         entity_id: light.light_stairs
         for:
@@ -757,9 +843,18 @@ automation:
   - alias: Autolight - Stairs Stop
     initial_state: 'off'
     trigger:
-      platform: state
+      - platform: state
+        entity_id: binary_sensor.motion_stairs
+        to: 'off'
+      - platform: state
+        entity_id: automation.autolight_stairs_stop
+        to: 'on'
+        for:
+          minutes: 3
+    condition:
+      condition: state
       entity_id: binary_sensor.motion_stairs
-      to: 'off'
+      state: 'off'
     action:
       - service: light.turn_off
         entity_id: light.light_stairs
@@ -769,9 +864,87 @@ automation:
     trigger:
       - platform: state
         entity_id: light.light_stairs
+        to: 'off'
     action:
       - service: automation.turn_off
         entity_id: automation.autolight_stairs_stop
+
+
+
+  ############################################################
+  # Motion detection in trees
+  ############################################################
+  - alias: Autolight - Trees
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.motion
+        event_data:
+          entity_id: binary_sensor.motion_outside_north
+      - platform: state
+        entity_id:
+          - device_tracker.corinnes_iphone
+          - device_tracker.jerome_s_iphone
+        to: 'home'
+    condition:
+      - condition: state
+        state: 'off'
+        entity_id: light.lights_trees
+        for:
+          seconds: 10
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          below: '2'
+          entity_id: sensor.illumination_outside_north
+        - condition: sun
+          after: sunset
+          after_offset: "00:15:00"
+    action:
+      - entity_id: light.lights_trees
+        service: light.turn_on
+      - entity_id: automation.autolight_trees_stop
+        service: automation.turn_on
+
+
+  - alias: Autolight - Trees Stop
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.motion_outside_north
+        to: 'off'
+      - platform: state
+        entity_id:
+          - device_tracker.corinnes_iphone
+          - device_tracker.jerome_s_iphone
+        to: 'not_home'
+      - platform: state
+        entity_id: automation.autolight_trees_stop
+        to: 'on'
+        for:
+          minutes: 3
+    condition:
+      condition: state
+      entity_id: binary_sensor.motion_outside_north
+      state: 'off'
+    action:
+      - service: light.turn_off
+        entity_id: light.lights_trees
+      # - condition: state
+      #   state: 'not_home'
+      #   entity_id: group.presence
+      # - entity_id: light.lights_trees
+      #   service: light.light_living
+
+  - alias: Autolight - Trees Stop - Housekeeping
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: light.lights_trees    
+        to: 'off'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.autolight_trees_stop
 
 
   ############################################################
@@ -819,6 +992,7 @@ automation:
       - automation.autolight_garage_stop
       # - automation.autolight_laundry_stop
       - automation.autolight_stairs_stop
+      - automation.autolight_trees_stop
     action:
       service_template: >
         {% if trigger.to_state.state == 'on' %}

@@ -51,4 +51,8 @@ light.barwindow_light:
   hidden: true
 automation.laundry_monitor_stop_of_laundry_machines_run:
   icon: mdi:washing-machine
-  
+# zone.work:
+#   beacon:
+#     uuid: C29CE823-E67A-4E71-BFF2-ABAA32E77A98
+#     major: 10167
+#     minor: 61958

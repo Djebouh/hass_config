@@ -31,9 +31,6 @@ script:
       - delay:
           seconds: 10
       - service: shell_command.transfer_snapshot
-      - delay:
-          seconds: 20
-      - service: shell_command.transfer_snapshot
 
 
   'show_webcam':
@@ -44,7 +41,7 @@ script:
     - condition: state
       state: 'home'
       entity_id: group.presence
-    - service: notify.notify
+    - service: notify.ALL_MOBILES
       data_template:
         title: "Big brother is watching you"
         message: "and you like it!"
@@ -165,7 +162,7 @@ automation:
       - condition: state
         entity_id: input_boolean.notify
         state: 'on'
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data:
           title: "No one@Home but presence detected"
           message: 'At {{now().strftime("%Y%m%d-%H%M%S")}}'
@@ -250,7 +247,7 @@ automation:
       - service: light.turn_on
         entity_id: light.lights_downstairs
       - service: script.webcam_snapshot  
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data:
           title: "Doors open while @home"
           message: 'At {{now().strftime("%Y%m%d-%H%M%S")}}'
@@ -277,7 +274,7 @@ automation:
       event_data:
         actionName: KEEP_PRIVACY
     action:
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           title: "Big brother can't watch"
           message: "NOT NOW (k)"
@@ -303,7 +300,7 @@ automation:
         entity_id: group.presence
         state: 'home'
     action:
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           title: "Big brother is watching you"
           message: "and you like it!"

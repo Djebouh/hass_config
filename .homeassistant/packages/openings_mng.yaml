@@ -22,7 +22,7 @@ homeassistant:
     binary_sensor.closed_and_locked:
       icon: mdi:home-lock
     binary_sensor.opening_window_living:
-      icon: mdi:window
+      icon: mdi:door
     binary_sensor.opening_window_kitchen:
       icon: mdi:door
     binary_sensor.opening_door_garage:
@@ -33,6 +33,8 @@ homeassistant:
       icon: mdi:door
     binary_sensor.opening_door_laundry:
       icon: mdi:door
+    binary_sensor.opening_window_bathroom:
+      icon: mdi:glassdoor
 
 
 cover:
@@ -302,8 +304,13 @@ automation:
         entity_id: binary_sensor.switch_door_entrance
         click_type: double
     action:
-      service: nuki.lock_n_go
-      entity_id: lock.front_door
+      - service: xiaomi_aqara.play_ringtone
+        data:
+          gw_mac: 34ce00812c05
+          ringtone_id: 12
+          ringtone_vol: 1
+      - service: nuki.lock_n_go
+        entity_id: lock.front_door
 
   - alias: Switch Entrance L - Switch off lights and Go
     initial_state: 'on'
@@ -314,6 +321,11 @@ automation:
         entity_id: binary_sensor.switch_door_entrance
         click_type: long_click_press
     action:
+      - service: xiaomi_aqara.play_ringtone
+        data:
+          gw_mac: 34ce00812c05
+          ringtone_id: 12
+          ringtone_vol: 10
       - service: nuki.lock_n_go
         entity_id: lock.front_door
       - delay:
@@ -360,7 +372,7 @@ automation:
       entity_id: timer.no_message_for_lock
       state: 'idle'
     action:
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           title: "{{ trigger.event.data.context }}"
           message: &message >
@@ -499,9 +511,9 @@ automation:
       - platform: time
         at: '00:30:00'
     condition:
-      - condition: time
-        after: '00:05:01'
-        before: '06:00:00'
+      # - condition: time
+      #   after: '00:05:01'
+      #   before: '06:00:00'
       - condition: state
         entity_id: binary_sensor.motion_home
         state: 'off'
@@ -554,7 +566,7 @@ automation:
       - condition: time
         before: '22:00:00'
     action:
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           # title: "Shutters still open !"
           message: "Shutters are open, view message to close"
@@ -609,6 +621,18 @@ automation:
         from: 'on'
         for:
           seconds: 5
+      - platform: state
+        entity_id: light.lights_trees
+        to: 'off'
+        from: 'on'
+        for:
+          seconds: 5
+      - platform: state
+        entity_id: light.light_pool
+        to: 'off'
+        from: 'on'
+        for:
+          seconds: 5
     condition:
       - condition: state
         entity_id: binary_sensor.opening_shutters_living
@@ -616,9 +640,15 @@ automation:
       - condition: state
         entity_id: group.opening_sliding_window
         state: 'off'
+      - condition: sun
+        after: sunset
+        after_offset: "00:45:00"
       - condition: state
-        state: 'below_horizon'
-        entity_id: sun.sun
+        entity_id: light.lights_trees
+        state: 'off'
+      - condition: state
+        entity_id: light.light_pool
+        state: 'off'
     action:
       - service: cover.close_cover
         entity_id: cover.shutters_living
@@ -633,6 +663,10 @@ automation:
         from: 'on'
         for:
           seconds: 5
+    condition:
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'off'
     action:
       - service: cover.stop_cover
         entity_id: cover.shutters_living
@@ -656,17 +690,17 @@ automation:
         below: 20
       - condition: numeric_state
         entity_id: sensor.dark_sky_daytime_high_temperature_0d
-        above: 25
+        above: 28
       - condition: state
         entity_id: sensor.netatmo_rain_gauge_sum_rain_1
         state: '0'
     action:
       - service: cover.close_cover
         entity_id: cover.sun_awning
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data:
           title: "Rolling awaning down"
-          message: "It will be hot today ({{states('sensor.dark_sky_daytime_high_temperature_0d')}}), with limited risk of rain ({{states('sensor.dark_sky_precip_probability_0d')}})"
+          message: "It will be hot today ({{states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit}}), with limited risk of rain ({{states.sensor.dark_sky_precip_probability_0d.state_with_unit}})"
 
 
   - alias: Autoawning - Roll up as rain arrives
@@ -683,7 +717,7 @@ automation:
     action:
       - service: cover.open_cover
         entity_id: cover.sun_awning
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           title: "Rolling awaning up, as it rains"
           message: 'Triggered by {{ trigger.trigger.entity_id }}'
@@ -715,21 +749,79 @@ automation:
       - platform: state
         entity_id: input_boolean.night_mode
         to: 'on'
-    condition:
-      condition: or
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.closed_and_locked
-          state: 'on'
-        - condition: state
-          entity_id: binary_sensor.opening_shutters_living
-          state: 'on'
+    # condition:
+    #   condition: or
+    #   conditions:
+    #     - condition: state
+    #       entity_id: binary_sensor.closed_and_locked
+    #       state: 'on'
+    #     - condition: state
+    #       entity_id: binary_sensor.opening_shutters_living
+    #       state: 'on'
     action:
-      - service: notify.notify
+      - service: notify.ALL_MOBILES
         data_template:
           title: "Entering NIGHT MODE"
-          message: *message
+          message: >-
+            {% if is_state('binary_sensor.closed_and_locked', 'off') %}
+              {% set text = "The house is locked" %}
+              {% if is_state('binary_sensor.opening_shutters_living', 'on') %}
+                {% set text = text ~ ". The shutters are open" %}
+              {%- endif %}
+            {% else %}
+              {% set text = "The house is NOT LOCKED" %}
+              {% set separ = ": " %}
+              {% if is_state('switch.lock_maindoor', 'on') %}
+                {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_front') %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('switch.lock_diningwindow', 'on') %}
+                {% set text = text ~ separ ~ "Sliding window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_window_living', 'on') %}
+                {% set text = text ~ separ ~ "Living window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_window_kitchen', 'on') %}
+                {% set text = text ~ separ ~ "Kitchen window is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('binary_sensor.opening_door_garage', 'on') %}
+                {% set text = text ~ separ ~ "Garage is open" %}
+                {% set separ = ", " %}
+              {% endif %}
+              {% if is_state('switch.lock_laundrydoor', 'on') %}
+                {% set text = text ~ separ ~ "Laundry door is " ~ states('sensor.door_laundry') %}
+                {% set separ = ", " %}
+              {% endif %}
+            {% endif %}
+            {{ text ~ "."}}
+            The lowest temperature tonight will be {{ states.sensor.dark_sky_overnight_low_temperature_0d.state_with_unit }}, 
+            today's highest was {{ states.sensor.netatmo_garden_max_temp.state_with_unit }}.
+            The sun will rise at {{ as_timestamp(states.sun.sun.attributes.next_rising)  | timestamp_custom("%H:%M")}}.
+            Tomorrow: {{ states.sensor.dark_sky_summary_1d.state }}
           data:
             push:
               sound: "US-EN-Alexa-Good-Night.wav"
+              category: nightmode
+
+  - alias: 'iOS Notif - Give status when night mode is switched off'
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.night_mode
+        to: 'off'
+    action:
+      - service: notify.ALL_MOBILES
+        data_template:
+          title: "Leaving NIGHT MODE"
+          message: >-
+            Today: {{ states.sensor.dark_sky_summary_0d.state }}
+            The highest temperature today will be {{ states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit }},
+            last night's lowest was {{ states.sensor.netatmo_garden_min_temp.state_with_unit }}.
+            The sun will set at {{ as_timestamp(states.sun.sun.attributes.next_setting)  | timestamp_custom("%H:%M")}}.
+          data:
+            push:
+              sound: "US-EN-Alexa-Good-Morning.wav"
               category: nightmode

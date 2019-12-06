@@ -45,7 +45,7 @@ group:
     name: Devices used for monitoring
     control: hidden
     entities:
-      - binary_sensor.motion_kitchen
+      - binary_sensor.motion_outside_north
       - binary_sensor.motion_bar
       - binary_sensor.motion_living
       - binary_sensor.motion_garage
