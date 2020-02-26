@@ -67,6 +67,30 @@ ios:
 
 automation:
 
+  - alias: Home Monitoring - Request location when entering
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.opening_door_entrance
+        to: 'on'
+      - platform: event
+        event_type: xiaomi_aqara.motion
+        event_data:
+          entity_id: binary_sensor.motion_outside_porch
+    condition:
+      condition: or
+      conditions:
+      - condition: state
+        entity_id: person.jerome
+        state: 'not_home'
+      - condition: state
+        entity_id: person.corinne
+        state: 'not_home'
+    action:
+      - service: notify.ALL_MOBILES
+        data:
+          message: "request_location_update"
+
   ############################################################
   # Activate monitoring after 10mn without motion
   ############################################################

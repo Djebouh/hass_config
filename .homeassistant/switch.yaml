@@ -31,4 +31,15 @@
   host: 192.168.1.39
   local_key: !secret tuya_local_key
   device_id: !secret tuya_device_id
+
+
+# - platform: mqtt
+#   name: "xiaomi gateway plug"
+#   state_topic: "shellies/shellyplug-s-7AE030/relay/0"
+#   command_topic: "shellies/shellyplug-s-7AE030/relay/0/command"
+#   qos: 0
+#   payload_on: "on"
+#   payload_off: "off"
+#   optimistic: false
+#   retain: false
   

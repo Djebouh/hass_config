@@ -35,6 +35,8 @@ homeassistant:
       icon: mdi:door
     binary_sensor.opening_window_bathroom:
       icon: mdi:glassdoor
+    binary_sensor.opening_window_bathroom_lou:
+      icon: mdi:glassdoor
 
 
 cover:
@@ -42,14 +44,14 @@ cover:
     devices:
       RTS_0F0F0F_0:
         name: sun awning
-  - platform: mqtt
-    name: "shutters living"
-    command_topic: "shellies/shellyswitch25-008100/roller/0/command"
-    qos: 0
-    payload_open: "open"
-    payload_close: "close"
-    payload_stop: "stop"
-    retain: false 
+  # - platform: mqtt
+  #   name: "shutters living"
+  #   command_topic: "shellies/shellyswitch25-008100/roller/0/command"
+  #   qos: 0
+  #   payload_open: "open"
+  #   payload_close: "close"
+  #   payload_stop: "stop"
+  #   retain: false 
 
 
 timer:
@@ -80,7 +82,6 @@ group:
   doors_monitored_by_safehome:
     name: Doors and Windows monitored by Safehome
     icon: mdi:security-home
-    control: hidden
     entities:
     - binary_sensor.opening_door_entrance #house door
     - switch.lock_diningwindow
@@ -92,7 +93,6 @@ group:
   locks_and_doors:
     name: locks and openings
     icon: mdi:home-lock
-    control: hidden
     entities:
     - switch.lock_maindoor #house door
     - switch.lock_diningwindow
@@ -114,9 +114,8 @@ switch:
           service: lock.unlock
           entity_id: lock.front_door
         turn_off:
-        - condition: state
-          state: 'unlocked'
-          entity_id: sensor.door_front
+        - condition: template
+          value_template: '{{not is_state("sensor.door_front", "locked") }}'
         - service: lock.lock
           entity_id: lock.front_door
 
@@ -129,9 +128,8 @@ switch:
           service: lock.unlock
           entity_id: lock.polycontrol_danalock_v3_btze_locked
         turn_off:
-        - condition: state
-          state: 'unlocked'
-          entity_id: sensor.door_laundry
+        - condition: template
+          value_template: '{{not is_state("sensor.door_laundry", "locked") }}'
         - service: lock.lock
           entity_id: lock.polycontrol_danalock_v3_btze_locked
 
@@ -147,13 +145,12 @@ switch:
           entity_id: group.opening_sliding_window
           state: 'off'
         - service: cover.open_cover
-          entity_id: cover.shutters_living
+          entity_id: cover.shelly_shutters_living
         turn_off:
-        - condition: state
-          entity_id: binary_sensor.opening_shutters_living
-          state: 'on'
+        - condition: template
+          value_template: '{{not is_state("binary_sensor.opening_shutters_living", "off") }}'
         - service: cover.close_cover
-          entity_id: cover.shutters_living
+          entity_id: cover.shelly_shutters_living
 
       lock_home:
         friendly_name: "lock Home"
@@ -223,7 +220,7 @@ binary_sensor:
 
       closed_and_locked:
         friendly_name: "Home closed and locked"
-        device_class: door
+        device_class: lock
         entity_id: group.locks_and_doors
         value_template: "{{ not(is_state('group.locks_and_doors', 'off')) }}"
 
@@ -550,7 +547,7 @@ automation:
         actionName: CLOSE_SHUTTERS
     action:
       - service: cover.close_cover
-        entity_id: cover.shutters_living
+        entity_id: cover.shelly_shutters_living
 
 
   - alias: Housekeeping - notify shutters still open
@@ -591,9 +588,8 @@ automation:
         event: sunrise
         offset: '02:00:00'
     condition:
-      - condition: state
-        entity_id: binary_sensor.opening_shutters_living
-        state: 'off'
+      - condition: template
+        value_template: '{{not is_state("binary_sensor.opening_shutters_living", "on") }}'
       - condition: state
         entity_id: group.opening_sliding_window
         state: 'off'
@@ -622,21 +618,20 @@ automation:
         for:
           seconds: 5
       - platform: state
-        entity_id: light.lights_trees
+        entity_id: light.shelly_lights_trees
         to: 'off'
         from: 'on'
         for:
           seconds: 5
       - platform: state
-        entity_id: light.light_pool
+        entity_id: light.shelly_light_pool
         to: 'off'
         from: 'on'
         for:
           seconds: 5
     condition:
-      - condition: state
-        entity_id: binary_sensor.opening_shutters_living
-        state: 'on'
+      - condition: template
+        value_template: '{{not is_state("binary_sensor.opening_shutters_living", "off") }}'
       - condition: state
         entity_id: group.opening_sliding_window
         state: 'off'
@@ -644,14 +639,14 @@ automation:
         after: sunset
         after_offset: "00:45:00"
       - condition: state
-        entity_id: light.lights_trees
+        entity_id: light.shelly_lights_trees
         state: 'off'
       - condition: state
-        entity_id: light.light_pool
+        entity_id: light.shelly_light_pool
         state: 'off'
     action:
       - service: cover.close_cover
-        entity_id: cover.shutters_living
+        entity_id: cover.shelly_shutters_living
 
 
   - alias: Autoshutters - stop when closed
@@ -664,12 +659,11 @@ automation:
         for:
           seconds: 5
     condition:
-      - condition: state
-        entity_id: binary_sensor.opening_shutters_living
-        state: 'off'
+      - condition: template
+        value_template: '{{not is_state("binary_sensor.opening_shutters_living", "on") }}'
     action:
       - service: cover.stop_cover
-        entity_id: cover.shutters_living
+        entity_id: cover.shelly_shutters_living
 
 
   ############################################################
@@ -740,88 +734,64 @@ automation:
 
 
   ############################################################
-  # Night mode switched on, openings not closed
+  # Monitor  Bathroom Window
   ############################################################
-
-  - alias: 'iOS Notif - Give status when night mode is switched on'
+  - alias: Notify when bathroom window still open
     initial_state: 'on'
     trigger:
-      - platform: state
-        entity_id: input_boolean.night_mode
-        to: 'on'
-    # condition:
-    #   condition: or
-    #   conditions:
-    #     - condition: state
-    #       entity_id: binary_sensor.closed_and_locked
-    #       state: 'on'
-    #     - condition: state
-    #       entity_id: binary_sensor.opening_shutters_living
-    #       state: 'on'
+    - platform: state
+      entity_id: binary_sensor.opening_window_bathroom
+      to: 'on'
+      from: 'off'
+      for:
+        minutes: 20
+    - platform: numeric_state
+      entity_id: sensor.netatmo_garden_temperature
+      below: '15'
+    - platform: state
+      entity_id: group.locks_and_doors
+      to: 'off'
+    condition:
+    - condition: numeric_state
+      entity_id: sensor.netatmo_garden_temperature
+      below: '15'
+    - condition: state
+      entity_id: binary_sensor.opening_window_bathroom
+      state: 'on'
     action:
-      - service: notify.ALL_MOBILES
-        data_template:
-          title: "Entering NIGHT MODE"
-          message: >-
-            {% if is_state('binary_sensor.closed_and_locked', 'off') %}
-              {% set text = "The house is locked" %}
-              {% if is_state('binary_sensor.opening_shutters_living', 'on') %}
-                {% set text = text ~ ". The shutters are open" %}
-              {%- endif %}
-            {% else %}
-              {% set text = "The house is NOT LOCKED" %}
-              {% set separ = ": " %}
-              {% if is_state('switch.lock_maindoor', 'on') %}
-                {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_front') %}
-                {% set separ = ", " %}
-              {% endif %}
-              {% if is_state('switch.lock_diningwindow', 'on') %}
-                {% set text = text ~ separ ~ "Sliding window is open" %}
-                {% set separ = ", " %}
-              {% endif %}
-              {% if is_state('binary_sensor.opening_window_living', 'on') %}
-                {% set text = text ~ separ ~ "Living window is open" %}
-                {% set separ = ", " %}
-              {% endif %}
-              {% if is_state('binary_sensor.opening_window_kitchen', 'on') %}
-                {% set text = text ~ separ ~ "Kitchen window is open" %}
-                {% set separ = ", " %}
-              {% endif %}
-              {% if is_state('binary_sensor.opening_door_garage', 'on') %}
-                {% set text = text ~ separ ~ "Garage is open" %}
-                {% set separ = ", " %}
-              {% endif %}
-              {% if is_state('switch.lock_laundrydoor', 'on') %}
-                {% set text = text ~ separ ~ "Laundry door is " ~ states('sensor.door_laundry') %}
-                {% set separ = ", " %}
-              {% endif %}
-            {% endif %}
-            {{ text ~ "."}}
-            The lowest temperature tonight will be {{ states.sensor.dark_sky_overnight_low_temperature_0d.state_with_unit }}, 
-            today's highest was {{ states.sensor.netatmo_garden_max_temp.state_with_unit }}.
-            The sun will rise at {{ as_timestamp(states.sun.sun.attributes.next_rising)  | timestamp_custom("%H:%M")}}.
-            Tomorrow: {{ states.sensor.dark_sky_summary_1d.state }}
-          data:
-            push:
-              sound: "US-EN-Alexa-Good-Night.wav"
-              category: nightmode
+    - service: notify.ALL_MOBILES
+      data_template:
+        title: The window of the bathroom is still open
+        message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
 
-  - alias: 'iOS Notif - Give status when night mode is switched off'
+
+  ############################################################
+  # Monitor  Lou's Bathroom Window
+  ############################################################
+  - alias: Notify when bathroom window still open
     initial_state: 'on'
     trigger:
-      - platform: state
-        entity_id: input_boolean.night_mode
-        to: 'off'
+    - platform: state
+      entity_id: binary_sensor.opening_window_bathroom_lou
+      to: 'on'
+      from: 'off'
+      for:
+        minutes: 20
+    - platform: numeric_state
+      entity_id: sensor.netatmo_garden_temperature
+      below: '15'
+    - platform: state
+      entity_id: group.locks_and_doors
+      to: 'off'
+    condition:
+    - condition: numeric_state
+      entity_id: sensor.netatmo_garden_temperature
+      below: '15'
+    - condition: state
+      entity_id: binary_sensor.opening_window_bathroom_lou
+      state: 'on'
     action:
-      - service: notify.ALL_MOBILES
-        data_template:
-          title: "Leaving NIGHT MODE"
-          message: >-
-            Today: {{ states.sensor.dark_sky_summary_0d.state }}
-            The highest temperature today will be {{ states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit }},
-            last night's lowest was {{ states.sensor.netatmo_garden_min_temp.state_with_unit }}.
-            The sun will set at {{ as_timestamp(states.sun.sun.attributes.next_setting)  | timestamp_custom("%H:%M")}}.
-          data:
-            push:
-              sound: "US-EN-Alexa-Good-Morning.wav"
-              category: nightmode
+    - service: notify.ALL_MOBILES
+      data_template:
+        title: The window of Lou's bathroom is still open
+        message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'

@@ -88,6 +88,10 @@ history:
     domains:
       - sensor
       - climate
+  exclude:
+    entities:
+      - sensor.geocoded_location
+      - sensor.geocoded_location_2
 
 
 recorder:
@@ -124,6 +128,8 @@ logbook:
       - automation.update_sensor_states_regularly
       - device_tracker.corinnes_iphone
       - device_tracker.jerome_s_iphone
+      - sensor.geocoded_location
+      - sensor.geocoded_location_2
     domains:
       - battery_alert
       - switch
@@ -152,8 +158,8 @@ device_tracker:
 
 hacs:
   token: !secret hacs_git_token
-  python_script: true
-  theme: true
+  # python_script: true
+  # theme: true
 
 
 # breaking_changes:
@@ -170,7 +176,9 @@ xiaomi_aqara:
 vacuum:
   - platform: xiaomi_miio
     host: rockrobo
-    token: !secret AspiBot_token
+    # token: !secret AspiBot_token
+    # token: 45435557645676645A4670493338696B
+    token: 47507169667939796d7277326f6a446f
     name: AspiBot
 
 
@@ -190,7 +198,11 @@ camera:
 
 google_assistant:
   project_id: !secret google_project_id
-  api_key: !secret google_home_key
+  # api_key: !secret google_home_key
+  # service_account: !include google-assistant.json
+  service_account:
+    private_key: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTq4ZtZ47rXwwd\nF2eOxO373wIlXyuCDd5/yVhgCFRLUtF7rVeOVn29gVNG3+1ShcoiZFnzzdVshOaJ\nPjaACkbHB6ia90iWQ1OB1G+RI2dP8ZmtYsHrdT2ZhaaSniDWy/3e9+eNkEqN+slb\nI+1LRKT9guPvgjxSQidde8BN2EqmVy29MevioyNAPZ7MA8eOM34eR/GIGPTRIiqK\n1KuHOJ2oo5mQIUkxfvfvk0d3eG8WFt1ml3cZTIczIIbAA8TUO0tJLcIOB9qJGQOJ\n8QTHbPcKQhW+1YLXurqZFsCHOW3ABbPgwH3kiKFE8L3kfJxssfL5zAKRLCZ1bTsV\nd8YhD7l5AgMBAAECggEARP1ceK8uqW+Wwqqcsa9lA9l5WRXuV9rOYOcOu2ork0tg\nhMeISJfPLuOGcYzNzL5XliMQIIM/ozmj7CqPV+dBj2BjJ3MewP8bqi7D2FHqO+e6\nl4UfQG+7jpy9oH8So//j9HbnjT/w1NrfIyoQDx7GCezN/wP7RjJSo0kQ8i5jklgy\n9fJZL8BCoRe9bO6FqHZsNbMltYwAIGr+WdKoqtAZJWJk4knIUBpRuPVAV7Jj8A5T\ndR+xJOuSOoM7943RofOUZMvCXY68NfVSVK5GQmIE0G9ZZ4btSq5fkXOCFEgVarpk\njgJPMuOrJwzL6PWxvJcGc1r5CEssWQb7T6mKFYqf+wKBgQDw/0nvEOJxl/UljiDe\nxPJguJLdWmfOdFJKLifoOJgR1NmIY6B6x1MuFk/FY9VBftzSTxvzCZp/DGqTyqpD\nzBCCttP5loAVLfk0MnKEBITUUD/oxDVYuZbTXPo/azaDCRUXtFERs5QClirw471e\nHhgDCJTphkn7OHGW5EeHCEYx1wKBgQDg2NsuJ0Ch6stBwBbVBgQZNQh1Lj2jjNPS\neVF5rFnAume5HSF3bMUoxT5WznJc1dBZidbM5zhrwV/NkYyd4DzHycW1rttQNXSx\nweY+W6epUNWf1hL/m0hse7UbCz4nsHDA49bdzFVRdmELqwTauPHbWRBbxr3lOJGS\nh+ls+rulLwKBgETltw1RlmtDNiJ2b49AXsqn+dSuc97iAmSSrXYGN/NhFo+Xa9mu\nAmm6lzOnRuBilF7LnwHsTO7lbdKyrdqUDGRSQGeqTxO/AO+bPIHhiNfp2VuCPH4R\nEL18Z06aKAtuHUmZk1OsMzRKGhyj/w9ZKyQy39+jNKNNj6vDt28zPl4hAoGBAKTw\n7/hvew5Me0aEbztd6mvDZ6zuevEbQdhIfuhO8phbJfO51u8Qr6E08IIld+d6Qhks\n8JHnnJAPjwPyHcFC2dOFxK9+0guI603q+8gK3HdsgQl7tPwlIX/TUAvCt5nN6SjW\n+qxCVOQpfw9cKXd57JIIR+PLa0pXsRJY+XekhzqpAoGAO18WiC1+tPE4gOay0Uhc\nN0nCyHDulmvg/0n2sdcE+tzmd861Ri4jR/27LWJSH1Zd3rctSnPUTyZZdlW7NduC\nRYZ+oHIUA88bCHD1XOH0ygCT2XI/RAp4zM1geJUBCAsK6nA50e1Dp07ppu6Y1cCZ\np6KvauIXyAQij7TvRTFKRXE=\n-----END PRIVATE KEY-----\n"
+    client_email: "hass-594@home-assistant-da40a.iam.gserviceaccount.com"
   expose_by_default: false
   entity_config:
     light.light_living:
@@ -233,7 +245,7 @@ google_assistant:
         - back door
         - laundry door
         - porte de derrière
-    cover.shutters_living:
+    cover.shelly_shutters_living:
       # name: volets roulants
       expose: true
       room: Living Room
@@ -286,26 +298,37 @@ google_assistant:
       aliases:
         - lumiere de la buanderie
         - laundry light
-    light.light_pool:
+    light.shelly_light_pool:
       expose: true
       room: Garden
       aliases:
         - lumiere de la piscine
         - pool light
-    light.lights_trees:
+    light.shelly_lights_trees:
       expose: true
       room: Garden
       aliases:
         - lumiere exterieure
         - lumiere des arbres
         - trees light
-    # sensor.netatmo_garden_temperature:
-    #   expose: true
-    #   room: Garden
-    #   aliases:
-    #     - temperature exterieure
-    #     - temparature in the Garden
-    #     - temperature outside
+    sensor.netatmo_garden_temperature:
+      expose: true
+      room: Garden
+      aliases:
+        - temperature exterieure
+        - temparature in the Garden
+        - temperature outside
+    scene.cosy:
+      expose: true
+      room: Living Room
+      aliases:
+        - ambiance cosy
+    switch.movie_mode:
+      expose: true
+      room: Living Room
+      aliases:
+        - ambiance cinema
+        - movie mode
 
 
 
@@ -349,10 +372,10 @@ mqtt:
 #     protocol: ctl_qled
 
 netatmo:
-  api_key: !secret netatmo_id
-  secret_key: !secret netatmo_secret
-  username: !secret netatmo_username
-  password: !secret netatmo_password
+  client_id: !secret netatmo_id
+  client_secret: !secret netatmo_secret
+  # username: !secret netatmo_username
+  # password: !secret netatmo_password
 
 
 tuya:
@@ -388,6 +411,13 @@ binary_sensor:
         device_class: motion
         entity_id: group.motion_home
         value_template: "{{ not(is_state('group.motion_home', 'off')) }}"
+      vegetal_wall_watering:
+        friendly_name: vegetal wall
+        device_class: moisture
+        entity_id: sensor.laundry_machines
+        value_template: >-
+          {%- set laundry_power = states('sensor.laundry_machines') | float -%}
+          {{  (laundry_power > 10) and (laundry_power < 20) }}
 
   - platform: command_line
     name: vpn status
@@ -398,23 +428,59 @@ binary_sensor:
 
 yeelight:
   devices:
-    yeelink-light-color1_miio56235794:
-      name: barEntry_light
-      use_music_mode: false
-      model: color1
-    yeelink-light-color1_miio56367227:
-      name: barWindow_light
-      use_music_mode: false
-      model: color1
+    # yeelink-light-color1_miio56235794:
+    #   name: barEntry_light
+    #   use_music_mode: false
+    #   model: color1
+    # yeelink-light-color1_miio56367227:
+    #   name: barWindow_light
+    #   use_music_mode: false
+    #   model: color1
     yeelink-light-color1_miio54993037:
       name: bedroom_light
       use_music_mode: false
       model: color1
+    yeelink-light-ceiling10_mibtEB71:
+      name: pendantEntry_light
+      use_music_mode: false
+      model: ceiling4
+    yeelink-light-ceiling10_mibt7C35:
+      name: pendantWindow_light
+      use_music_mode: false
+      model: ceiling4
 
 
-linky:
-  - username: !secret enedis_user
-    password: !secret enedis_password
+# linky:
+#   - username: !secret enedis_user
+#     password: !secret enedis_password
+
+shelly:
+  discovery: True  #add all devices (default)
+  igmp_fix: True
+  mdns: True
+  scan_interval: 30
+  devices:  #configure devices
+    - id: "008100"
+      name: "shutters living"
+      entity_id: shutters_living
+    - id: "7ae030"
+      name: "plug xiaomi gateway"
+      entity_id: plug_xiaomi_gateway
+    - id: "e631d5-1"
+      name: "light@Pool"
+      light_switch: true  #add this switch as a light
+      entity_id: light_pool
+    - id: "e631d5-2"
+      name: "lights@Trees"
+      light_switch: true  #add this switch as a light
+      entity_id: lights_trees
+    - id: "24CE1A"
+      name: "light@Porch"
+      light_switch: true  #add this switch as a light
+      entity_id: light_porch
+
+tts:
+  - platform: google_translate
 
 switch: !include switch.yaml
 light: !include light.yaml

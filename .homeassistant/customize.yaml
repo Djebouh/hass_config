@@ -10,10 +10,6 @@ device_tracker.redminote5redmi:
 person.lou:
   friendly_name: Lou
   icon: mdi:human-male-girl
-group.all_automations:
-  hidden: false
-group.all_scripts:
-  hidden: false
 group.motion_living:
   device_class: moving
 sensor.netatmo_living_room_temperature:

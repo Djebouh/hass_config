@@ -1,3 +1,6 @@
+############################################################
+# Cube configuration
+############################################################
 - alias: Cube event flip90
   trigger:
     platform: event
@@ -8,7 +11,7 @@
   action:
     service: light.toggle
     entity_id: light.light_living
-  id: b926b865b2314cfdbd4ca093117d0cff
+
 - alias: Cube event flip180
   trigger:
     platform: event
@@ -19,7 +22,7 @@
   action:
   - service: light.toggle
     entity_id: light.light_bar
-  id: 3bd584afb29a4fab84321ce612583867
+
 - alias: Cube event tap_twice
   trigger:
     platform: event
@@ -30,7 +33,7 @@
   action:
   - service: light.toggle
     entity_id: light.lights_downstairs
-  id: e71a8814ac45420c9b7b0e0f26b2c409
+
 - alias: Cube event move
   trigger:
     platform: event
@@ -41,7 +44,7 @@
   action:
     service: input_boolean.toggle
     entity_id: input_boolean.block_autolight_living
-  id: 680e47d39a614eb7bb3c9240605ebfd5
+
 - alias: Cube event shake_air
   trigger:
     platform: event
@@ -52,7 +55,7 @@
   action:
   - service: switch.toggle
     entity_id: switch.movie_mode
-  id: 2c3e46ad5ca947bcbe7c0fd17bbe58b4
+
 - alias: Cube event rotate
   trigger:
     platform: event
@@ -64,11 +67,19 @@
     service: light.turn_on
     entity_id: light.bulbs_bar
     data_template:
-      brightness: "{% set state = (states.light.barwindow_light.attributes.brightness\
-        \ + (trigger.event.data.action_value|int)*4) | int -%} {%-  if state > 255\
-        \ -%}\n   {%- set state  = 255 -%}\n{%-  elif state < 0 -%}\n   {%- set state\
-        \  = 0 -%}\n{%- endif %} {{ state }}\n"
-  id: 0ba70627548c47759c6e049f8cf42beb
+      brightness: >
+        {% set state = (states.light.barwindow_light.attributes.brightness + (trigger.event.data.action_value|int)*4) | int -%}
+        {%-  if state > 255 -%}
+          {%- set state  = 255 -%}
+        {%-  elif state < 0 -%}
+          {%- set state = 0 -%}
+        {%- endif %}
+        {{ state }}
+
+
+############################################################
+# Notify when laundry machines stop
+############################################################
 - alias: Laundry - Monitor stop of laundry machines run
   initial_state: 'off'
   trigger:
@@ -78,6 +89,10 @@
     for:
       seconds: 130
   action:
+  - service: tts.google_translate_say
+    entity_id: media_player.living_room_speaker
+    data:
+      message: 'Laundry is over.'
   - service: notify.ALL_MOBILES
     data_template:
       title: Laundry completed
@@ -86,7 +101,7 @@
     entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
   - service: automation.turn_on
     entity_id: automation.laundry_monitor_start_of_laundry_machines_run
-  id: 6bcbc012f0c84895859415ff132d519f
+
 - alias: Laundry - Monitor start of laundry machines run
   initial_state: 'on'
   trigger:
@@ -96,11 +111,35 @@
     for:
       seconds: 130
   action:
-  - service: automation.turn_on
-    entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
-  - service: automation.turn_off
-    entity_id: automation.laundry_monitor_start_of_laundry_machines_run
-  id: a50f2e33187b4578bfcd35bd7b177071
+    - service: automation.turn_on
+      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
+    - service: automation.turn_off
+      entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+
+
+# ############################################################
+# # Notify when watering stops
+# ############################################################
+
+# - alias: Laundry - Monitor watering
+#   initial_state: 'on'
+#   trigger:
+#     platform: numeric_state
+#     entity_id: sensor.laundry_machines
+#     above: '10'
+#     below: '30'
+#     for:
+#       seconds: 70
+#   action:
+#     - service: notify.ALL_MOBILES
+#       data_template:
+#         title: Watering laundry
+#         message: It runs now
+
+
+############################################################
+# Stop heating when open
+############################################################
 - alias: Housekeeping - Stop Heating when doors are open
   trigger:
     platform: state
@@ -110,66 +149,140 @@
       minutes: 2
   condition:
     condition: template
-    value_template: '{{ state_attr(''climate.netatmo_living_room'', ''current_temperature'')
-      > 10 }}'
+    value_template: "{{ state_attr('climate.netatmo_living_room', 'current_temperature') > 10 }}"
   action:
-  - service: climate.set_preset_mode
-    data:
-      entity_id: climate.netatmo_living_room
-      preset_mode: away
-  - service: automation.turn_on
-    entity_id:
-    - automation.housekeeping_restart_heating_when_doors_are_closed
-  id: 904c245db1f441da8e2ab8d12fe0a4e4
+    - service: climate.set_preset_mode
+      data:
+        entity_id: climate.netatmo_living_room
+        preset_mode: away
+    - service: automation.turn_on
+      entity_id: automation.housekeeping_restart_heating_when_doors_are_closed
+
 - alias: Housekeeping - restart Heating when doors are closed
+  initial_state: 'off'
   trigger:
+    - platform: state
+      entity_id: group.openings
+      to: 'off'
+      for:
+        minutes: 1
+    - platform: state
+      entity_id: automation.housekeeping_stop_heating_when_doors_are_open
+      to: 'on'
+  action:
+    - service: climate.set_preset_mode
+      data:
+        entity_id: climate.netatmo_living_room
+        preset_mode: Schedule
+
+- alias: Housekeeping - stop monitoring when thermostat on away
+  initial_state: 'on'
+  trigger:
+    platform: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'away') }}"
+  condition:
+    condition: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'away') }}"
+  action:
+  - service: automation.turn_off
+    entity_id: automation.housekeeping_stop_heating_when_doors_are_open
+
+- alias: Housekeeping - restart monitoring when thermostat on Schedule
+  initial_state: 'on'
+  trigger:
+    platform: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'Schedule') }}"
+  condition:
+    condition: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'Schedule') }}"
+  action:
+  - service: automation.turn_on
+    entity_id: automation.housekeeping_stop_heating_when_doors_are_open
+  - service: automation.turn_off
+    entity_id: automation.housekeeping_restart_heating_when_doors_are_closed
+
+
+
+############################################################
+# Boost when at home
+############################################################
+- alias: Housekeeping - Boost Heating when at home
+  initial_state: 'on'
+  trigger:
+  - platform: time
+    at: '09:00:05'
+  - platform: state
+    entity_id: group.presence
+    to: home
   - platform: state
     entity_id: group.openings
     to: 'off'
-    for:
-      minutes: 1
+  - platform: template
+    value_template: "{{ state_attr('climate.netatmo_living_room', 'current_temperature') < 20.7 }}"
+  - platform: template
+    value_template: "{{ state_attr('climate.netatmo_living_room', 'temperature') < 21 }}"
+  condition:
+  - condition: time
+    after: '9:00:00'
+    before: '18:00:00'
+  - condition: state
+    entity_id: group.presence
+    state: home
+  - condition: state
+    entity_id: group.openings
+    state: 'off'
+  - condition: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'Schedule') }}"
+  - condition: template
+    value_template: "{{ state_attr('climate.netatmo_living_room', 'current_temperature') < 20.7 }}"
+  - condition: template
+    value_template: "{{ state_attr('climate.netatmo_living_room', 'temperature') < 21 }}"
+  action:
+    - service: climate.set_temperature
+      data:
+        entity_id: climate.netatmo_living_room
+        temperature: 21
+    - service: automation.turn_on
+      entity_id: automation.housekeeping_stop_heating_boost
+    - service: notify.ALL_MOBILES
+      data:
+        message: >-
+          The temperature is {{ state_attr('climate.netatmo_living_room', 'current_temperature') }}.
+          Schedule mode will be reactivated at 6pm or when leaving home.
+        title: Boost heating
+
+
+- alias: Housekeeping - Stop heating boost
+  initial_state: 'off'
+  trigger:
+  - platform: time
+    at: '18:00:05'
   - platform: state
-    entity_id: automation.housekeeping_stop_heating_when_doors_are_open
-    to: 'on'
+    entity_id: group.presence
+    to: not_home
+  - platform: template
+    value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'Schedule') }}"
   action:
-  - service: climate.set_preset_mode
-    data:
-      entity_id: climate.netatmo_living_room
-      preset_mode: Schedule
-  id: 51ff6286edec41b3bb5d4939150f6e59
-- alias: Housekeeping - on thermostat away on
-  initial_state: 'on'
-  trigger:
-    platform: template
-    value_template: '{{ is_state_attr(''climate.netatmo_living_room'', ''preset_mode'',
-      ''away'') }}'
-  condition:
-    condition: template
-    value_template: '{{ is_state_attr(''climate.netatmo_living_room'', ''preset_mode'',
-      ''away'') }}'
-  action:
-  - service: automation.turn_off
-    entity_id:
-    - automation.housekeeping_stop_heating_when_doors_are_open
-  id: cc8463b808a5468cbe62a47f0f77442b
-- alias: Housekeeping - on thermostat away off
-  initial_state: 'on'
-  trigger:
-    platform: template
-    value_template: '{{ is_state_attr(''climate.netatmo_living_room'', ''preset_mode'',
-      ''Schedule'') }}'
-  condition:
-    condition: template
-    value_template: '{{ is_state_attr(''climate.netatmo_living_room'', ''preset_mode'',
-      ''Schedule'') }}'
-  action:
-  - service: automation.turn_on
-    entity_id:
-    - automation.housekeeping_stop_heating_when_doors_are_open
-  - service: automation.turn_off
-    entity_id:
-    - automation.housekeeping_restart_heating_when_doors_are_closed
-  id: 9901f74e89d447d08b314f39c229ea70
+    - service: automation.turn_off
+      entity_id: automation.housekeeping_stop_heating_boost
+    - service: notify.ALL_MOBILES
+      data:
+        message: >-
+          Hope U had a good day!
+          The Temperature is {{ state_attr('climate.netatmo_living_room', 'current_temperature') }}.
+        title: Stop Boost heating
+    - condition: template
+      value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'manual') }}"
+    - service: climate.set_preset_mode
+      data:
+        entity_id: climate.netatmo_living_room
+        preset_mode: Schedule
+
+
+
+############################################################
+# Vacuum cleaner automation
+############################################################
 - alias: Vacuum - Start
   initial_state: 'on'
   trigger:
@@ -197,7 +310,11 @@
     entity_id: vacuum.aspibot
   - service: automation.turn_off
     entity_id: automation.vacuum_start
-  id: 7752b86e55c8473d827dd2059e2402dc
+
+
+############################################################
+# Theme management
+############################################################
 - alias: Set HA theme for day and night
   trigger:
   - platform: homeassistant
@@ -211,9 +328,17 @@
   action:
   - service_template: frontend.set_theme
     data_template:
-      name: "{% if states.sun.sun.state == \"above_horizon\" %}\n  default\n{% else\
-        \ %}\n  blue_night\n{% endif %}\n"
-  id: 7499cd37861b447ca4b590666c5a28e6
+      name: >
+        {% if states.sun.sun.state == "above_horizon" %}
+          default
+        {% else %}
+          blue_night
+        {% endif %}
+
+
+############################################################
+# Control Night Mode
+############################################################
 - alias: Start Night Mode
   initial_state: 'on'
   trigger:
@@ -234,7 +359,7 @@
   action:
   - service: input_boolean.turn_on
     entity_id: input_boolean.night_mode
-  id: d4b66923c7294d47ab2672e31e901bc0
+
 - alias: Stop Night Mode
   initial_state: 'on'
   trigger:
@@ -250,7 +375,7 @@
   action:
   - service: input_boolean.turn_off
     entity_id: input_boolean.night_mode
-  id: 32a8a0bf2d8f49fea0767d01231daff5
+
 - alias: Start automation during Night Mode
   initial_state: 'on'
   trigger:
@@ -268,7 +393,7 @@
     entity_id:
     - automation.housekeeping_stop_heating_when_doors_are_open
     - automation.vacuum_start
-  id: 00d69993c9074515ae2f513cf59f835a
+
 - alias: Stop automation during Night Mode
   initial_state: 'on'
   trigger:
@@ -287,7 +412,101 @@
     entity_id:
     - automation.housekeeping_stop_heating_when_doors_are_open
     - automation.vacuum_start
-  id: 2bb03a78449e457f992a8a3fd87d06fd
+
+
+############################################################
+# Message when entering or exiting night mode
+############################################################
+
+- alias: 'iOS Notif - Give status when night mode is switched on'
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.night_mode
+      to: 'on'
+      from: 'off'
+  # condition:
+  #   condition: or
+  #   conditions:
+  #     - condition: state
+  #       entity_id: binary_sensor.closed_and_locked
+  #       state: 'on'
+  #     - condition: state
+  #       entity_id: binary_sensor.opening_shutters_living
+  #       state: 'on'
+  action:
+    - service: notify.ALL_MOBILES
+      data_template:
+        title: "Entering NIGHT MODE"
+        message: >-
+          {% if is_state('binary_sensor.closed_and_locked', 'off') %}
+            {% set text = "The house is locked" %}
+            {% if is_state('binary_sensor.opening_shutters_living', 'on') %}
+              {% set text = text ~ ". The shutters are open" %}
+            {%- endif %}
+          {% else %}
+            {% set text = "The house is NOT LOCKED" %}
+            {% set separ = ": " %}
+            {% if is_state('switch.lock_maindoor', 'on') %}
+              {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_front') %}
+              {% set separ = ", " %}
+            {% endif %}
+            {% if is_state('switch.lock_diningwindow', 'on') %}
+              {% set text = text ~ separ ~ "Sliding window is open" %}
+              {% set separ = ", " %}
+            {% endif %}
+            {% if is_state('binary_sensor.opening_window_living', 'on') %}
+              {% set text = text ~ separ ~ "Living window is open" %}
+              {% set separ = ", " %}
+            {% endif %}
+            {% if is_state('binary_sensor.opening_window_kitchen', 'on') %}
+              {% set text = text ~ separ ~ "Kitchen window is open" %}
+              {% set separ = ", " %}
+            {% endif %}
+            {% if is_state('binary_sensor.opening_door_garage', 'on') %}
+              {% set text = text ~ separ ~ "Garage is open" %}
+              {% set separ = ", " %}
+            {% endif %}
+            {% if is_state('switch.lock_laundrydoor', 'on') %}
+              {% set text = text ~ separ ~ "Laundry door is " ~ states('sensor.door_laundry') %}
+              {% set separ = ", " %}
+            {% endif %}
+          {% endif %}
+          {{ text ~ "."}}
+          The lowest temperature tonight will be {{ states.sensor.dark_sky_overnight_low_temperature_0d.state_with_unit }}, 
+          today's highest was {{ states.sensor.netatmo_garden_max_temp.state_with_unit }}.
+          The sun will rise at {{ as_timestamp(states.sun.sun.attributes.next_rising)  | timestamp_custom("%H:%M")}}.
+          Tomorrow: {{ states.sensor.dark_sky_summary_1d.state }}
+        data:
+          push:
+            sound: "US-EN-Alexa-Good-Night.wav"
+            category: nightmode
+
+- alias: iOS Notif - Give status when night mode is switched off
+  initial_state: 'on'
+  trigger:
+    - platform: state
+      entity_id: input_boolean.night_mode
+      to: 'off'
+      from: 'on'
+  action:
+    - service: notify.ALL_MOBILES
+      data_template:
+        title: "Leaving NIGHT MODE"
+        message: >-
+          Today: {{ states.sensor.dark_sky_summary_0d.state }}
+          The highest temperature today will be {{ states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit }},
+          last night's lowest was {{ states.sensor.netatmo_garden_min_temp.state_with_unit }}.
+          The sun will set at {{ as_timestamp(states.sun.sun.attributes.next_setting)  | timestamp_custom("%H:%M")}}.
+        data:
+          push:
+            sound: "US-EN-Alexa-Good-Morning.wav"
+            category: nightmode
+
+
+############################################################
+# Notify when new Home Assistant updates are available
+############################################################
 - alias: Update Available Notifications
   initial_state: 'on'
   trigger:
@@ -298,19 +517,26 @@
   action:
     service: notify.mobile_app_jerome_s_iphone
     data:
-      message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version')
-        }} is available.
-  id: e02264fe24c04172aa7616de28c593dd
+      message: Home Assistant {{ state_attr('binary_sensor.updater', 'newest_version') }} is available.
+
+
+############################################################
+# Send event 2MN_AFTER_HASS_START, 2 mn after homeassistant started
+############################################################
 - alias: throw event 2 minute after homeassistant starts
   initial_state: 'on'
   trigger:
     platform: homeassistant
     event: start
   action:
-  - delay:
-      minutes: 2
-  - event: 2MN_AFTER_HASS_START
-  id: 74b250a2eefd4ca88367b794d88a658a
+    - delay:
+        minutes: 2
+    - event: 2MN_AFTER_HASS_START
+
+
+############################################################
+# Notify on power problem
+############################################################
 - alias: Power Problem Notification
   initial_state: 'on'
   trigger:
@@ -320,46 +546,122 @@
     above: 0
     for:
       minutes: 5
-  condition:
   action:
   - service: persistent_notification.create
     data_template:
-      message: 'RPI Power reported {{ states.sensor.rpi_power_status.state }}. The
-        state had changed from {{ trigger.from_state.state }} '
+      message: >-
+        RPI Power reported {{ states.sensor.rpi_power_status.state }}.
+        The state had changed from {{ trigger.from_state.state }}
       title: Power Supply Issue
       notification_id: power_alert
   - service: notify.ALL_MOBILES
     data_template:
-      message: RPI Power reported {{ states.sensor.rpi_power_status.state }}. The
-        state had  changed from {{ trigger.from_state.state }}
+      message: >-
+        RPI Power reported {{ states.sensor.rpi_power_status.state }}.
+        The state had  changed from {{ trigger.from_state.state }}
       title: Power Supply Issue
-  id: 1ff6b82a641e48f38468a7672a318670
-- id: '1573514667009'
-  alias: Notify when bathroom's windows is open and it's cold
-  description: Notify when bathroom's windows is left open and it's cold outside
+
+- alias: Create a notification when there is updates pending in HACS
+  initial_state: 'on'
+  trigger:
+    platform: state
+    entity_id: sensor.hacs
+  condition:
+    - condition: template
+      value_template: "{{ states(trigger.entity_id) != 'unknown'}}"
+    - condition: template
+      value_template: "{{ (states(trigger.entity_id) | float) != 0}}"
+  action:
+    service: persistent_notification.create
+    data_template:
+      title: Updates pending in HACS
+      message: >-
+        {% for repo in state_attr(trigger.entity_id, 'repositories') %}
+          **{{ repo.display_name }}** _{{ repo["installed version"] }}_ -> _{{ repo["available version"] }}_
+        {% endfor %}
+
+
+############################################################
+# iOS actions
+############################################################
+- alias: "iOS Action - Toogle Movie mode"
+  initial_state: true
+  trigger:
+    - platform: event
+      event_type: ios.action_fired
+      event_data:
+        actionName: 'Toggle Movie mode'
+  action:
+    service: switch.toggle
+    entity_id: switch.movie_mode
+
+- alias: "iOS Action - Cooking Time"
+  initial_state: true
+  trigger:
+    - platform: event
+      event_type: ios.action_fired
+      event_data:
+        actionName: 'Cooking Time'
+  action:
+    - service: scene.turn_on
+      entity_id: scene.kitchen_and_bar
+
+- alias: "iOS Action - Toogle Bedroom light"
+  initial_state: true
+  trigger:
+    - platform: event
+      event_type: ios.action_fired
+      event_data:
+        actionName: 'Toggle Bedroom'
+  action:
+    service: light.toggle
+    entity_id: light.light_bedroom
+
+- alias: "iOS Action - Lock Home"
+  initial_state: true
+  trigger:
+    - platform: event
+      event_type: ios.action_fired
+      event_data:
+        actionName: 'Lock Home'
+  action:
+    - service: switch.turn_off
+      entity_id: switch.lock_home
+
+
+############################################################
+# Notify on Xiaomi gateway deconnection
+############################################################
+- alias: Xiaomi unavailable - Restart
+  initial_state: 'on'
   trigger:
   - platform: state
-    entity_id: binary_sensor.opening_window_bathroom
-    to: 'on'
-    from: 'off'
-    for:
-      minutes: 20
-  - platform: numeric_state
-    entity_id: sensor.netatmo_garden_temperature
-    below: '15'
-  - platform: state
-    entity_id: group.locks_and_doors
-    to: 'off'
+    entity_id: binary_sensor.smoke_sensor
+    to: 'unavailable'
+  - platform: event
+    event_type: 2MN_AFTER_HASS_START
   condition:
-  - condition: numeric_state
-    entity_id: sensor.netatmo_garden_temperature
-    below: '15'
   - condition: state
-    entity_id: binary_sensor.opening_window_bathroom
-    state: 'on'
+    entity_id: binary_sensor.smoke_sensor
+    state: 'unavailable'
   action:
-  - service: notify.ALL_MOBILES
-    data_template:
-      title: The window of the bathroom is still open
-      message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
-    
+    - service: persistent_notification.create
+      data:
+        message: Xiaomi gateway is unavailable!
+        title: Xiaomi Issue
+        notification_id: xiaomi_alert
+    - service: notify.ALL_MOBILES
+      data:
+        message: Xiaomi gateway is unavailable!
+        title: Xiaomi Issue
+    - service: switch.turn_off
+      entity_id: switch.shelly_plug_xiaomi_gateway
+    - delay:
+        minutes: 1
+    - service: switch.turn_on
+      entity_id: switch.shelly_plug_xiaomi_gateway
+    - delay:
+        minutes: 1
+    - service: shell_command.reboot_pi
+
+

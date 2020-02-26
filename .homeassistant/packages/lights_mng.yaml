@@ -42,13 +42,39 @@ switch:
       movie_mode:
         friendly_name: "Movie Mode"
         value_template: >-
-          {{ is_state('light.light_bar', 'on') and
-            is_state('light.barwindow_light', 'on') and
-            (states.light.barwindow_light.attributes.hs_color[0] == 240) and
-            is_state('light.barentry_light', 'on') and
-            (states.light.barentry_light.attributes.hs_color[0] == 240) }}
+          {{ is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+            is_state('light.light_living', 'off') and is_state('light.light_kitchen', 'off') and
+            is_state('light.light_bar', 'on') and
+            is_state('light.pendantentry_light_ambilight', 'on') and
+            (states.light.pendantentry_light_ambilight.attributes.hs_color[0] == 240) and
+            is_state('light.pendantwindow_light_ambilight', 'on') and
+            (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] == 240) }}
         turn_on:
           service: script.turn_on_movie_scene
+        turn_off:
+          - service: script.turn_off
+            data: 
+              entity_id: script.turn_on_movie_scene
+          - service: scene.turn_on
+            entity_id: scene.bar_bright
+
+      cosy_mode:
+        friendly_name: "Cosy Mode"
+        value_template: >-
+          {{ is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+            is_state('light.light_living', 'off') and is_state('light.light_kitchen', 'off') and
+            is_state('light.light_bar', 'on') and
+            is_state('light.pendantentry_light_ambilight', 'on') and
+            (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == 13) and
+            is_state('light.pendantwindow_light_ambilight', 'on') and
+            (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == 13) }}
+        turn_on:
+          - service: scene.turn_on
+            entity_id: scene.cosy
+          - delay:
+              seconds: 2
+          - service: scene.turn_on
+            entity_id: scene.cosy
         turn_off:
           - service: script.turn_off
             data: 
@@ -76,9 +102,6 @@ script:
       entity_id: scene.living_movie
     - delay:
         seconds: 2
-    - condition: state
-      state: 'off'
-      entity_id: switch.movie_mode
     - service: scene.turn_on
       entity_id: scene.living_movie
     - delay:
@@ -490,9 +513,8 @@ automation:
         for:
           minutes: 3
     condition:
-      - condition: state
-        entity_id: binary_sensor.motion_living
-        state: 'off'
+      condition: template
+      value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.gateway_light
@@ -560,9 +582,8 @@ automation:
         for:
           minutes: 3
     condition:
-      - condition: state
-        entity_id: binary_sensor.motion_living
-        state: 'off'
+      condition: template
+      value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       service: light.turn_off
       entity_id: light.light_living
@@ -669,17 +690,25 @@ automation:
         for:
           minutes: 1
       - platform: state
+        entity_id: binary_sensor.opening_door_garage
+        to: 'off'
+        for:
+          minutes: 1
+      - platform: state
+        entity_id: binary_sensor.opening_door_2garage
+        to: 'off'
+        for:
+          minutes: 1
+      - platform: state
         entity_id: automation.autolight_garage_stop
         to: 'on'
         for:
-          minutes: 1
+          minutes: 3
     condition:
-      - condition: state
-        state: 'off'
-        entity_id: binary_sensor.motion_garage
-      - condition: state
-        state: 'off'
-        entity_id: binary_sensor.motion_laundry
+      - condition: template
+        value_template: '{{not is_state("binary_sensor.motion_garage", "on") }}'
+      - condition: template
+        value_template: '{{not is_state("binary_sensor.motion_laundry", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_garage
@@ -852,9 +881,8 @@ automation:
         for:
           minutes: 3
     condition:
-      condition: state
-      entity_id: binary_sensor.motion_stairs
-      state: 'off'
+      condition: template
+      value_template: '{{not is_state("binary_sensor.motion_stairs", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_stairs
@@ -880,16 +908,26 @@ automation:
       - platform: event
         event_type: xiaomi_aqara.motion
         event_data:
-          entity_id: binary_sensor.motion_outside_north
+          entity_id: binary_sensor.motion_outside_porch
+      - platform: state
+        entity_id:  group.openings
+        to: 'on'
       - platform: state
         entity_id:
           - device_tracker.corinnes_iphone
           - device_tracker.jerome_s_iphone
         to: 'home'
+        for:
+          minutes: 1
     condition:
       - condition: state
         state: 'off'
-        entity_id: light.lights_trees
+        entity_id: light.shelly_lights_trees
+        for:
+          seconds: 10
+      - condition: state
+        state: 'off'
+        entity_id: light.shelly_light_porch
         for:
           seconds: 10
       - condition: or
@@ -897,12 +935,17 @@ automation:
         - condition: numeric_state
           below: '2'
           entity_id: sensor.illumination_outside_north
-        - condition: sun
-          after: sunset
-          after_offset: "00:15:00"
+        # - condition: sun
+        #   after: sunset
+        #   after_offset: "00:15:00"
+        - condition: state
+          state: 'below_horizon'
+          entity_id: sun.sun
     action:
-      - entity_id: light.lights_trees
-        service: light.turn_on
+      - service: light.turn_on
+        entity_id:
+          - light.shelly_lights_trees
+          - light.shelly_light_porch
       - entity_id: automation.autolight_trees_stop
         service: automation.turn_on
 
@@ -911,36 +954,45 @@ automation:
     initial_state: 'off'
     trigger:
       - platform: state
-        entity_id: binary_sensor.motion_outside_north
+        entity_id: binary_sensor.motion_outside_porch
         to: 'off'
+        from: 'on'
       - platform: state
         entity_id:
           - device_tracker.corinnes_iphone
           - device_tracker.jerome_s_iphone
         to: 'not_home'
       - platform: state
+        entity_id:  group.openings
+        to: 'off'
+        for:
+          seconds: 20
+      - platform: state
         entity_id: automation.autolight_trees_stop
         to: 'on'
         for:
           minutes: 3
     condition:
-      condition: state
-      entity_id: binary_sensor.motion_outside_north
-      state: 'off'
+      condition: template
+      value_template: '{{not is_state("binary_sensor.motion_outside_porch", "on") }}'
     action:
       - service: light.turn_off
-        entity_id: light.lights_trees
+        entity_id:
+          - light.shelly_lights_trees
+          - light.shelly_light_porch
       # - condition: state
       #   state: 'not_home'
       #   entity_id: group.presence
-      # - entity_id: light.lights_trees
+      # - entity_id: light.shelly_lights_trees
       #   service: light.light_living
 
   - alias: Autolight - Trees Stop - Housekeeping
     initial_state: 'off'
     trigger:
       - platform: state
-        entity_id: light.lights_trees    
+        entity_id:
+          - light.shelly_lights_trees
+          - light.shelly_light_porch  
         to: 'off'
     action:
       - service: automation.turn_off
@@ -988,11 +1040,11 @@ automation:
       platform: state
       # entity_id: automation.autolight_living_stop
       entity_id:
-      - automation.autolight_living_stop
-      - automation.autolight_garage_stop
-      # - automation.autolight_laundry_stop
-      - automation.autolight_stairs_stop
-      - automation.autolight_trees_stop
+        - automation.autolight_living_stop
+        - automation.autolight_garage_stop
+        # - automation.autolight_laundry_stop
+        - automation.autolight_stairs_stop
+        - automation.autolight_trees_stop
     action:
       service_template: >
         {% if trigger.to_state.state == 'on' %}

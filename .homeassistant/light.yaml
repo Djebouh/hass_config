@@ -46,11 +46,11 @@
           kelvin: "{{ (2700 + 1300 / 254 * (brightness - 1)) | int }}"
 
 
-- platform: group
-  name: bulbs_bar
-  entities:
-    - light.barentry_light
-    - light.barwindow_light
+# - platform: group
+#   name: bulbs_bar
+#   entities:
+#     - light.barentry_light
+#     - light.barwindow_light
 
 
 - platform: group
@@ -76,23 +76,23 @@
     - light.light_lou_ceiling
 
 
-- platform: mqtt
-  name: "lights@Trees"
-  state_topic: "shellies/shellyswitch25-E631D5/relay/1"
-  command_topic: "shellies/shellyswitch25-E631D5/relay/1/command"
-  qos: 0
-  payload_on: "on"
-  payload_off: "off"
-  optimistic: false
-  retain: false
+# - platform: mqtt
+#   name: "lights@Trees"
+#   state_topic: "shellies/shellyswitch25-E631D5/relay/1"
+#   command_topic: "shellies/shellyswitch25-E631D5/relay/1/command"
+#   qos: 0
+#   payload_on: "on"
+#   payload_off: "off"
+#   optimistic: false
+#   retain: false
 
 
-- platform: mqtt
-  name: "light@Pool"
-  state_topic: "shellies/shellyswitch25-E631D5/relay/0"
-  command_topic: "shellies/shellyswitch25-E631D5/relay/0/command"
-  qos: 0
-  payload_on: "on"
-  payload_off: "off"
-  optimistic: false
-  retain: false
+# - platform: mqtt
+#   name: "light@Pool"
+#   state_topic: "shellies/shellyswitch25-E631D5/relay/0"
+#   command_topic: "shellies/shellyswitch25-E631D5/relay/0/command"
+#   qos: 0
+#   payload_on: "on"
+#   payload_off: "off"
+#   optimistic: false
+#   retain: false

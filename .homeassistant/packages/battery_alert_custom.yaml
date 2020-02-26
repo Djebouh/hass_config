@@ -22,6 +22,20 @@ homeassistant:
     #   battery_sensor_creation_disabled: true
     #   battery_alert_disabled: true
 
+    sensor.corinnes_iphone_battery:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.jerome_s_iphone_battery:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    device_tracker.corinnes_iphone:
+      battery_sensor_creation_disabled: true
+
+    device_tracker.jerome_s_iphone:
+      battery_sensor_creation_disabled: true
+
     switch.wallswitch_light_bar:
       battery_sensor_creation_disabled: true
 
