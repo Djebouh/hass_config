@@ -1,34 +1,34 @@
-- platform: broadlink_power
-  host: Broadlink_Outlet-T1-9d-34-30
-  mac: '34:ea:34:9d:34:30'
-  name: 'Laundry Machines'
+# - platform: broadlink_power
+#   host: Broadlink_Outlet-T1-9d-34-30
+#   mac: '34:ea:34:9d:34:30'
+#   name: 'Laundry Machines'
 
 
-- platform: rpi_power
-  text_state: true
+# - platform: rpi_power
+#   text_state: true
 
 
-- platform: darksky
-  api_key: !secret dark_sky_key
-  forecast:
-    - 0
-    - 1
-  hourly_forecast:
-    - 0
-  monitored_conditions:
-    - precip_type
-    - precip_intensity
-    - precip_probability
-    - wind_speed
-    - wind_gust
-    - uv_index
-    - temperature
-    - temperature_high
-    - temperature_low
-    - summary
-    - alerts
-  scan_interval:
-    minutes: 5
+# - platform: darksky
+#   api_key: !secret dark_sky_key
+#   forecast:
+#     - 0
+#     - 1
+#   hourly_forecast:
+#     - 0
+#   monitored_conditions:
+#     - precip_type
+#     - precip_intensity
+#     - precip_probability
+#     - wind_speed
+#     - wind_gust
+#     - uv_index
+#     - temperature
+#     - temperature_high
+#     - temperature_low
+#     - summary
+#     - alerts
+#   scan_interval:
+#     minutes: 5
 
 
 # - platform: template

@@ -1,0 +1,150 @@
+################################################################
+## Proxy to the other raspberry, handling pool automation
+################################################################
+
+sensor:
+  - platform: mqtt
+    name: "Pool Redox"
+    state_topic: "poolassistant/sensor/redox/state"
+    unit_of_measurement: "mV"
+    force_update: true
+
+  - platform: mqtt
+    name: "Pool pH"
+    state_topic: "poolassistant/sensor/ph/state"
+    unit_of_measurement: "pH"
+    force_update: true
+
+  - platform: mqtt
+    name: "Pool Water Temperature"
+    state_topic: "poolassistant/sensor/pool_temperature/state"
+    unit_of_measurement: "°C"
+    device_class: temperature
+    force_update: true
+
+switch:
+  - platform: mqtt
+    name: "Pool - Cl Regulation"
+    command_topic: "poolassistant/automation/cl_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/cl_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH Regulation"
+    command_topic: "poolassistant/automation/ph_regul_injection_automation/set"
+    state_topic: "poolassistant/automation/ph_regul_injection_automation/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:home-assistant
+    qos: 1
+    retain: true
+
+  - platform: mqtt
+    name: "Pool - pH- Injection"
+    command_topic: "poolassistant/switch/ph_injection/set"
+    state_topic: "poolassistant/switch/ph_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+
+  - platform: mqtt
+    name: "Pool - Cl+ Injection"
+    command_topic: "poolassistant/switch/cl_injection/set"
+    state_topic: "poolassistant/switch/cl_injection/state"
+    state_on: "on"
+    state_off: "off"
+    icon: mdi:needle
+    qos: 1
+    retain: false
+
+
+automation:
+  ############################################################
+  # Pool Management
+  ############################################################
+
+  - alias: 'Pool - Notify on Cl Regulation start'
+    initial_state: 'on'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/cl_regul_injection_automation/start
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool Chlor regulation started"
+          message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
+          data:
+            clickAction: '/lovelace/pool'
+            push:
+              sound: none
+              thread-id: "pool-chlor-regulat"
+
+
+  - alias: 'Pool - Notify on Cl+ Injection stop'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/cl_regul_injection/stop
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool Cl+ injection stopped"
+          message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
+          data:
+            clickAction: "/lovelace/pool"
+            push:
+              sound: none
+              thread-id: "pool-chlor-regulat"
+
+
+  - alias: 'Pool - Notify on pH Regulation start'
+    initial_state: 'on'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/ph_regul_injection_automation/start
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool pH regulation started"
+          message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
+          data:
+            clickAction: "/lovelace/pool"
+            push:
+              sound: none
+              thread-id: "pool-ph-regulat"
+
+
+  - alias: 'Pool - Notify on pH- Injection stop'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/event/ph_regul_injection/stop
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool ph- injection stopped"
+          message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
+          data:
+            clickAction: "/lovelace/pool"
+            push:
+              sound: none
+              thread-id: "pool-ph-regulat"
+
+
+  - alias: 'Pool - Notify on excess of Cl+ Injection'
+    trigger:
+      platform: mqtt
+      topic: poolassistant/alert/cl_regul_max_reached
+    action:
+      - service: notify.notify
+        data_template:
+          title: "Pool Cl+ injection ALERT"
+          message: 'Cumulated injection duration was {{ trigger.payload_json["cumulated_duration"] }}, current redox is {{ trigger.payload_json["current_redox"]}}mV, target redox is {{ trigger.payload_json["target_redox"]}}mV'
+          data:
+            clickAction: "/lovelace/pool"
+            subtitle: 'The max daily injection is reached, the regulation is stopped'
+

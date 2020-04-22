@@ -1,0 +1,331 @@
+################################################################
+## Interact with assistants
+################################################################
+
+# Apple Homekit
+homekit:
+  auto_start: false
+  filter:
+    include_entities:
+      - light.light_living
+      - light.light_bar
+      - light.light_kitchen
+      - light.light_pool
+      - light.lights_trees
+      - cover.shutters_living
+      - cover.sun_awning
+      - sensor.netatmo_garden_temperature
+      - scene.cosy
+      - sensor.pool_water_temperature
+  entity_config:
+    light.light_living:
+      name: Salon
+    light.light_bar:
+      name: Bar
+    light.light_kitchen:
+      name: Cuisine
+    light.light_pool:
+      name: Piscine
+    light.lights_trees:
+      name: Arbres
+    cover.shutters_living:
+      name: Volet roulant
+    cover.sun_awning:
+      name: Store
+    sensor.pool_water_temperature:
+      name: Temperature Piscine
+
+
+# Google Home
+google_assistant:
+  project_id: !secret google_project_id
+  service_account:
+    private_key: !secret google_private_key
+    client_email: !secret google_client_email
+  expose_by_default: false
+  entity_config:
+    light.light_living:
+      # name: lumiere du salon
+      expose: true
+      room: Living Room
+      aliases:
+        - lumiere du salon
+        - living room light
+    light.light_bar:
+      # name: lumiere du bar
+      expose: true
+      room: Living Room
+      aliases:
+        - lumiere du bar
+        - bar light
+    light.light_kitchen:
+      # name: lumiere de la cuisine
+      expose: true
+      room: Living Room
+      aliases:
+        - lumiere de la cuisine
+        - kitchen light
+    lock.front_door:
+      # name: porte d'entree
+      expose: true
+      aliases:
+        - porte d'entree
+        - front door
+        - main door
+        - porte
+        - porte principale
+      room: Living Room
+    lock.polycontrol_danalock_v3_btze_locked:
+      # name: porte de la buanderie
+      expose: true
+      room: Laundry
+      aliases:
+        - porte de la buanderie
+        - back door
+        - laundry door
+        - porte de derrière
+    cover.shutters_living:
+      # name: volets roulants
+      expose: true
+      room: Living Room
+      aliases:
+        - volet roulant
+        - shutters
+    cover.sun_awning:
+      # name: store
+      expose: true
+      room: Garden
+      aliases:
+        - store
+        - awning
+    light.light_lou_desk:
+      expose: true
+      room: Lou's bedroom
+      aliases:
+        - lumiere du bureau de Lou
+        - Lou's desk light
+    light.light_lou_ceiling:
+      expose: true
+      room: Lou's bedroom
+      aliases:
+        - lumiere principale de la chambre de Lou
+        - Lou's ceiling light
+        - Lou's bedroom main light
+    light.light_bedroom:
+      expose: true
+      room: Bedroom
+      aliases:
+        - lumiere de la chambre
+        - bedroom light
+    climate.netatmo_living_room:
+      expose: true
+      room: Living Room
+      aliases:
+        - temperature
+        - temperature interieure
+        - temparature at home
+        - temperature inside
+    light.light_garage:
+      expose: true
+      room: Garage
+      aliases:
+        - lumiere du garage
+        - garage light
+    light.light_laundry:
+      expose: true
+      room: Laundry
+      aliases:
+        - lumiere de la buanderie
+        - laundry light
+    light.light_pool:
+      expose: true
+      room: Garden
+      aliases:
+        - lumiere de la piscine
+        - pool light
+    light.lights_trees:
+      expose: true
+      room: Garden
+      aliases:
+        - lumiere exterieure
+        - lumiere des arbres
+        - trees light
+    sensor.netatmo_garden_temperature:
+      expose: true
+      room: Garden
+      aliases:
+        - temperature exterieure
+        - temparature in the Garden
+        - temperature outside
+    light.scene_cosy:
+      expose: true
+      room: Living Room
+      aliases:
+        - ambiance cosy
+        - cosy mode
+    light.scene_movie:
+      expose: true
+      room: Living Room
+      aliases:
+        - ambiance cinema
+        - movie mode
+
+
+notify:
+  - name: ALL_MOBILES
+    platform: group
+    services:
+      - service: mobile_app_jerome_s_iphone
+      - service: mobile_app_corinnes_iphone
+
+
+automation:
+
+  - alias: Homekit - Start
+    initial_state: 'on'
+    trigger:
+      - platform: event
+        event_type: 2MN_AFTER_HASS_START
+    action:
+      - service: homekit.start
+
+
+
+
+  ############################################################
+  # Message when entering or exiting night mode
+  ############################################################
+
+  - alias: 'Notif - Night mode is switched on'
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.night_mode
+        to: 'on'
+        from: 'off'
+    # condition:
+    #   - platform: state
+    #     entity_id: group.presence
+    #     to: home
+    action:
+      - service: notify.ALL_MOBILES
+        data_template:
+          title: "Entering NIGHT MODE"
+          message: >-
+            Tonight's low will be {{ states.sensor.dark_sky_overnight_low_temperature_0d.state_with_unit }};
+            sunrise will be at {{ as_timestamp(states.sun.sun.attributes.next_rising) | timestamp_custom("%H:%M")}}.
+            And tomorrow! {{ states.sensor.dark_sky_summary_1d.state }}
+          data:
+            subtitle: >-
+              {% if is_state('binary_sensor.closed_and_locked', 'off') %}
+                {% set text = "The house is locked" %}
+                {% if is_state('binary_sensor.opening_shutters_living', 'on') %}
+                  {% set text = text ~ ". The shutters are open" %}
+                {%- endif %}
+              {% else %}
+                {% set text = "The house is NOT LOCKED" %}
+                {% set separ = ": " %}
+                {% if is_state('switch.lock_maindoor', 'on') %}
+                  {% set text = text ~ separ ~ "Main door is " ~ states('sensor.door_front') %}
+                  {% set separ = ", " %}
+                {% endif %}
+                {% if is_state('switch.lock_diningwindow', 'on') %}
+                  {% set text = text ~ separ ~ "Sliding window is open" %}
+                  {% set separ = ", " %}
+                {% endif %}
+                {% if is_state('binary_sensor.opening_window_living', 'on') %}
+                  {% set text = text ~ separ ~ "Living window is open" %}
+                  {% set separ = ", " %}
+                {% endif %}
+                {% if is_state('binary_sensor.opening_window_kitchen', 'on') %}
+                  {% set text = text ~ separ ~ "Kitchen window is open" %}
+                  {% set separ = ", " %}
+                {% endif %}
+                {% if is_state('binary_sensor.opening_door_garage', 'on') %}
+                  {% set text = text ~ separ ~ "Garage is open" %}
+                  {% set separ = ", " %}
+                {% endif %}
+                {% if is_state('switch.lock_laundrydoor', 'on') %}
+                  {% set text = text ~ separ ~ "Laundry door is " ~ states('sensor.door_laundry') %}
+                  {% set separ = ", " %}
+                {% endif %}
+              {% endif %}
+              {{ text ~ "."}}
+            push:
+              sound: "US-EN-Alexa-Good-Night.wav"
+              category: nightmode
+
+  - alias: 'Notif - Good Morning'
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        at: 07:15:01
+    # condition:
+    #   - condition: state
+    #     entity_id: group.presence
+    #     state: home
+    action:
+      - service: notify.ALL_MOBILES
+        data_template:
+          title: "Good Morning !"
+          message: >-
+            It's currently {{ states.sensor.netatmo_garden_temperature.state_with_unit }}; the high will be {{ states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit }}.
+            Sunset will be at {{ as_timestamp(states.sun.sun.attributes.next_setting) | timestamp_custom("%H:%M")}}.
+          data:
+            subtitle: '{{ states.sensor.dark_sky_summary_0d.state }}'
+            push:
+              sound: none
+      - service: tts.google_translate_say
+        entity_id: media_player.living_room_speaker
+        data_template:
+          message: "Good Morning! It's {{ now().time().isoformat(timespec='minutes') }} and the temperature outside is {{ states.sensor.netatmo_garden_temperature.state_with_unit }}"
+
+
+
+  ############################################################
+  # iOS actions
+  ############################################################
+  - alias: "iOS Action - Toogle Movie mode"
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: ios.action_fired
+        event_data:
+          actionName: 'Toggle Movie mode'
+    action:
+      service: switch.toggle
+      entity_id: light.scene_movie
+
+  - alias: "iOS Action - Cooking Time"
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: ios.action_fired
+        event_data:
+          actionName: 'Cooking Time'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.kitchen_and_bar
+
+  - alias: "iOS Action - Toogle Bedroom light"
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: ios.action_fired
+        event_data:
+          actionName: 'Toggle Bedroom'
+    action:
+      service: light.toggle
+      entity_id: light.light_bedroom
+
+  - alias: "iOS Action - Lock Home"
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: ios.action_fired
+        event_data:
+          actionName: 'Lock Home'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.lock_home
+

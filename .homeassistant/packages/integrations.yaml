@@ -1,0 +1,127 @@
+################################################################
+## Define all integrations
+################################################################
+
+hacs:
+  token: !secret hacs_git_token
+
+xiaomi_aqara:
+  discovery_retry: 20
+  gateways:
+   - host: lumi-gateway-v3_miio56297828
+     key: !secret mi_gateway_key
+     mac: !secret mi_gateway_mac
+
+samsungtv_smart:
+  - host: Samsung
+    name: Samsung Q7
+    api_key: !secret smartthings_token
+    device_id: !secret smartthings_di
+    mac: d8:e0:e1:e0:c7:b7
+    # show_channel_number: true
+    scan_app_http: false
+
+
+netatmo:
+  client_id: !secret netatmo_id
+  client_secret: !secret netatmo_secret
+
+
+tuya:
+  username: !secret tuya_username
+  password: !secret tuya_password
+  country_code: 33
+
+# linky:
+#   - username: !secret enedis_user
+#     password: !secret enedis_password
+
+shelly:
+  discovery: True  #add all devices (default)
+  igmp_fix: True
+  mdns: True
+  scan_interval: 30
+  devices:  #configure devices
+    # - id: "008100"
+    #   name: "shutters living"
+    #   entity_id: shutters_living
+    - id: "7ae030"
+      name: "plug xiaomi gateway"
+      entity_id: plug_xiaomi_gateway
+    # - id: "e631d5-1"
+    #   name: "light@Pool"
+    #   light_switch: true  #add this switch as a light
+    #   entity_id: light_pool
+    # - id: "e631d5-2"
+    #   name: "lights@Trees"
+    #   light_switch: true  #add this switch as a light
+    #   entity_id: lights_trees
+    # - id: "24CE1A"
+    #   name: "light@Porch"
+    #   light_switch: true  #add this switch as a light
+    #   entity_id: light_porch
+
+# rachio:
+#   api_key: !secret rachio_api_key
+#   hass_url_override: !secret rachio_hass_url_override
+#   manual_run_mins: 3
+
+weather:
+  - platform: darksky
+    api_key: !secret dark_sky_key
+    mode: daily
+
+
+device_tracker:
+  - platform: bbox
+    track_new_devices: false
+    # interval_seconds: 30
+    consider_home: 0:05
+
+switch:
+  - platform: xiaomi_miio
+    name: Mimie's Spring
+    host: chuangmi-plug-m1_miio55288472
+    token: !secret xiaomi_miio_token
+
+  # - platform: broadlink
+  #   host: 192.168.1.15
+  #   mac: '34:ea:34:9d:34:30'
+  #   type: sp3
+  #   friendly_name: 'Laundry Machines'
+
+  - platform: tuya
+    name: webcam plug
+    host: 192.168.1.39
+    local_key: !secret tuya_local_key
+    device_id: !secret tuya_device_id
+
+
+sensor:
+
+  - platform: rpi_power
+    text_state: true
+
+
+  - platform: darksky
+    api_key: !secret dark_sky_key
+    forecast:
+      - 0
+      - 1
+    hourly_forecast:
+      - 0
+    monitored_conditions:
+      - precip_type
+      - precip_intensity
+      - precip_probability
+      - wind_speed
+      - wind_gust
+      - uv_index
+      - temperature
+      - temperature_high
+      - temperature_low
+      - summary
+      - alerts
+    scan_interval:
+      minutes: 5
+

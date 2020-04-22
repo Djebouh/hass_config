@@ -1,28 +1,28 @@
-'vacuum':
-  alias: Vacuum downstairs
-  sequence:
-    - service: vacuum.xiaomi_clean_zone
-      data_template:
-        entity_id: vacuum.aspibot
-        repeats: 0
-        zone:
-          - [20683,19635,25583,26085]
-          - [25514,22212,30164,26062]
-          - [28314,19518,29914,22318]
-          - [25558,19518,28308,20518]
-          # - [left: 20683, bottom: 19518, right: 30164, top: 26085]
+# 'vacuum':
+#   alias: Vacuum downstairs
+#   sequence:
+#     - service: vacuum.xiaomi_clean_zone
+#       data_template:
+#         entity_id: vacuum.aspibot
+#         repeats: 0
+#         zone:
+#           - [20683,19635,25583,26085]
+#           - [25514,22212,30164,26062]
+#           - [28314,19518,29914,22318]
+#           - [25558,19518,28308,20518]
+#           # - [left: 20683, bottom: 19518, right: 30164, top: 26085]
 
 
-'vacuum_return_to_base':
-  alias: Vacuum back 2 base
-  sequence:
-    - service: vacuum.return_to_base
-      entity_id: vacuum.aspibot
+# 'vacuum_return_to_base':
+#   alias: Vacuum back 2 base
+#   sequence:
+#     - service: vacuum.return_to_base
+#       entity_id: vacuum.aspibot
 
 
-'reboot_pi':
-  alias: Reboot my Pi
-  sequence:
-    - service: shell_command.reboot_pi
+# 'reboot_pi':
+#   alias: Reboot my Pi
+#   sequence:
+#     - service: shell_command.reboot_pi
 
 

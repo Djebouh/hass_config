@@ -1,94 +1,101 @@
-- name: living Movie
-  entities:
-    light.pendantentry_light: off
-    light.pendantwindow_light: off
-    light.light_living: off
-    light.light_bar: on
-    # light.bulbs_bar:
-    #   state: on
-    #   hs_color: [240, 78]
-    #   brightness: 255
-    light.light_kitchen: off
-    light.pendantentry_light_ambilight:
-      state: on
-      hs_color: [240, 78]
-      brightness: 255
-    light.pendantwindow_light_ambilight:
-      state: on
-      hs_color: [240, 78]
-      brightness: 255
+# - name: living Movie
+#   entities:
+#     light.pendantentry_light: off
+#     light.pendantwindow_light: off
+#     light.light_living: off
+#     light.light_bar: on
+#     # light.bulbs_bar:
+#     #   state: on
+#     #   hs_color: [240, 78]
+#     #   brightness: 255
+#     light.light_kitchen: off
+#     light.pendantentry_light_ambilight:
+#       state: on
+#       hs_color: [240, 78]
+#       brightness: 255
+#     light.pendantwindow_light_ambilight:
+#       state: on
+#       hs_color: [240, 78]
+#       brightness: 255
 
 
-- name: cosy
-  entities:
-    light.light_bar: on
-    light.light_living: off
-    light.light_kitchen: off
-    light.pendantentry_light: off
-    light.pendantwindow_light: off
-    light.pendantentry_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
-    light.pendantwindow_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
+# - name: living cosy
+#   entities:
+#     light.light_bar: on
+#     light.light_living: off
+#     light.light_kitchen: off
+#     light.pendantentry_light: off
+#     light.pendantwindow_light: off
+#     light.pendantentry_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
+#     light.pendantwindow_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
 
 
-- name: Kitchen and Bar
-  entities:
-    light.light_kitchen: on
-    light.light_bar: on
-    light.pendantentry_light:
-      state: on
-      brightness: 255
-      kelvin: 5500
-    light.pendantentry_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
-    light.pendantwindow_light:
-      state: on
-      brightness: 255
-      kelvin: 5500
-    light.pendantwindow_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
+# - name: Kitchen and Bar
+#   entities:
+#     light.light_kitchen: on
+#     light.light_bar: on
+#     light.pendantentry_light:
+#       state: on
+#       brightness: 255
+#       # kelvin: 5500
+#       rgb_color: [255,236,224]
+#     light.pendantentry_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
+#     light.pendantwindow_light:
+#       state: on
+#       brightness: 255
+#       # kelvin: 5500
+#       rgb_color: [255,236,224]
+#     light.pendantwindow_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
 
-- name: bar Bright
-  entities:
-    light.light_bar: on
-    light.pendantentry_light:
-      state: on
-      brightness: 255
-      kelvin: 5500
-    light.pendantentry_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
-    light.pendantwindow_light:
-      state: on
-      brightness: 255
-      kelvin: 5500
-    light.pendantwindow_light_ambilight:
-      state: on
-      hs_color: [13, 100]
-      brightness: 255
-
-
-- name: bedroom Bright
-  entities:
-    light.bedroom_light:
-      state: on
-      kelvin: 4000
-      brightness: 255
+# - name: bar Bright
+#   entities:
+#     light.light_bar: on
+#     light.pendantentry_light:
+#       state: on
+#       brightness: 255
+#       # kelvin: 5500
+#       rgb_color: [255,236,224]
+#     light.pendantentry_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
+#     light.pendantwindow_light:
+#       state: on
+#       brightness: 255
+#       # kelvin: 5500
+#       rgb_color: [255,236,224]
+#     light.pendantwindow_light_ambilight:
+#       state: on
+#       hs_color: [13, 100]
+#       brightness: 255
 
 
-- name: bedroom Lite
-  entities:
-    light.bedroom_light:
-      state: on
-      kelvin: 2700
-      brightness: 1
+# # - name: bedroom Bright
+# #   entities:
+# #     light.bedroom_light:
+# #       state: on
+# #       # kelvin: 4000
+# #       # rgb_color: [255,205,166]
+# #       hs_color: [27, 35]
+# #       brightness: 255
+
+
+# # - name: bedroom Lite
+# #   entities:
+# #     light.bedroom_light:
+# #       state: on
+# #       # kelvin: 2700
+# #       rgb_color: [255,169,87]
+# #       brightness: 1

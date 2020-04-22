@@ -4,9 +4,31 @@
 ## Do not display camera on HASS when someone is at home
 ################################################################
 
-shell_command:
-  take_snapshot_webcam: 'bash /home/homeassistant/scripts/take_snapshot_webcam.sh'
-  transfer_snapshot: 'bash /home/homeassistant/scripts/transfer_snapshot.sh'
+group:
+  presence:
+    name: Anyone @home
+    entities:
+    - person.corinne
+    - person.jerome
+
+
+  motion_living:
+    name: Motion @Living
+    entities:
+    - binary_sensor.motion_bar #bar
+    - binary_sensor.motion_living #chimney
+    # - binary_sensor.motion_kitchen #kitchen
+
+
+  motion_home:
+    name: Motion
+    icon: mdi:run
+    entities:
+    - group.motion_living
+    - binary_sensor.motion_garage
+    - binary_sensor.motion_stairs
+    - binary_sensor.motion_laundry
+  #  - binary_sensor.motion_outside_porch
 
 
 input_boolean:
@@ -20,6 +42,11 @@ timer:
     duration: '00:03:00'
   block_big_brother:
     duration: '00:05:00'
+
+
+shell_command:
+  take_snapshot_webcam: 'bash /home/homeassistant/scripts/take_snapshot_webcam.sh'
+  transfer_snapshot: 'bash /home/homeassistant/scripts/transfer_snapshot.sh'
 
 
 script:
@@ -178,6 +205,9 @@ automation:
       - delay:
           seconds: 120
       - condition: state
+        state: 'not_home'
+        entity_id: group.presence
+      - condition: state
         entity_id: binary_sensor.motion_home
         state: 'on'
         for:
@@ -194,6 +224,10 @@ automation:
             attachment:
               content-type: jpeg
             push:
+              # sound:
+                # name: default
+                # critical: 1
+                # volume: 1.0
               category: camera
             entity_id: camera.xiaofang
 
@@ -279,6 +313,10 @@ automation:
             attachment:
               content-type: jpeg
             push:
+              sound:
+                name: default
+                critical: 1
+                # volume: 1.0
               category: camera
             entity_id: camera.xiaofang
       - delay:

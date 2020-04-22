@@ -32,9 +32,11 @@
       value_template: "{{ is_state('light.bedroom_light', 'on') }}"
       level_template: "{{ state_attr('light.bedroom_light', 'brightness') | int }}"
       turn_on:
-        service: scene.turn_on
+        service: light.turn_on
+        entity_id: light.bedroom_light
         data_template:
-          entity_id: "{{ 'scene.bedroom_bright' if (now().hour >= 8) and (now().hour < 21) else 'scene.bedroom_lite' }}"
+          brightness: "{{ 255 if (now().hour >= 8) and (now().hour < 21) else 3 }}"
+          kelvin: "{{ 4000 if (now().hour >= 8) and (now().hour < 21) else 2700 }}"
       turn_off:
         service: light.turn_off
         entity_id: light.bedroom_light
@@ -44,14 +46,6 @@
         data_template:
           brightness: "{{ brightness }}"
           kelvin: "{{ (2700 + 1300 / 254 * (brightness - 1)) | int }}"
-
-
-# - platform: group
-#   name: bulbs_bar
-#   entities:
-#     - light.barentry_light
-#     - light.barwindow_light
-
 
 - platform: group
   name: lights_downstairs
@@ -76,23 +70,34 @@
     - light.light_lou_ceiling
 
 
-# - platform: mqtt
-#   name: "lights@Trees"
-#   state_topic: "shellies/shellyswitch25-E631D5/relay/1"
-#   command_topic: "shellies/shellyswitch25-E631D5/relay/1/command"
-#   qos: 0
-#   payload_on: "on"
-#   payload_off: "off"
-#   optimistic: false
-#   retain: false
+- platform: mqtt
+  name: "lights@Trees"
+  state_topic: "shellies/shellyswitch25-E631D5/relay/1"
+  command_topic: "shellies/shellyswitch25-E631D5/relay/1/command"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  optimistic: false
+  retain: false
 
 
-# - platform: mqtt
-#   name: "light@Pool"
-#   state_topic: "shellies/shellyswitch25-E631D5/relay/0"
-#   command_topic: "shellies/shellyswitch25-E631D5/relay/0/command"
-#   qos: 0
-#   payload_on: "on"
-#   payload_off: "off"
-#   optimistic: false
-#   retain: false
+- platform: mqtt
+  name: "light@Pool"
+  state_topic: "shellies/shellyswitch25-E631D5/relay/0"
+  command_topic: "shellies/shellyswitch25-E631D5/relay/0/command"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  optimistic: false
+  retain: false
+
+
+- platform: mqtt
+  name: "light@Porch"
+  state_topic: "shellies/shelly1-24CE1A/relay/0"
+  command_topic: "shellies/shelly1-24CE1A/relay/0/command"
+  qos: 0
+  payload_on: "on"
+  payload_off: "off"
+  optimistic: false
+  retain: false

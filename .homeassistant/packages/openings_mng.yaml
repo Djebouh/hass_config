@@ -43,15 +43,47 @@ cover:
   - platform: rflink
     devices:
       RTS_0F0F0F_0:
-        name: sun awning
-  # - platform: mqtt
-  #   name: "shutters living"
-  #   command_topic: "shellies/shellyswitch25-008100/roller/0/command"
-  #   qos: 0
-  #   payload_open: "open"
-  #   payload_close: "close"
-  #   payload_stop: "stop"
-  #   retain: false 
+        name: zz sun awning internal
+  - platform: mqtt
+    name: "zz shutters living internal"
+    # name: "shutters living"
+    device_class: shutter
+    command_topic: "shellies/shellyswitch25-008100/roller/0/command"
+    qos: 0
+    payload_open: "open"
+    payload_close: "close"
+    payload_stop: "stop"
+    retain: false 
+  - platform: template
+    covers:
+      shutters_living:
+        friendly_name: "shutters@living"
+        device_class: shutter
+        # value_template: "{{ not is_state('binary_sensor.opening_shutters_living', 'off') }}"
+        position_template: "{{ 90 if is_state('binary_sensor.opening_shutters_living', 'on') else 0 }}"
+        open_cover:
+          service: cover.open_cover
+          entity_id: cover.zz_shutters_living_internal
+        close_cover:
+          service: cover.close_cover
+          entity_id: cover.zz_shutters_living_internal
+        stop_cover:
+          service: cover.stop_cover
+          entity_id: cover.zz_shutters_living_internal
+      sun_awning:
+        friendly_name: "sun awning"
+        device_class: awning
+        # value_template: "{{ not is_state('binary_sensor.opening_shutters_living', 'off') }}"
+        # position_template: "{{ 90 if is_state('binary_sensor.opening_shutters_living', 'on') else 0 }}"
+        open_cover:
+          service: cover.open_cover
+          entity_id: cover.zz_sun_awning_internal
+        close_cover:
+          service: cover.close_cover
+          entity_id: cover.zz_sun_awning_internal
+        stop_cover:
+          service: cover.stop_cover
+          entity_id: cover.zz_sun_awning_internal
 
 
 timer:
@@ -145,12 +177,12 @@ switch:
           entity_id: group.opening_sliding_window
           state: 'off'
         - service: cover.open_cover
-          entity_id: cover.shelly_shutters_living
+          entity_id: cover.shutters_living
         turn_off:
         - condition: template
           value_template: '{{not is_state("binary_sensor.opening_shutters_living", "off") }}'
         - service: cover.close_cover
-          entity_id: cover.shelly_shutters_living
+          entity_id: cover.shutters_living
 
       lock_home:
         friendly_name: "lock Home"
@@ -409,7 +441,11 @@ automation:
             {{ text ~ "."}}
           data:
             push:
-              sound: "US-EN-Alexa-Front-Door-Opened.wav"
+              sound:
+                name: "US-EN-Alexa-Front-Door-Opened.wav"
+                # critical: 1
+                # volume: 1.0
+              # sound: "US-EN-Alexa-Front-Door-Opened.wav"
               category: safehome
       - service: timer.start
         entity_id: timer.no_message_for_lock
@@ -547,7 +583,7 @@ automation:
         actionName: CLOSE_SHUTTERS
     action:
       - service: cover.close_cover
-        entity_id: cover.shelly_shutters_living
+        entity_id: cover.shutters_living
 
 
   - alias: Housekeeping - notify shutters still open
@@ -618,13 +654,13 @@ automation:
         for:
           seconds: 5
       - platform: state
-        entity_id: light.shelly_lights_trees
+        entity_id: light.lights_trees
         to: 'off'
         from: 'on'
         for:
           seconds: 5
       - platform: state
-        entity_id: light.shelly_light_pool
+        entity_id: light.light_pool
         to: 'off'
         from: 'on'
         for:
@@ -639,14 +675,14 @@ automation:
         after: sunset
         after_offset: "00:45:00"
       - condition: state
-        entity_id: light.shelly_lights_trees
+        entity_id: light.lights_trees
         state: 'off'
       - condition: state
-        entity_id: light.shelly_light_pool
+        entity_id: light.light_pool
         state: 'off'
     action:
       - service: cover.close_cover
-        entity_id: cover.shelly_shutters_living
+        entity_id: cover.shutters_living
 
 
   - alias: Autoshutters - stop when closed
@@ -663,7 +699,7 @@ automation:
         value_template: '{{not is_state("binary_sensor.opening_shutters_living", "on") }}'
     action:
       - service: cover.stop_cover
-        entity_id: cover.shelly_shutters_living
+        entity_id: cover.shutters_living
 
 
   ############################################################
@@ -693,7 +729,7 @@ automation:
         entity_id: cover.sun_awning
       - service: notify.ALL_MOBILES
         data:
-          title: "Rolling awaning down"
+          title: "Rolling awning down"
           message: "It will be hot today ({{states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit}}), with limited risk of rain ({{states.sensor.dark_sky_precip_probability_0d.state_with_unit}})"
 
 

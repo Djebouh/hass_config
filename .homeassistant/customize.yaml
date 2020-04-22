@@ -24,10 +24,10 @@ device_tracker.corinnesiphone:
 person.corinne:
   friendly_name: Corinne
   icon: mdi:gender-female
-scene.light_kitchen:
-  icon: mdi:food
-scene.living_movie:
-  icon: mdi:filmstrip
+scene.bar_bright:
+  icon: mdi:food-fork-drink
+# scene.living_movie:
+#   icon: mdi:filmstrip
 scene.kitchen_and_bar:
   icon: mdi:food-fork-drink
 scene.bar_brigth:
