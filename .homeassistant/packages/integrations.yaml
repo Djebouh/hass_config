@@ -13,7 +13,7 @@ xiaomi_aqara:
      mac: !secret mi_gateway_mac
 
 samsungtv_smart:
-  - host: Samsung
+  - host: 192.168.1.36
     name: Samsung Q7
     api_key: !secret smartthings_token
     device_id: !secret smartthings_di
@@ -70,6 +70,9 @@ weather:
   - platform: darksky
     api_key: !secret dark_sky_key
     mode: daily
+
+meteo_france:
+  - city: '06410'
 
 
 device_tracker:

@@ -10,6 +10,7 @@ group:
     entities:
     - person.corinne
     - person.jerome
+    - person.lou
 
 
   motion_living:

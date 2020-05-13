@@ -26,10 +26,14 @@ HANDLES = [
     ["watering_mode", 0x0090],
     ["watering_status", 0x009a]
 ]
-BATTERY = [0x004b, ]
-NAME = [0x03, "name"]
 
 _LOGGER = logging.getLogger(__name__)
+
+def format_bytes(raw_data):
+    """Prettyprint a byte array."""
+    if raw_data is None:
+        return 'None'
+    return ' '.join([format(c, "02x") for c in raw_data]).upper()
 
 
 class ParrotPotPoller(object):
@@ -42,8 +46,11 @@ class ParrotPotPoller(object):
         Initialize a Parrot Pot Poller for the given MAC address.
         """
 
+
+        _LOGGER.debug('ParrotPotPoller intialized with mac %s, backend %s and adapter %s .', mac, backend.__name__, adapter)
+
         self._mac = mac
-        self._bt_interface = BluetoothInterface(backend, adapter)
+        self._bt_interface = BluetoothInterface(backend, adapter=adapter)
         self._cache = None
         self._cache_timeout = timedelta(seconds=cache_timeout)
         self._last_read = None
@@ -73,7 +80,7 @@ class ParrotPotPoller(object):
         with self._bt_interface.connect(self._mac) as connection:
             data = connection.read_handle(_HANDLE_READ_VERSION_BATTERY)
             _LOGGER.debug('Received result for handle %s: %s',
-                          _HANDLE_READ_VERSION_BATTERY, self._format_bytes(data))
+                          _HANDLE_READ_VERSION_BATTERY, format_bytes(data))
             rawValue = int.from_bytes(data, byteorder='little')
             battery = rawValue * 1.0
         
@@ -91,7 +98,7 @@ class ParrotPotPoller(object):
                     data2read = handle[0]
                     data = connection.read_handle(handle[1])
                     _LOGGER.debug('Received result for %s(%x): %s',
-                              data2read, handle[1], self._format_bytes(data))
+                              data2read, handle[1], format_bytes(data))
                     
                     if len(data) <= 2:
                         rawValue = int.from_bytes(data, byteorder='little')
@@ -125,12 +132,12 @@ class ParrotPotPoller(object):
                         value2report = ''.join(chr(n) for n in value2report)
 
 
-                    _LOGGER.info('Decoded result for %s: %s',
-                                data2read, value2report)
+                    _LOGGER.info('Decoded result for %s: %s', data2read, value2report)
                     self._cache[data2read] = value2report
         except:
-            self._cache = None
-            self._last_read = datetime.now() - self._cache_timeout + timedelta(seconds=300)
+            self.clear_cache()
+            # self._cache = None
+            # self._last_read = datetime.now() - self._cache_timeout + timedelta(seconds=300)
             raise
 
 
@@ -191,10 +198,3 @@ class ParrotPotPoller(object):
     def cache_available(self):
         """Check if there is data in the cache."""
         return ((self._cache is not None) and (self._cache))
-
-    @staticmethod
-    def _format_bytes(raw_data):
-        """Prettyprint a byte array."""
-        if raw_data is None:
-            return 'None'
-        return ' '.join([format(c, "02x") for c in raw_data]).upper()

@@ -77,13 +77,14 @@ automation:
     action:
       - service: notify.notify
         data_template:
-          title: "Pool Chlor regulation started"
+          title: "Pool regulation"
           message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
+            subtitle: 'Chlor injection started'
             clickAction: '/lovelace/pool'
             push:
               sound: none
-              thread-id: "pool-chlor-regulat"
+              thread-id: "pool-regul"
 
 
   - alias: 'Pool - Notify on Cl+ Injection stop'
@@ -93,13 +94,14 @@ automation:
     action:
       - service: notify.notify
         data_template:
-          title: "Pool Cl+ injection stopped"
+          title: "Pool regulation"
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
+            subtitle: 'Chlor injection stopped'
             clickAction: "/lovelace/pool"
             push:
               sound: none
-              thread-id: "pool-chlor-regulat"
+              thread-id: "pool-regul"
 
 
   - alias: 'Pool - Notify on pH Regulation start'
@@ -110,13 +112,14 @@ automation:
     action:
       - service: notify.notify
         data_template:
-          title: "Pool pH regulation started"
+          title: "Pool regulation"
           message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
+            subtitle: 'Acid injection started'
             clickAction: "/lovelace/pool"
             push:
               sound: none
-              thread-id: "pool-ph-regulat"
+              thread-id: "pool-regul"
 
 
   - alias: 'Pool - Notify on pH- Injection stop'
@@ -126,13 +129,14 @@ automation:
     action:
       - service: notify.notify
         data_template:
-          title: "Pool ph- injection stopped"
+          title: "Pool regulation"
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
+            subtitle: 'Acid injection stopped'
             clickAction: "/lovelace/pool"
             push:
               sound: none
-              thread-id: "pool-ph-regulat"
+              thread-id: "pool-regul"
 
 
   - alias: 'Pool - Notify on excess of Cl+ Injection'
@@ -142,9 +146,9 @@ automation:
     action:
       - service: notify.notify
         data_template:
-          title: "Pool Cl+ injection ALERT"
-          message: 'Cumulated injection duration was {{ trigger.payload_json["cumulated_duration"] }}, current redox is {{ trigger.payload_json["current_redox"]}}mV, target redox is {{ trigger.payload_json["target_redox"]}}mV'
+          title: "Pool regulation"
+          message: 'Today, total injection duration was {{ trigger.payload_json["cumulated_duration"] }}, current redox is {{ trigger.payload_json["current_redox"]}}mV, target redox is {{ trigger.payload_json["target_redox"]}}mV'
           data:
             clickAction: "/lovelace/pool"
-            subtitle: 'The max daily injection is reached, the regulation is stopped'
+            subtitle: 'ALERT: The max Cl+ daily injection is reached, the regulation is stopped'
 
