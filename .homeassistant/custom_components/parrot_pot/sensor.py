@@ -1,4 +1,8 @@
-"""Support for Xiaomi Parrot Pot BLE plant sensor."""
+""""
+Support for Parrot POT BLE plant sensor.
+Inspired from Mi Flora integration: https://github.com/home-assistant/core/tree/dev/homeassistant/components/miflora
+"""
+
 from datetime import timedelta
 import logging
 
@@ -11,26 +15,29 @@ import homeassistant.helpers.config_validation as cv
 # from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import (
-    CONDUCTIVITY,
-    CONF_FORCE_UPDATE,
     CONF_MAC,
     CONF_NAME,
     CONF_SCAN_INTERVAL,
-    EVENT_HOMEASSISTANT_START,
+    UNIT_PERCENTAGE,
     TEMP_CELSIUS,
     TEMP_FAHRENHEIT,
-    UNIT_PERCENTAGE,
-    CONF_PREFIX,
+    CONDUCTIVITY,
     CONF_SENSORS,
+    DEVICE_CLASS_TEMPERATURE,
+    DEVICE_CLASS_ILLUMINANCE,
+    DEVICE_CLASS_HUMIDITY,
+    DEVICE_CLASS_BATTERY,
+    CONF_FORCE_UPDATE,
+    EVENT_HOMEASSISTANT_START,
 )
 from homeassistant.core import callback
 
 import homeassistant.util.dt as dt_util
 from homeassistant.util.temperature import celsius_to_fahrenheit
 
-from . import parrotpot_poller
+from typing import Optional
 
-from homeassistant.components.plant import Plant
+from . import parrotpot_poller
 
 try:
     import bluepy.btle  # noqa: F401 pylint: disable=unused-import
@@ -54,14 +61,14 @@ SCAN_INTERVAL = timedelta(seconds=1200)
 
 ATTR_LAST_SUCCESSFUL_UPDATE = "last_successful_update"
 
-# Sensor types are defined like: Name, units, icon
+# Sensor types are defined like: Name, units, icon, device type (icon or device type are mandatory)
 SENSOR_TYPES = {
-    'soil_temperature': ['Temperature', TEMP_CELSIUS, 'mdi:thermometer'],
-    'dli_cal': ['Brightness', 'mole/m2/day', 'mdi:white-balance-sunny'],
-    'moisture_cal': ['Moisture', UNIT_PERCENTAGE, 'mdi:water-percent'],
-    'watertank_Level': ['Watertank level', UNIT_PERCENTAGE, 'mdi:water-percent'],
-    'conductivity': ['Conductivity', CONDUCTIVITY, 'mdi:flash-circle'],
-    'battery': ['Battery', UNIT_PERCENTAGE, 'mdi:battery-charging'],
+    'soil_temperature': ['Temperature', TEMP_CELSIUS, 'mdi:thermometer', DEVICE_CLASS_TEMPERATURE],
+    'dli_cal': ['Brightness', 'mole/m2/day', 'mdi:white-balance-sunny', DEVICE_CLASS_ILLUMINANCE],
+    'moisture_cal': ['Moisture', UNIT_PERCENTAGE, 'mdi:water-percent', DEVICE_CLASS_HUMIDITY],
+    'watertank_Level': ['Watertank level', UNIT_PERCENTAGE, 'mdi:water-percent', DEVICE_CLASS_HUMIDITY],
+    'conductivity': ['Conductivity', CONDUCTIVITY, 'mdi:flash-circle', None],
+    'battery': ['Battery', UNIT_PERCENTAGE, 'mdi:battery-charging', DEVICE_CLASS_BATTERY],
 }
 
 
@@ -71,7 +78,6 @@ SENSOR_SCHEMA = vol.Schema(
         # vol.Optional(CONF_MONITORED_CONDITIONS, default=list(SENSOR_TYPES)):
         #     vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
         vol.Optional(CONF_NAME): cv.string,
-        vol.Optional(CONF_PREFIX): cv.string,
         vol.Optional(CONF_MEDIAN, default=DEFAULT_MEDIAN): cv.positive_int,
         vol.Optional(CONF_FORCE_UPDATE, default=DEFAULT_FORCE_UPDATE): cv.boolean,
         vol.Optional(CONF_ADAPTER, default=DEFAULT_ADAPTER): cv.string,
@@ -89,11 +95,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     if (discovery_info is not None):
         sensor_config = discovery_info
 
-    prefix = sensor_config.get(CONF_PREFIX)
-    _LOGGER.debug('Config for ParrotPot %s is %s .', prefix, sensor_config)
+    plant_name = sensor_config.get(CONF_NAME)
+    _LOGGER.debug('Config for %s is %s .', plant_name, sensor_config)
 
     backend = BACKEND
-    _LOGGER.debug('ParrotPot %s is using %s backend.', prefix, backend.__name__)
+    _LOGGER.debug('%s is using %s BLE backend.', plant_name, backend.__name__)
 
     cache = sensor_config.get(CONF_SCAN_INTERVAL, SCAN_INTERVAL).total_seconds()
     poller = parrotpot_poller.ParrotPotPoller(
@@ -106,36 +112,34 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
     go_unavailable_timeout = sensor_config.get(CONF_GO_UNAVAILABLE_TIMEOUT)
 
-    devs = []
+    sensors = []
 
     for key, sensor_type in SENSOR_TYPES.items():
-        parameter = sensor_type[0].lower()
-        name = sensor_config[CONF_SENSORS].get(parameter)
-        if (name):
-            name = name[7:]
-        else:
-            name = f"{sensor_config[CONF_PREFIX]}_{parameter}".lower()
+        parameter = sensor_type[0]
+        sensor_name = f"{plant_name} {parameter}"
         unit = (
             hass.config.units.temperature_unit
-            if parameter == "temperature"
+            if parameter == "Temperature"
             else sensor_type[1]
         )
-        icon = sensor_type[2]
+        icon = sensor_type[2] if(not sensor_type[3]) else None
 
-        devs.append(
+        _LOGGER.debug('Plant %s, adding sensor %s for key %s', plant_name, parameter, key)
+        sensors.append(
             ParrotPotSensor(
                 poller,
                 key,
-                name,
+                sensor_name,
                 unit,
                 icon,
+                sensor_type[3],
                 force_update,
                 median,
                 go_unavailable_timeout,
             )
         )
 
-    async_add_entities(devs)
+    async_add_entities(sensors)
 
 
 class ParrotPotSensor(Entity):
@@ -148,6 +152,7 @@ class ParrotPotSensor(Entity):
         name,
         unit,
         icon,
+        device_class,
         force_update,
         median,
         go_unavailable_timeout,
@@ -157,6 +162,7 @@ class ParrotPotSensor(Entity):
         self.parameter = parameter
         self._unit = unit
         self._icon = icon
+        self._device_class = device_class
         self._name = name
         self._state = None
         self.data = []
@@ -208,6 +214,11 @@ class ParrotPotSensor(Entity):
     def icon(self):
         """Return the icon of the sensor."""
         return self._icon
+
+    @property
+    def device_class(self) -> Optional[str]:
+        """Return the device class of the sensor."""
+        return self._device_class
 
     @property
     def force_update(self):

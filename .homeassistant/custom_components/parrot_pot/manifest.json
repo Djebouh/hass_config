@@ -1,0 +1,13 @@
+{
+  "domain": "parrot_pot",
+  "name": "Plant Parrot POT",
+  "documentation": "https://github.com/Djebouh/hass_config/tree/master/.homeassistant/custom_components",
+  "requirements": [
+    "bluepy==1.3.0",
+    "btlewrap>=0.0.9"
+  ],
+  "dependencies": [],
+  "codeowners": [
+    "@djebouh"
+  ]
+}

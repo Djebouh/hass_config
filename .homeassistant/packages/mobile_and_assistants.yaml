@@ -19,6 +19,7 @@ homekit:
       - sensor.netatmo_garden_temperature
       - scene.cosy
       - sensor.pool_water_temperature
+      - media_player.samsung_q7
   entity_config:
     light.light_living:
       name: Salon
@@ -31,17 +32,17 @@ homekit:
     light.scene_cosy:
       name: ambiance cosy
     light.light_pool:
-      name: Piscine
+      name: piscine
     light.lights_trees:
-      name: Arbres
+      name: arbres
     cover.shutters_living:
-      name: Volet roulant
+      name: volet
     cover.sun_awning:
-      name: Store
+      name: store
     sensor.pool_water_temperature:
-      name: Temperature Piscine
+      name: temperature piscine
     media_player.samsung_q7:
-      name: Television
+      name: television
 
 
 # Google Home
@@ -97,7 +98,7 @@ google_assistant:
       expose: true
       room: Living Room
       aliases:
-        - volet roulant
+        - volet
         - shutters
     cover.sun_awning:
       # name: store

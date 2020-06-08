@@ -2,22 +2,22 @@
 ## Define all integrations
 ################################################################
 
-hacs:
-  token: !secret hacs_git_token
+# hacs:
+#   token: !secret hacs_git_token
 
 xiaomi_aqara:
   discovery_retry: 20
   gateways:
-   - host: lumi-gateway-v3_miio56297828
+   - host:  !secret mi_gateway_ip
      key: !secret mi_gateway_key
      mac: !secret mi_gateway_mac
 
 samsungtv_smart:
-  - host: 192.168.1.36
+  - host: !secret samsung_tv_ip
     name: Samsung Q7
     api_key: !secret smartthings_token
     device_id: !secret smartthings_di
-    mac: d8:e0:e1:e0:c7:b7
+    mac: !secret samsungtv_mac
     # show_channel_number: true
     scan_app_http: false
 
@@ -26,11 +26,18 @@ netatmo:
   client_id: !secret netatmo_id
   client_secret: !secret netatmo_secret
 
+lock:
+  - platform: nuki
+    host: !secret nuki_bridge_ip
+    token: !secret nuki_token
 
-tuya:
-  username: !secret tuya_username
-  password: !secret tuya_password
-  country_code: 33
+ffmpeg:
+
+camera:
+  - platform: ffmpeg
+    name: Xiaofang
+    input: !secret xiaofang_camera_input
+    extra_arguments: -an
 
 # linky:
 #   - username: !secret enedis_user
@@ -66,38 +73,29 @@ shelly:
 #   hass_url_override: !secret rachio_hass_url_override
 #   manual_run_mins: 3
 
-weather:
-  - platform: darksky
-    api_key: !secret dark_sky_key
-    mode: daily
+# weather:
+#   - platform: darksky
+#     api_key: !secret dark_sky_key
+#     mode: daily
 
 meteo_france:
   - city: '06410'
 
 
 device_tracker:
-  - platform: bbox
+  - platform: xiaomi
     track_new_devices: false
     # interval_seconds: 30
     consider_home: 0:05
+    host: !secret xiaomi_router_ip
+    password: !secret xiaomi_router_pswd
+
 
 switch:
   - platform: xiaomi_miio
     name: Mimie's Spring
-    host: chuangmi-plug-m1_miio55288472
-    token: !secret xiaomi_miio_token
-
-  # - platform: broadlink
-  #   host: 192.168.1.15
-  #   mac: '34:ea:34:9d:34:30'
-  #   type: sp3
-  #   friendly_name: 'Laundry Machines'
-
-  - platform: tuya
-    name: webcam plug
-    host: 192.168.1.39
-    local_key: !secret tuya_local_key
-    device_id: !secret tuya_device_id
+    host: !secret chuangmi_plug_ip
+    token: !secret chuangmi_miio_token
 
 
 sensor:

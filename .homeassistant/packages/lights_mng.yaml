@@ -14,15 +14,15 @@ homeassistant:
 
 yeelight:
   devices:
-    yeelink-light-color1_miio54993037:
+    !secret yeelink-light-color1_miio54993037_ip:
       name: bedroom_light
       use_music_mode: false
       model: color1
-    yeelink-light-ceiling10_mibtEB71:
+    !secret yeelink-light-ceiling10_entry_ip:
       name: pendantEntry_light
       use_music_mode: false
       model: ceiling4
-    yeelink-light-ceiling10_mibt7C35:
+    !secret yeelink-light-ceiling10_window_ip:
       name: pendantWindow_light
       use_music_mode: false
       model: ceiling4
@@ -386,16 +386,20 @@ script:
         description: "The saturation of the targeted ambiance"
         example: 100
     sequence:
+      - service: script.light_turn_bar_to_ambilight
+        data_template:
+          hue: "{{ hue }}"
+          saturation: "{{ saturation }}"
       - service: light.turn_on
         entity_id: light.light_bar
       - service: light.turn_off
         entity_id:
           - light.light_kitchen
           - light.light_living
-      - service: script.light_turn_bar_to_ambilight
-        data_template:
-          hue: "{{ hue }}"
-          saturation: "{{ saturation }}"
+      # - service: script.light_turn_bar_to_ambilight
+      #   data_template:
+      #     hue: "{{ hue }}"
+      #     saturation: "{{ saturation }}"
       - delay:
           seconds: 2
       - service: script.light_turn_bar_to_ambilight

@@ -12,10 +12,10 @@ person.lou:
   icon: mdi:human-male-girl
 group.motion_living:
   device_class: moving
-sensor.netatmo_living_room_temperature:
-  icon: mdi:temperature-celsius
-sensor.netatmo_garden_temperature:
-  icon: mdi:thermometer-lines
+# sensor.netatmo_living_room_temperature:
+#   icon: mdi:temperature-celsius
+# sensor.netatmo_garden_temperature:
+#   icon: mdi:thermometer-lines
 binary_sensor.opening_catflap:
   icon: mdi:cat
 device_tracker.corinnesiphone:

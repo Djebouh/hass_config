@@ -1,5 +1,6 @@
 """"
 Read data from Parrot Pot plant sensor.
+Inspired from https://pypi.org/project/miflora/
 """
 
 from datetime import datetime, timedelta

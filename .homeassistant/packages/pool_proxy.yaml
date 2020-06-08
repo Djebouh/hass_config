@@ -140,6 +140,7 @@ automation:
 
 
   - alias: 'Pool - Notify on excess of Cl+ Injection'
+    initial_state: 'on'
     trigger:
       platform: mqtt
       topic: poolassistant/alert/cl_regul_max_reached

@@ -4,40 +4,39 @@
 
 vacuum:
   - platform: xiaomi_miio
-    host: rockrobo
-    token: !secret AspiBot_token
-    # token: 47507169667939796d7277326f6a446f
+    host: !secret rockrobo_vacuum_ip
+    token: !secret rockrobo_token
     name: AspiBot
 
 
 sensor:
   - platform: broadlink_power
-    host: Broadlink_Outlet-T1-9d-34-30
-    mac: '34:ea:34:9d:34:30'
+    host: !secret broadlink_plug_ip
+    mac: !secret broadlink_plug_mac
     name: 'Laundry Machines'
 
 
-script:
-  'vacuum':
-    alias: Vacuum downstairs
-    sequence:
-      - service: vacuum.xiaomi_clean_zone
-        data_template:
-          entity_id: vacuum.aspibot
-          repeats: 0
-          zone:
-            - [20683,19635,25583,26085]
-            - [25514,22212,30164,26062]
-            - [28314,19518,29914,22318]
-            - [25558,19518,28308,20518]
-            # - [left: 20683, bottom: 19518, right: 30164, top: 26085]
+# script:
+#   'vacuum':
+#     alias: Vacuum downstairs
+#     sequence:
+#       - service: vacuum.xiaomi_clean_zone
+#         data_template:
+#           entity_id: vacuum.aspibot
+#           repeats: 0
+#           zone:
+#             - [20683,19635,25583,26085]
+#             - [25514,22212,30164,26062]
+#             - [28314,19518,29914,22318]
+#             - [25558,19518,28308,20518]
+#             # - [left: 20683, bottom: 19518, right: 30164, top: 26085]
 
 
-  'vacuum_return_to_base':
-    alias: Vacuum back 2 base
-    sequence:
-      - service: vacuum.return_to_base
-        entity_id: vacuum.aspibot
+#   'vacuum_return_to_base':
+#     alias: Vacuum back 2 base
+#     sequence:
+#       - service: vacuum.return_to_base
+#         entity_id: vacuum.aspibot
 
 
 automation:

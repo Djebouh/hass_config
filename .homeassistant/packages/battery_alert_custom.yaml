@@ -70,176 +70,95 @@ homeassistant:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
 
-    plant.miflora_4bc9:
+    plant.mi_flora_3cb6:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.miflora_4bc9_battery:
+    sensor.mi_flora_3cb6_battery:
       battery_alert_disabled: true
 
-    plant.miflora_4cc3:
+    plant.mi_flora_4835:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.miflora_4cc3_battery:
+    sensor.mi_flora_4835_battery:
       battery_alert_disabled: true
 
-    plant.miflora_6ec8:
+    plant.mi_flora_4bc9:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.miflora_6ec8_battery:
+    sensor.mi_flora_4bc9_battery:
       battery_alert_disabled: true
 
-    plant.miflora_4835:
+
+    plant.mi_flora_4cc3:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.miflora_4835_battery:
+    sensor.mi_flora_4cc3_battery:
       battery_alert_disabled: true
 
-    plant.miflora_3cb6:
+    plant.mi_flora_6dfb:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
+    sensor.mi_flora_6dfb_battery:
+      battery_alert_disabled: true
 
-    sensor.miflora_3cb6_battery:
+    plant.mi_flora_6ec8:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+    sensor.mi_flora_6ec8_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_0ef7:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+    sensor.parrot_pot_0ef7_battery:
+      battery_alert_disabled: true
+
+    plant.parrot_pot_1f11:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+    sensor.parrot_pot_1f11_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_2872:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_2872_battery:
+    sensor.parrot_pot_2872_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_720a:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_720a_battery:
+    sensor.parrot_pot_720a_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_7c46:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_7c46_battery:
-      battery_alert_disabled: true
-
-    plant.parrot_pot_7eb9:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    sensor.parrotpot_7eb9_battery:
+    sensor.parrot_pot_7c46_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_a293:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_a293_battery:
+    sensor.parrot_pot_a293_battery:
       battery_alert_disabled: true
 
-    plant.parrot_pot_b4b6:
+    plant.parrot_pot_c187:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_b4b6_battery:
+    sensor.parrot_pot_c187_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_c284:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_c284_battery:
+    sensor.parrot_pot_c284_battery:
       battery_alert_disabled: true
 
     plant.parrot_pot_c5c6:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
-
-    sensor.parrotpot_c5c6_battery:
-      battery_alert_disabled: true
-
-    plant.parrot_pot_cc3e:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    sensor.parrotpot_cc3e_battery:
-      battery_alert_disabled: true
-
-    plant.parrotpot_2872:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_720a:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_7c46:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_7eb9:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_a293:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_b4b6:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_c284:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_cc3e:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_c5c6:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrot_pot_test:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-
-    plant.parrotpot_0ef7:
-      battery_sensor_creation_disabled: true
-      battery_alert_disabled: true
-      
-    sensor.parrot_platform_2872_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_720a_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_7c46_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_7eb9_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_a293_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_b4b6_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_c284_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_cc3e_battery:
-      battery_alert_disabled: true
-      
-    sensor.parrot_platform_c5c6_battery:
-      battery_alert_disabled: true
-
-    sensor.parrot_platform_0ef7_battery:
+    sensor.parrot_pot_c5c6_battery:
       battery_alert_disabled: true
 
     sensor.battery_level:

@@ -60,7 +60,14 @@ cover:
         friendly_name: "shutters@living"
         device_class: shutter
         # value_template: "{{ not is_state('binary_sensor.opening_shutters_living', 'off') }}"
-        position_template: "{{ 90 if is_state('binary_sensor.opening_shutters_living', 'on') else 0 }}"
+        position_template: >-
+          {% if is_state('binary_sensor.opening_shutters_living', 'off') %}
+            0
+          {% elif is_state('binary_sensor.opening_shutters_top_living', 'off') %}
+            100
+          {% else %}
+            50
+          {% endif %}
         open_cover:
           service: cover.open_cover
           entity_id: cover.zz_shutters_living_internal
@@ -74,8 +81,8 @@ cover:
         friendly_name: "sun awning"
         device_class: shade
 
-        # value_template: "{{ is_state('binary_sensor.awning', 'off') }}"
-        position_template: "{{ 100 if is_state('binary_sensor.awning', 'off') else 10 }}"
+        # value_template: "{{ is_state('binary_sensor.opening_awning', 'off') }}"
+        position_template: "{{ 100 if is_state('binary_sensor.opening_awning', 'off') else 10 }}"
         open_cover:
           service: cover.open_cover
           entity_id: cover.zz_sun_awning_internal
@@ -336,7 +343,7 @@ automation:
     action:
       - service: xiaomi_aqara.play_ringtone
         data:
-          gw_mac: 34ce00812c05
+          gw_mac: !secret mi_gateway_mac_short
           ringtone_id: 12
           ringtone_vol: 1
       - service: nuki.lock_n_go
@@ -353,7 +360,7 @@ automation:
     action:
       - service: xiaomi_aqara.play_ringtone
         data:
-          gw_mac: 34ce00812c05
+          gw_mac: !secret mi_gateway_mac_short
           ringtone_id: 12
           ringtone_vol: 10
       - service: nuki.lock_n_go
@@ -725,6 +732,9 @@ automation:
       - condition: state
         entity_id: sensor.netatmo_rain_gauge_sum_rain_1
         state: '0'
+      - condition: state
+        entity_id: cover.sun_awning
+        state: 'open'
     action:
       - service: cover.close_cover
         entity_id: cover.sun_awning
@@ -745,13 +755,17 @@ automation:
         above: 50
         # for:
         #   minutes: 15
+    condition:
+      - condition: state
+        entity_id: cover.sun_awning
+        state: 'close'
     action:
       - service: cover.open_cover
         entity_id: cover.sun_awning
       - service: notify.ALL_MOBILES
         data_template:
           title: "Rolling awaning up, as it rains"
-          message: 'Triggered by {{ trigger.trigger.entity_id }}'
+          message: 'Triggered by {{ trigger.entity_id }}'
 
   - alias: Autoawning - Roll up at dusk
     initial_state: 'on'
@@ -765,6 +779,10 @@ automation:
         below: 16.0
       # - platform: time
       #   at: '19:00:00'
+    condition:
+      - condition: state
+        entity_id: cover.sun_awning
+        state: 'close'
     action:
     - service: cover.open_cover
       entity_id: cover.sun_awning
