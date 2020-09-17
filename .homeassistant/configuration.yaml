@@ -14,7 +14,7 @@ homeassistant:
   customize: !include customize.yaml
   # Customization file
   packages: !include_dir_named packages
-
+  allowlist_external_dirs: /home/homeassistant/tmp/webcam_images/
 
 # Enables the frontend
 frontend:
@@ -39,6 +39,7 @@ logger:
     custom_components.mqtt_plant: debug
     # homeassistant.custom_components.rachio: debug
     aiohttp: error
+    # xiaomi_gateway: debug
     # rachiopy: debug
     # custom_components.shelly: debug
     # pyShelly: debug
@@ -62,12 +63,11 @@ recorder:
 
 http:
   # api_password: !secret http_password
-  ssl_certificate: !secret ssl_certificate
-  ssl_key: !secret ssl_key
-  # base_url: !secret base_url
+  ssl_certificate: !secret dynu_ssl_certificate
+  ssl_key: !secret dynu_ssl_key
+  base_url: https://hass-biot.myddns.rocks:8123
 
 mobile_app:
-
 
 person:
 

@@ -22,6 +22,12 @@ sensor:
     device_class: temperature
     force_update: true
 
+  - platform: mqtt
+    name: "Pool Water Level"
+    state_topic: "pool/water_level"
+    unit_of_measurement: "mV"
+    force_update: true
+
 switch:
   - platform: mqtt
     name: "Pool - Cl Regulation"

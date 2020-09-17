@@ -28,10 +28,10 @@ scene.bar_bright:
   icon: mdi:food-fork-drink
 # scene.living_movie:
 #   icon: mdi:filmstrip
-scene.kitchen_and_bar:
-  icon: mdi:food-fork-drink
-scene.bar_brigth:
-  icon: mdi:cup
+# scene.kitchen_and_bar:
+#   icon: mdi:food-fork-drink
+# scene.bar_brigth:
+#   icon: mdi:cup
 switch.mimies_spring:
   icon: mdi:water
 switch.laundry_machines:

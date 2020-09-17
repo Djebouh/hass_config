@@ -21,37 +21,37 @@ yeelight:
     !secret yeelink-light-ceiling10_entry_ip:
       name: pendantEntry_light
       use_music_mode: false
-      model: ceiling4
+      model: ceiling10
     !secret yeelink-light-ceiling10_window_ip:
       name: pendantWindow_light
       use_music_mode: false
-      model: ceiling4
+      model: ceiling10
 
 light:
   - platform: switch
     name: light@Garage
-    entity_id: switch.wallswitch_light_garage
+    entity_id: switch.wall_switch_158d00022acf25
   - platform: switch
     name: light@Laundry
-    entity_id: switch.wallswitch_light_laundry
+    entity_id: switch.wall_switch_158d00034ff3ae
   - platform: switch
     name: light@Kitchen
-    entity_id: switch.wallswitch_light_kitchen
+    entity_id: switch.wall_switch_ln_right_158d0001d629ab
   - platform: switch
     name: light@Living
-    entity_id: switch.wallswitch_light_living
+    entity_id: switch.wall_switch_158d0001a414b9
   - platform: switch
     name: light@Bar
-    entity_id: switch.wallswitch_light_bar
+    entity_id: switch.wall_switch_ln_left_158d0001d629ab
   - platform: switch
     name: light@Stairs
-    entity_id: switch.wallswitch_light_stairs
+    entity_id: switch.wall_switch_ln_158d000273b63a
   - platform: switch
     name: light@Lou_Ceiling
-    entity_id: switch.wallswitch_light_lou_ceiling
+    entity_id: switch.wall_switch_ln_left_158d0002323b17
   - platform: switch
     name: light@Lou_Desk
-    entity_id: switch.wallswitch_light_lou_wall
+    entity_id: switch.wall_switch_ln_right_158d0002323b17
 
 
   - platform: template
@@ -295,6 +295,7 @@ scene:
 
 
   - name: Kitchen and Bar
+    icon: mdi:food-fork-drink
     entities:
       light.light_kitchen: on
       light.light_bar: on
@@ -318,6 +319,7 @@ scene:
         brightness: 255
 
   - name: bar Bright
+    icon: mdi:cup
     entities:
       light.light_bar: on
       light.pendantentry_light:
@@ -339,6 +341,30 @@ scene:
         hs_color: [13, 100]
         brightness: 255
 
+  - name: Movie
+    icon: mdi:filmstrip
+    entities:
+      light.scene_movie:
+        state: on
+
+  - name: Cosy
+    icon: mdi:sofa
+    entities:
+      light.scene_cosy:
+        state: on
+
+  - name: Dodo
+    icon: mdi:hotel
+    entities:
+      light.light_bedroom:
+        state: off
+
+  - name: lock Home
+    icon: mdi:lock-outline
+    entities:
+      switch.lock_home:
+        state: off
+
 script:
 
   'light_swap_bedroom_lighting':
@@ -353,6 +379,7 @@ script:
   'light_turn_bar_to_ambilight':
     alias: Turn lights@bar to ambilight
     description: 'Turn off the pendant lights of the bar and set the ambilight to the specified ambiance'
+    mode: restart
     fields:
       hue:
         description: "The hue of the targeted ambiance"
@@ -378,6 +405,7 @@ script:
   'light_set_livingroom_ambiance':
     alias: Set the ambiance of the living room
     description: 'Turn off all lights of the living room but the ambilight of the pendant. The ambilight are set to the specified ambiance'
+    mode: restart
     fields:
       hue:
         description: "The hue of the targeted ambiance"
@@ -402,67 +430,81 @@ script:
       #     saturation: "{{ saturation }}"
       - delay:
           seconds: 2
-      - service: script.light_turn_bar_to_ambilight
-        data_template:
-          hue: "{{ hue }}"
-          saturation: "{{ saturation }}"
-      - service: homeassistant.update_entity
-        entity_id:
-          - light.pendantentry_light
-          - light.pendantwindow_light
-          - light.pendantwindow_light_ambilight
-          - light.pendantentry_light_ambilight
-      - condition: template
-        value_template: >-
-          {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-            is_state('light.pendantentry_light_ambilight', 'on') and
-            (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-            is_state('light.pendantwindow_light_ambilight', 'on') and
-            (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      - delay:
-          seconds: 18
-      - service: script.light_turn_bar_to_ambilight
-        data_template:
-          hue: "{{ hue }}"
-          saturation: "{{ saturation }}"
-      - service: homeassistant.update_entity
-        entity_id:
-          - light.pendantentry_light
-          - light.pendantwindow_light
-          - light.pendantwindow_light_ambilight
-          - light.pendantentry_light_ambilight
-      - condition: template
-        value_template: >-
-          {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-            is_state('light.pendantentry_light_ambilight', 'on') and
-            (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-            is_state('light.pendantwindow_light_ambilight', 'on') and
-            (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      - delay:
-          seconds: 5
-      - service: script.light_turn_bar_to_ambilight
-        data_template:
-          hue: "{{ hue }}"
-          saturation: "{{ saturation }}"
-      - service: homeassistant.update_entity
-        entity_id:
-          - light.pendantentry_light
-          - light.pendantwindow_light
-          - light.pendantwindow_light_ambilight
-          - light.pendantentry_light_ambilight
-      - condition: template
-        value_template: >-
-          {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-            is_state('light.pendantentry_light_ambilight', 'on') and
-            (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-            is_state('light.pendantwindow_light_ambilight', 'on') and
-            (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      - delay:
-          seconds: 5
-      - service: script.light_turn_bar_to_ambilight
-        data_template:
-          hue: "{{ hue }}"
-          saturation: "{{ saturation }}"
+      - repeat:
+          while:
+            - condition: template
+              value_template: >-
+                {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+                  is_state('light.pendantentry_light_ambilight', 'on') and
+                  (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
+                  is_state('light.pendantwindow_light_ambilight', 'on') and
+                  (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
+            - condition: template
+              value_template: "{{ repeat.index <= 5 }}"
+          sequence:
+            - delay:
+                seconds: 6
+            - service: script.light_turn_bar_to_ambilight
+              data_template:
+                hue: "{{ hue }}"
+                saturation: "{{ saturation }}"
+      # - service: homeassistant.update_entity
+      #   entity_id:
+      #     - light.pendantentry_light
+      #     - light.pendantwindow_light
+      #     - light.pendantwindow_light_ambilight
+      #     - light.pendantentry_light_ambilight
+      # - condition: template
+      #   value_template: >-
+      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+      #       is_state('light.pendantentry_light_ambilight', 'on') and
+      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
+      #       is_state('light.pendantwindow_light_ambilight', 'on') and
+      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
+      # - delay:
+      #     seconds: 18
+      # - service: script.light_turn_bar_to_ambilight
+      #   data_template:
+      #     hue: "{{ hue }}"
+      #     saturation: "{{ saturation }}"
+      # - service: homeassistant.update_entity
+      #   entity_id:
+      #     - light.pendantentry_light
+      #     - light.pendantwindow_light
+      #     - light.pendantwindow_light_ambilight
+      #     - light.pendantentry_light_ambilight
+      # - condition: template
+      #   value_template: >-
+      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+      #       is_state('light.pendantentry_light_ambilight', 'on') and
+      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
+      #       is_state('light.pendantwindow_light_ambilight', 'on') and
+      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
+      # - delay:
+      #     seconds: 5
+      # - service: script.light_turn_bar_to_ambilight
+      #   data_template:
+      #     hue: "{{ hue }}"
+      #     saturation: "{{ saturation }}"
+      # - service: homeassistant.update_entity
+      #   entity_id:
+      #     - light.pendantentry_light
+      #     - light.pendantwindow_light
+      #     - light.pendantwindow_light_ambilight
+      #     - light.pendantentry_light_ambilight
+      # - condition: template
+      #   value_template: >-
+      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
+      #       is_state('light.pendantentry_light_ambilight', 'on') and
+      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
+      #       is_state('light.pendantwindow_light_ambilight', 'on') and
+      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
+      # - delay:
+      #     seconds: 5
+      # - service: script.light_turn_bar_to_ambilight
+      #   data_template:
+      #     hue: "{{ hue }}"
+      #     saturation: "{{ saturation }}"
 
 
   # 'turn_on_movie_scene':
@@ -594,12 +636,12 @@ automation:
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom
+        entity_id: binary_sensor.switch_158d0001b8f9b0
         click_type: single
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom2
+        entity_id: binary_sensor.switch_158d00010a813f
         click_type: single
     condition:
       - condition: state
@@ -616,12 +658,12 @@ automation:
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom
+        entity_id: binary_sensor.switch_158d0001b8f9b0
         click_type: single
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom2
+        entity_id: binary_sensor.switch_158d00010a813f
         click_type: single
     condition:
       condition: state
@@ -637,12 +679,12 @@ automation:
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom
+        entity_id: binary_sensor.switch_158d0001b8f9b0
         click_type: double
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom2
+        entity_id: binary_sensor.switch_158d00010a813f
         click_type: double
     action:
       service: script.light_swap_bedroom_lighting
@@ -653,12 +695,12 @@ automation:
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom
+        entity_id: binary_sensor.switch_158d0001b8f9b0
         click_type: long_click_press
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_bedroom2
+        entity_id: binary_sensor.switch_158d00010a813f
         click_type: long_click_press
     action:
       service: light.toggle
@@ -673,7 +715,7 @@ automation:
       platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_lou
+        entity_id: binary_sensor.switch_158d000149bb20
         click_type: single
     condition:
       condition: and
@@ -694,7 +736,7 @@ automation:
       platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_lou
+        entity_id: binary_sensor.switch_158d000149bb20
         click_type: single
     condition:
       condition: or
@@ -717,7 +759,7 @@ automation:
       platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_lou
+        entity_id: binary_sensor.switch_158d000149bb20
         click_type: double
     condition:
       - condition: state
@@ -735,7 +777,7 @@ automation:
       platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_lou
+        entity_id: binary_sensor.switch_158d000149bb20
         click_type: double
     condition:
       - condition: state
@@ -753,7 +795,7 @@ automation:
     - platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.switch_light_lou
+        entity_id: binary_sensor.switch_158d000149bb20
         click_type: long_click_press
     action:
       service: light.toggle
@@ -769,7 +811,7 @@ automation:
       platform: event
       event_type: xiaomi_aqara.click
       event_data:
-        entity_id: binary_sensor.wallswitch_light_stairs
+        entity_id: binary_sensor.wall_switch_158d000183c9fa
         click_type: single
     action:
       service: light.toggle
@@ -987,7 +1029,7 @@ automation:
           entity_id: sun.sun
     action:
     - service: light.turn_on
-      entity_id: light.light_living
+      entity_id: light.light_bar
     - service: automation.turn_on
       entity_id: automation.autolight_living_stop
       
@@ -1008,7 +1050,7 @@ automation:
       value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       service: light.turn_off
-      entity_id: light.light_living
+      entity_id: light.light_bar
 
   - alias: Autolight - Living Stop - Housekeeping
     # initial_state: 'off'
@@ -1017,10 +1059,16 @@ automation:
         entity_id: light.light_kitchen
         to: 'on'
       - platform: state
-        entity_id: light.light_bar
+        entity_id: light.light_living
         to: 'on'
       - platform: state
-        entity_id: light.light_living
+        entity_id: light.light_bar
+        to: 'off'
+      - platform: state
+        entity_id: light.pendantentry_light
+        to: 'off'
+      - platform: state
+        entity_id: light.pendantwindow_light
         to: 'off'
     action:
       - service: automation.turn_off
@@ -1332,8 +1380,10 @@ automation:
         event_data:
           entity_id: binary_sensor.motion_outside_porch
       - platform: state
-        entity_id:  group.openings
+        entity_id:  group.doors_monitored_by_safehome
         to: 'on'
+        for:
+          seconds: 1
       - platform: state
         entity_id:
           - device_tracker.corinnes_iphone
@@ -1385,7 +1435,7 @@ automation:
           - device_tracker.jerome_s_iphone
         to: 'not_home'
       - platform: state
-        entity_id:  group.openings
+        entity_id:  group.doors_monitored_by_safehome
         to: 'off'
         for:
           seconds: 20

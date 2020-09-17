@@ -190,7 +190,9 @@ automation:
       entity_id: group.presence
     action:
       - service: automation.turn_off
-        entity_id: automation.alert_monitor_intrusion
+        data:
+          entity_id: automation.alert_monitor_intrusion
+          stop_actions: false
       - service: script.webcam_snapshot
       - delay:
           seconds: 90
@@ -243,9 +245,13 @@ automation:
       - platform: state
         entity_id: group.locks_and_doors
         to: 'off'
+        for:
+          minutes: 2
       - platform: state
         entity_id: automation.alert_activate_safe_home
         to: 'on'
+        for:
+          minutes: 5
       - platform: state
         entity_id: group.motion_living
         from: 'on'
@@ -300,7 +306,9 @@ automation:
       to: 'on'
     action:
       - service: automation.turn_off
-        entity_id: automation.alert_monitor_safe_home
+        data:
+          entity_id: automation.alert_monitor_safe_home
+          stop_actions: false
       - service: automation.turn_off
         entity_id: automation.alert_stop_monitoring_safe_home
       - service: light.turn_on

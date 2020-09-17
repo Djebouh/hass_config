@@ -10,14 +10,14 @@ homekit:
       - light.light_living
       - light.light_bar
       - light.light_kitchen
-      - light.scene_cosy
-      - light.scene_movie
       - light.light_pool
       - light.lights_trees
       - cover.shutters_living
       - cover.sun_awning
       - sensor.netatmo_garden_temperature
+      - climate.netatmo_SALON
       - scene.cosy
+      - scene.movie
       - sensor.pool_water_temperature
       - media_player.samsung_q7
   entity_config:
@@ -27,20 +27,24 @@ homekit:
       name: Bar
     light.light_kitchen:
       name: Cuisine
-    light.scene_movie:
-      name: ambiance cinema
-    light.scene_cosy:
-      name: ambiance cosy
     light.light_pool:
       name: piscine
     light.lights_trees:
       name: arbres
+    scene.movie:
+      name: ambiance cinema
+    scene.cosy:
+      name: ambiance cosy
     cover.shutters_living:
       name: volet
     cover.sun_awning:
-      name: store
+      name: auvent
     sensor.pool_water_temperature:
       name: temperature piscine
+    sensor.netatmo_garden_temperature:
+      name: temperature jardin
+    sensor.netatmo_SALON_temperature:
+      name: temperature maison
     media_player.samsung_q7:
       name: television
 
@@ -54,135 +58,156 @@ google_assistant:
   expose_by_default: false
   entity_config:
     light.light_living:
-      # name: lumiere du salon
+      name: LUMIERE DU SALON
       expose: true
-      room: Living Room
-      aliases:
-        - lumiere du salon
-        - living room light
+      room: SALON
+      # aliases:
+      #   - lumiere du salon
+      #   - living room light
     light.light_bar:
-      # name: lumiere du bar
+      name: LUMIERE DU BAR
       expose: true
-      room: Living Room
-      aliases:
-        - lumiere du bar
-        - bar light
+      room: SALON
+      # aliases:
+      #   - lumiere du bar
+      #   - bar light
     light.light_kitchen:
-      # name: lumiere de la cuisine
+      name: LUMIERE DE LA CUISINE
       expose: true
-      room: Living Room
-      aliases:
-        - lumiere de la cuisine
-        - kitchen light
+      room: SALON
+      # aliases:
+      #   - lumiere de la cuisine
+      #   - kitchen light
     lock.front_door:
-      # name: porte d'entree
+      name: PORTE D'ENTREE
       expose: true
+      room: SALON
       aliases:
-        - porte d'entree
-        - front door
-        - main door
+        # - porte d'entree
+        # - front door
+        # - main door
         - porte
         - porte principale
-      room: Living Room
     lock.polycontrol_danalock_v3_btze_locked:
-      # name: porte de la buanderie
+      name: PORTE DE LA BUANDERIE
       expose: true
-      room: Laundry
+      room: BUANDERIE
       aliases:
-        - porte de la buanderie
-        - back door
-        - laundry door
+        # - porte de la buanderie
+        # - back door
+        # - laundry door
         - porte de derrière
     cover.shutters_living:
-      # name: volets roulants
+      name: VOLETS ROULANTS
       expose: true
-      room: Living Room
+      room: SALON
       aliases:
         - volet
-        - shutters
+        # - volets roulants
+        # - shutters
     cover.sun_awning:
-      # name: store
+      name: Auvent
       expose: true
-      room: Garden
+      room: JARDIN
       aliases:
+        # - store
         - store
-        - awning
+        # - awning
     light.light_lou_desk:
+      name: LUMIERE DU BUREAU DE LOU
       expose: true
-      room: Lou's bedroom
-      aliases:
-        - lumiere du bureau de Lou
-        - Lou's desk light
+      room: CHAMBRE DE LOU
+      # aliases:
+      #   - lumiere du bureau de Lou
+      #   - Lou's desk light
     light.light_lou_ceiling:
       expose: true
-      room: Lou's bedroom
-      aliases:
-        - lumiere principale de la chambre de Lou
-        - Lou's ceiling light
-        - Lou's bedroom main light
+      name: LUMIERE PRINCIPALE DE LA CHAMBRE DE LOU
+      room: CHAMBRE DE LOU
+      # aliases:
+      #   - lumiere principale de la chambre de Lou
+      #   - Lou's ceiling light
+      #   - Lou's bedroom main light
     light.light_bedroom:
       expose: true
-      room: Bedroom
-      aliases:
-        - lumiere de la chambre
-        - bedroom light
-    climate.netatmo_living_room:
+      name: LUMIERE DE LA CHAMBRE
+      room: CHAMBRE
+      # aliases:
+      #   - lumiere de la chambre
+      #   - bedroom light
+    climate.netatmo_SALON:
       expose: true
-      room: Living Room
+      name: TEMPERATURE DU SALON
+      room: SALON
       aliases:
-        - temperature
+        # - temperature maison
         - temperature interieure
-        - temparature at home
-        - temperature inside
+        # - temparature at home
+        # - temperature inside
     light.light_garage:
       expose: true
-      room: Garage
-      aliases:
-        - lumiere du garage
-        - garage light
+      name: LUMIERE DU GARAGE
+      room: GARAGE
+      # aliases:
+      #   - lumiere du garage
+      #   - garage light
     light.light_laundry:
       expose: true
-      room: Laundry
-      aliases:
-        - lumiere de la buanderie
-        - laundry light
+      name: LUMIERE DE LA BUANDERIE
+      room: BUANDERIE
+      # aliases:
+      #   - lumiere de la buanderie
+      #   - laundry light
     light.light_pool:
       expose: true
-      room: Garden
-      aliases:
-        - lumiere de la piscine
-        - pool light
+      name: LUMIERE DE LA PISCINE
+      room: JARDIN
+      # aliases:
+      #   - lumiere de la piscine
+      #   - pool light
     light.lights_trees:
       expose: true
-      room: Garden
+      name: LUMIERE DES ARBRES
+      room: JARDIN
       aliases:
         - lumiere exterieure
-        - lumiere des arbres
-        - trees light
+        # - lumiere du jardin
+      #   - trees light
     sensor.netatmo_garden_temperature:
       expose: true
-      room: Garden
+      room: JARDIN
+      name: TEMPERATURE EXTERIEURE
       aliases:
-        - temperature exterieure
-        - temparature in the Garden
-        - temperature outside
-    light.scene_cosy:
+        - temperature du jardin
+      #   - temperature exterieure
+      #   - temparature in the Garden
+      #   - temperature outside
+    sensor.pool_water_temperature:
       expose: true
-      room: Living Room
-      aliases:
-        - ambiance cosy
-        - cosy mode
-    light.scene_movie:
+      name: TEMPERATURE DE LA PISCINE
+      room: JARDIN
+      # aliases:
+      #   - temperature piscine
+    scene.cosy:
       expose: true
-      room: Living Room
-      aliases:
-        - ambiance cinema
-        - movie mode
+      name: AMBIANCE COSY
+      room: SALON
+      # aliases:
+      #   - ambiance cosy
+      #   - cosy mode
+    scene.movie:
+      expose: true
+      name: AMBIANCE CINEMA
+      room: SALON
+      # aliases:
+      #   - ambiance cinema
+      #   - movie mode
     media_player.samsung_q7:
       expose: true
-      room: Living Room
+      name: TELEVISION
+      room: SALON
       aliases:
-        - television
+        # - television
         - tele
         - TV
 
@@ -268,7 +293,7 @@ automation:
               {% endif %}
               {{ text ~ "."}}
             push:
-              sound: "US-EN-Alexa-Good-Night.wav"
+              sound: none
               category: nightmode
 
   - alias: 'Notif - Good Morning iOS'
@@ -286,6 +311,11 @@ automation:
             subtitle: '{{ states.sensor.dark_sky_summary_0d.state }}'
             push:
               sound: none
+              category: shutters_open
+              # {{ "category: shutters_open" if is_state('group.opening_sliding_window', 'on')  }}
+              # {% if is_state('group.opening_sliding_window', 'on') %}
+              #   category: shutters_open
+              # {% endif %}
               
 
   - alias: 'Notif - Good Morning Google Home'

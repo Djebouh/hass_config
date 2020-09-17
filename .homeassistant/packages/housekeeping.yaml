@@ -60,10 +60,10 @@ automation:
       data_template:
         title: Laundry completed
         message: The laundry is over
-    - service: automation.turn_off
-      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
     - service: automation.turn_on
       entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+    - service: automation.turn_off
+      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
 
   - alias: Laundry - Monitor start of laundry machines run
     initial_state: 'on'

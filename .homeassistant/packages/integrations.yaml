@@ -5,12 +5,12 @@
 # hacs:
 #   token: !secret hacs_git_token
 
-xiaomi_aqara:
-  discovery_retry: 20
-  gateways:
-   - host:  !secret mi_gateway_ip
-     key: !secret mi_gateway_key
-     mac: !secret mi_gateway_mac
+# xiaomi_aqara:
+#   discovery_retry: 20
+#   gateways:
+#    - host:  !secret mi_gateway_ip
+#      key: !secret mi_gateway_key
+#      mac: !secret mi_gateway_mac
 
 samsungtv_smart:
   - host: !secret samsung_tv_ip
@@ -38,6 +38,23 @@ camera:
     name: Xiaofang
     input: !secret xiaofang_camera_input
     extra_arguments: -an
+
+  - platform: mjpeg
+    name: espcam
+    mjpeg_url: http://192.168.31.76/
+
+  # - platform: generic
+  #   name: Some Image
+  #   still_image_url: rtsp://194.218.96.92:554
+  #   stream_source: rtsp://194.218.96.92:554
+  #   # verify_ssl: false
+
+rpi_camera:
+  image_width: 1296
+  image_height: 972
+  image_quality: 75
+  timelapse: 2000
+  file_path: /home/homeassistant/tmp/webcam_images/raspi.jpg
 
 # linky:
 #   - username: !secret enedis_user

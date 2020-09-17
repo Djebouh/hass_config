@@ -91,7 +91,9 @@ sensor:
             is_state(item, 'unavailable') or
             is_state(item, 'dead')
           ) -%}
-            {{ item if (states(item) == 'unknown') else state_attr(item, "friendly_name") }} is unavailable
+            {% if loop.index < 5 -%}
+              {{ item if ((states(item) == 'unknown') or not state_attr(item, "friendly_name")) else state_attr(item, "friendly_name") }} is unavailable
+            {% endif %}
           {% else %}
             {{ 'ok' }}
           {% endfor -%}

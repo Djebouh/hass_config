@@ -64,7 +64,7 @@ ATTR_LAST_SUCCESSFUL_UPDATE = "last_successful_update"
 # Sensor types are defined like: Name, units, icon, device type (icon or device type are mandatory)
 SENSOR_TYPES = {
     'soil_temperature': ['Temperature', TEMP_CELSIUS, 'mdi:thermometer', DEVICE_CLASS_TEMPERATURE],
-    'dli_cal': ['Brightness', 'mole/m2/day', 'mdi:white-balance-sunny', DEVICE_CLASS_ILLUMINANCE],
+    'light': ['Brightness', 'mole/m2/day', 'mdi:white-balance-sunny', DEVICE_CLASS_ILLUMINANCE],
     'moisture_cal': ['Moisture', UNIT_PERCENTAGE, 'mdi:water-percent', DEVICE_CLASS_HUMIDITY],
     'watertank_Level': ['Watertank level', UNIT_PERCENTAGE, 'mdi:water-percent', DEVICE_CLASS_HUMIDITY],
     'conductivity': ['Conductivity', CONDUCTIVITY, 'mdi:flash-circle', None],
