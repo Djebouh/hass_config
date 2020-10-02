@@ -221,78 +221,7 @@ switch:
           data:
             entity_id: input_boolean.block_autolight_living
 
-      # movie_mode:
-      #   friendly_name: "Movie Mode"
-      #   value_template: >-
-      #     {{ is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-      #       is_state('light.light_living', 'off') and is_state('light.light_kitchen', 'off') and
-      #       is_state('light.light_bar', 'on') and
-      #       is_state('light.pendantentry_light_ambilight', 'on') and
-      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] == 240) and
-      #       is_state('light.pendantwindow_light_ambilight', 'on') and
-      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] == 240) }}
-      #   turn_on:
-      #     service: script.turn_on_movie_scene
-      #   turn_off:
-      #     - service: script.turn_off
-      #       data: 
-      #         entity_id: script.turn_on_movie_scene
-      #     - service: scene.turn_on
-      #       entity_id: scene.bar_bright
-
-      # cosy_mode:
-      #   friendly_name: "Cosy Mode"
-      #   value_template: >-
-      #     {{ is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-      #       is_state('light.light_living', 'off') and is_state('light.light_kitchen', 'off') and
-      #       is_state('light.light_bar', 'on') and
-      #       is_state('light.pendantentry_light_ambilight', 'on') and
-      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == 13) and
-      #       is_state('light.pendantwindow_light_ambilight', 'on') and
-      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == 13) }}
-      #   turn_on:
-      #     service: script.turn_on_cosy_scene
-      #   turn_off:
-      #     - service: script.turn_off
-      #       data: 
-      #         entity_id: script.turn_on_cosy_scene
-      #     - service: scene.turn_on
-      #       entity_id: scene.bar_bright
-
 scene:
-  # - name: living Movie
-  #   entities:
-  #     light.light_bar: on
-  #     light.light_living: off
-  #     light.light_kitchen: off
-  #     light.pendantentry_light: off
-  #     light.pendantwindow_light: off
-  #     light.pendantentry_light_ambilight:
-  #       state: on
-  #       hs_color: [240, 78]
-  #       brightness: 255
-  #     light.pendantwindow_light_ambilight:
-  #       state: on
-  #       hs_color: [240, 78]
-  #       brightness: 255
-
-
-  # - name: living cosy
-  #   entities:
-  #     light.light_bar: on
-  #     light.light_living: off
-  #     light.light_kitchen: off
-  #     light.pendantentry_light: off
-  #     light.pendantwindow_light: off
-  #     light.pendantentry_light_ambilight:
-  #       state: on
-  #       hs_color: [13, 100]
-  #       brightness: 255
-  #     light.pendantwindow_light_ambilight:
-  #       state: on
-  #       hs_color: [13, 100]
-  #       brightness: 255
-
 
   - name: Kitchen and Bar
     icon: mdi:food-fork-drink
@@ -424,10 +353,6 @@ script:
         entity_id:
           - light.light_kitchen
           - light.light_living
-      # - service: script.light_turn_bar_to_ambilight
-      #   data:
-      #     hue: "{{ hue }}"
-      #     saturation: "{{ saturation }}"
       - delay:
           seconds: 2
       - repeat:
@@ -448,182 +373,7 @@ script:
               data:
                 hue: "{{ hue }}"
                 saturation: "{{ saturation }}"
-      # - service: homeassistant.update_entity
-      #   entity_id:
-      #     - light.pendantentry_light
-      #     - light.pendantwindow_light
-      #     - light.pendantwindow_light_ambilight
-      #     - light.pendantentry_light_ambilight
-      # - condition: template
-      #   value_template: >-
-      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-      #       is_state('light.pendantentry_light_ambilight', 'on') and
-      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-      #       is_state('light.pendantwindow_light_ambilight', 'on') and
-      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      # - delay:
-      #     seconds: 18
-      # - service: script.light_turn_bar_to_ambilight
-      #   data:
-      #     hue: "{{ hue }}"
-      #     saturation: "{{ saturation }}"
-      # - service: homeassistant.update_entity
-      #   entity_id:
-      #     - light.pendantentry_light
-      #     - light.pendantwindow_light
-      #     - light.pendantwindow_light_ambilight
-      #     - light.pendantentry_light_ambilight
-      # - condition: template
-      #   value_template: >-
-      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-      #       is_state('light.pendantentry_light_ambilight', 'on') and
-      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-      #       is_state('light.pendantwindow_light_ambilight', 'on') and
-      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      # - delay:
-      #     seconds: 5
-      # - service: script.light_turn_bar_to_ambilight
-      #   data:
-      #     hue: "{{ hue }}"
-      #     saturation: "{{ saturation }}"
-      # - service: homeassistant.update_entity
-      #   entity_id:
-      #     - light.pendantentry_light
-      #     - light.pendantwindow_light
-      #     - light.pendantwindow_light_ambilight
-      #     - light.pendantentry_light_ambilight
-      # - condition: template
-      #   value_template: >-
-      #     {{ not (is_state('light.pendantentry_light', 'off') and is_state('light.pendantwindow_light', 'off') and
-      #       is_state('light.pendantentry_light_ambilight', 'on') and
-      #       (states.light.pendantentry_light_ambilight.attributes.hs_color[0] | round == hue) and
-      #       is_state('light.pendantwindow_light_ambilight', 'on') and
-      #       (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == hue)) }}
-      # - delay:
-      #     seconds: 5
-      # - service: script.light_turn_bar_to_ambilight
-      #   data:
-      #     hue: "{{ hue }}"
-      #     saturation: "{{ saturation }}"
 
-
-  # 'turn_on_movie_scene':
-  #   alias: Switch to Movie Mode
-  #   sequence:
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 2
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_movie
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_movie
-
-  # 'turn_on_cosy_scene':
-  #   alias: Switch to cosy Mode
-  #   sequence:
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 2
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
-  #   - delay:
-  #       seconds: 5
-  #   - condition: state
-  #     state: 'off'
-  #     entity_id: light.scene_cosy
-  #   - service: scene.turn_on
-  #     entity_id: scene.living_cosy
 
 automation:
 
@@ -985,8 +735,6 @@ automation:
         - condition: state
           entity_id: light.lights_downstairs
           state: 'on'
-      # condition: template
-      # value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.gateway_light
@@ -1057,8 +805,6 @@ automation:
       - condition: state
         entity_id: binary_sensor.motion_living
         state: 'off'
-      # condition: template
-      # value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       service: light.turn_off
       entity_id: light.light_bar
@@ -1192,10 +938,6 @@ automation:
       - condition: state
         entity_id: binary_sensor.motion_laundry
         state: 'off'
-      # - condition: template
-      #   value_template: '{{not is_state("binary_sensor.motion_garage", "on") }}'
-      # - condition: template
-      #   value_template: '{{not is_state("binary_sensor.motion_laundry", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_garage
@@ -1371,8 +1113,6 @@ automation:
       - condition: state
         entity_id: binary_sensor.motion_stairs
         state: 'off'
-      # condition: template
-      # value_template: '{{not is_state("binary_sensor.motion_stairs", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_stairs
@@ -1427,9 +1167,6 @@ automation:
         - condition: numeric_state
           below: '2'
           entity_id: sensor.illumination_outside_north
-        # - condition: sun
-        #   after: sunset
-        #   after_offset: "00:15:00"
         - condition: state
           state: 'below_horizon'
           entity_id: sun.sun
@@ -1468,18 +1205,11 @@ automation:
       - condition: state
         entity_id: binary_sensor.motion_outside_porch
         state: 'off'
-      # condition: template
-      # value_template: '{{not is_state("binary_sensor.motion_outside_porch", "on") }}'
     action:
       - service: light.turn_off
         entity_id:
           - light.lights_trees
           - light.light_porch
-      # - condition: state
-      #   state: 'not_home'
-      #   entity_id: group.presence
-      # - entity_id: light.lights_trees
-      #   service: light.light_living
 
   - alias: Autolight - Trees Stop - Housekeeping
     # initial_state: 'off'
