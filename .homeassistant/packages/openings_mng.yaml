@@ -449,7 +449,7 @@ automation:
       state: 'idle'
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "{{ trigger.event.data.context }}"
           message: &message >
             {% if is_state('binary_sensor.closed_and_locked', 'off') %}
@@ -671,7 +671,7 @@ automation:
         before: '22:10:00'
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           # title: "Shutters still open !"
           message: "Shutters are open, view message to close"
           data:
@@ -695,16 +695,15 @@ automation:
         event: sunrise
         offset: '02:00:00'
     condition:
-      - condition: template
-        value_template: '{{not is_state("binary_sensor.opening_shutters_living", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'off'
       - condition: state
         entity_id: group.opening_sliding_window
         state: 'off'
       - condition: time
         after: '06:30:00'
         before: '08:35:00'
-      # - condition: sun
-      #   after: sunrise
     action:
       - service: switch.turn_on
         entity_id: switch.lock_diningwindow
@@ -767,8 +766,9 @@ automation:
         for:
           seconds: 5
     condition:
-      - condition: template
-        value_template: '{{not is_state("binary_sensor.opening_shutters_living", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.opening_shutters_living
+        state: 'off'
     action:
       - service: cover.stop_cover
         entity_id: cover.shutters_living
@@ -785,11 +785,8 @@ automation:
         at: '10:00:00'
       - platform: numeric_state
         entity_id: sun.sun
-        value_template: '{{ state.attributes.elevation }}'
+        attribute: elevation
         above: 35
-      # - platform: sun
-      #   event: sunrise
-      #   offset: '03:00:00'
     condition:
       - condition: numeric_state
         entity_id: sensor.dark_sky_precip_probability_0d
@@ -800,8 +797,10 @@ automation:
       - condition: state
         entity_id: sensor.netatmo_rain_gauge_sum_rain_1
         state: '0'
-      - condition: template
-        value_template: "{{ (state_attr('cover.sun_awning', 'current_position')|int) == 100 }}"
+      - condition: state
+        entity_id: cover.sun_awning
+        attribute: current_position
+        state: '100'
     action:
       - service: cover.close_cover
         entity_id: cover.sun_awning
@@ -825,13 +824,15 @@ automation:
         # for:
         #   minutes: 15
     condition:
-      - condition: template
-        value_template: "{{ (state_attr('cover.sun_awning', 'current_position')|int) < 100 }}"
+      - condition: numeric_state
+        entity_id: cover.sun_awning
+        attribute: current_position
+        below: '100'
     action:
       - service: cover.open_cover
         entity_id: cover.sun_awning
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "Rolling awaning up, as it rains"
           message: 'Triggered by {{ trigger.entity_id }}'
 
@@ -843,11 +844,8 @@ automation:
         offset: '-01:30:00'
       - platform: numeric_state
         entity_id: sun.sun
-        value_template: '{{ state.attributes.elevation }}'
+        attribute: elevation
         below: 18.0
-    # condition:
-    #   - condition: template
-    #     value_template: "{{ (state_attr('cover.sun_awning', 'current_position')|int) < 100 }}"
     action:
       - service: cover.open_cover
         entity_id: cover.sun_awning
@@ -880,7 +878,7 @@ automation:
       state: 'on'
     action:
     - service: notify.ALL_MOBILES
-      data_template:
+      data:
         title: The window of the bathroom is still open
         message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
 
@@ -912,6 +910,6 @@ automation:
       state: 'on'
     action:
     - service: notify.ALL_MOBILES
-      data_template:
+      data:
         title: The window of Lou's bathroom is still open
         message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'

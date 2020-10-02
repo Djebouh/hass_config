@@ -12,20 +12,20 @@ homeassistant:
     input_boolean.block_autolight_living:
       icon: mdi:sleep
 
-yeelight:
-  devices:
-    !secret yeelink-light-color1_miio54993037_ip:
-      name: bedroom_light
-      use_music_mode: false
-      model: color1
-    !secret yeelink-light-ceiling10_entry_ip:
-      name: pendantEntry_light
-      use_music_mode: false
-      model: ceiling10
-    !secret yeelink-light-ceiling10_window_ip:
-      name: pendantWindow_light
-      use_music_mode: false
-      model: ceiling10
+# yeelight:
+#   devices:
+#     !secret yeelink-light-color1_miio54993037_ip:
+#       name: bedroom_light
+#       use_music_mode: false
+#       model: color1
+#     !secret yeelink-light-ceiling10_entry_ip:
+#       name: pendantEntry_light
+#       use_music_mode: false
+#       model: ceiling10
+#     !secret yeelink-light-ceiling10_window_ip:
+#       name: pendantWindow_light
+#       use_music_mode: false
+#       model: ceiling10
 
 light:
   - platform: switch
@@ -64,7 +64,7 @@ light:
         turn_on:
           service: light.turn_on
           entity_id: light.bedroom_light
-          data_template:
+          data:
             brightness: "{{ 255 if (now().hour >= 8) and (now().hour < 21) else 3 }}"
             kelvin: "{{ 4000 if (now().hour >= 8) and (now().hour < 21) else 2700 }}"
         turn_off:
@@ -73,7 +73,7 @@ light:
         set_level:
           service: light.turn_on
           entity_id: light.bedroom_light
-          data_template:
+          data:
             brightness: "{{ brightness }}"
             kelvin: "{{ (2700 + 1300 / 254 * (brightness - 1)) | int }}"
       
@@ -99,7 +99,7 @@ light:
         icon_template: mdi:filmstrip
         turn_on:
           - service: script.light_set_livingroom_ambiance
-            data_template:
+            data:
               hue: 240
               saturation: 78
         turn_off:
@@ -131,7 +131,7 @@ light:
         icon_template: mdi:sofa
         turn_on:
           - service: script.light_set_livingroom_ambiance
-            data_template:
+            data:
               hue: 13
               saturation: 100
         turn_off:
@@ -372,7 +372,7 @@ script:
     sequence:
     - service: light.turn_on
       entity_id: light.bedroom_light
-      data_template:
+      data:
         brightness: "{{ 3 if (state_attr('light.bedroom_light', 'brightness') is none) or (state_attr('light.bedroom_light', 'brightness') > 10) else 255 }}"
         kelvin: "{{ 2700 if (state_attr('light.bedroom_light', 'brightness') is none) or (state_attr('light.bedroom_light', 'brightness') > 10) else 4000 }}"
 
@@ -396,7 +396,7 @@ script:
         entity_id:
           - light.pendantwindow_light_ambilight
           - light.pendantentry_light_ambilight
-        data_template:
+        data:
           brightness: 255
           hs_color:
             - "{{ hue }}"
@@ -415,7 +415,7 @@ script:
         example: 100
     sequence:
       - service: script.light_turn_bar_to_ambilight
-        data_template:
+        data:
           hue: "{{ hue }}"
           saturation: "{{ saturation }}"
       - service: light.turn_on
@@ -425,7 +425,7 @@ script:
           - light.light_kitchen
           - light.light_living
       # - service: script.light_turn_bar_to_ambilight
-      #   data_template:
+      #   data:
       #     hue: "{{ hue }}"
       #     saturation: "{{ saturation }}"
       - delay:
@@ -445,7 +445,7 @@ script:
             - delay:
                 seconds: 6
             - service: script.light_turn_bar_to_ambilight
-              data_template:
+              data:
                 hue: "{{ hue }}"
                 saturation: "{{ saturation }}"
       # - service: homeassistant.update_entity
@@ -464,7 +464,7 @@ script:
       # - delay:
       #     seconds: 18
       # - service: script.light_turn_bar_to_ambilight
-      #   data_template:
+      #   data:
       #     hue: "{{ hue }}"
       #     saturation: "{{ saturation }}"
       # - service: homeassistant.update_entity
@@ -483,7 +483,7 @@ script:
       # - delay:
       #     seconds: 5
       # - service: script.light_turn_bar_to_ambilight
-      #   data_template:
+      #   data:
       #     hue: "{{ hue }}"
       #     saturation: "{{ saturation }}"
       # - service: homeassistant.update_entity
@@ -502,7 +502,7 @@ script:
       # - delay:
       #     seconds: 5
       # - service: script.light_turn_bar_to_ambilight
-      #   data_template:
+      #   data:
       #     hue: "{{ hue }}"
       #     saturation: "{{ saturation }}"
 
@@ -977,8 +977,16 @@ automation:
         for:
           minutes: 3
     condition:
-      condition: template
-      value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.motion_living
+          state: 'off'
+        - condition: state
+          entity_id: light.lights_downstairs
+          state: 'on'
+      # condition: template
+      # value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.gateway_light
@@ -1046,8 +1054,11 @@ automation:
         for:
           minutes: 3
     condition:
-      condition: template
-      value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.motion_living
+        state: 'off'
+      # condition: template
+      # value_template: '{{not is_state("binary_sensor.motion_living", "on") }}'
     action:
       service: light.turn_off
       entity_id: light.light_bar
@@ -1175,10 +1186,16 @@ automation:
         for:
           minutes: 3
     condition:
-      - condition: template
-        value_template: '{{not is_state("binary_sensor.motion_garage", "on") }}'
-      - condition: template
-        value_template: '{{not is_state("binary_sensor.motion_laundry", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.motion_garage
+        state: 'off'
+      - condition: state
+        entity_id: binary_sensor.motion_laundry
+        state: 'off'
+      # - condition: template
+      #   value_template: '{{not is_state("binary_sensor.motion_garage", "on") }}'
+      # - condition: template
+      #   value_template: '{{not is_state("binary_sensor.motion_laundry", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_garage
@@ -1351,8 +1368,11 @@ automation:
         for:
           minutes: 3
     condition:
-      condition: template
-      value_template: '{{not is_state("binary_sensor.motion_stairs", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.motion_stairs
+        state: 'off'
+      # condition: template
+      # value_template: '{{not is_state("binary_sensor.motion_stairs", "on") }}'
     action:
       - service: light.turn_off
         entity_id: light.light_stairs
@@ -1445,8 +1465,11 @@ automation:
         for:
           minutes: 3
     condition:
-      condition: template
-      value_template: '{{not is_state("binary_sensor.motion_outside_porch", "on") }}'
+      - condition: state
+        entity_id: binary_sensor.motion_outside_porch
+        state: 'off'
+      # condition: template
+      # value_template: '{{not is_state("binary_sensor.motion_outside_porch", "on") }}'
     action:
       - service: light.turn_off
         entity_id:
@@ -1518,11 +1541,11 @@ automation:
         - automation.autolight_stairs_stop
         - automation.autolight_trees_stop
     action:
-      service_template: >
+      service: >
         {% if trigger.to_state.state == 'on' %}
           automation.turn_on
         {% else %}
           automation.turn_off
         {% endif %}
-      data_template:
+      data:
         entity_id: '{{ trigger.entity_id ~ "_housekeeping" }}'

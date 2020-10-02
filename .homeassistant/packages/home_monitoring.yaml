@@ -70,7 +70,7 @@ script:
       state: 'home'
       entity_id: group.presence
     - service: notify.ALL_MOBILES
-      data_template:
+      data:
         title: "Big brother is watching you"
         message: "and you like it!"
         data:
@@ -346,7 +346,7 @@ automation:
         actionName: KEEP_PRIVACY
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "Big brother can't watch"
           message: "NOT NOW (k)"
       - service: timer.start
@@ -372,7 +372,7 @@ automation:
         state: 'home'
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "Big brother is watching you"
           message: "and you like it!"
           data:

@@ -15,7 +15,7 @@ homekit:
       - cover.shutters_living
       - cover.sun_awning
       - sensor.netatmo_garden_temperature
-      - climate.netatmo_SALON
+      - climate.netatmo_living_room
       - scene.cosy
       - scene.movie
       - sensor.pool_water_temperature
@@ -43,7 +43,7 @@ homekit:
       name: temperature piscine
     sensor.netatmo_garden_temperature:
       name: temperature jardin
-    sensor.netatmo_SALON_temperature:
+    climate.netatmo_living_room:
       name: temperature maison
     media_player.samsung_q7:
       name: television
@@ -135,7 +135,7 @@ google_assistant:
       # aliases:
       #   - lumiere de la chambre
       #   - bedroom light
-    climate.netatmo_SALON:
+    climate.netatmo_living_room:
       expose: true
       name: TEMPERATURE DU SALON
       room: SALON
@@ -250,7 +250,7 @@ automation:
     #     to: home
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "Entering NIGHT MODE"
           message: >-
             Tonight's low will be {{ states.sensor.dark_sky_overnight_low_temperature_0d.state_with_unit }};
@@ -302,7 +302,7 @@ automation:
         at: 07:15:01
     action:
       - service: notify.ALL_MOBILES
-        data_template:
+        data:
           title: "Good Morning !"
           message: >-
             It's currently {{ states.sensor.netatmo_garden_temperature.state_with_unit }}; the high will be {{ states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit }}.
@@ -329,7 +329,7 @@ automation:
     action:
       - service: tts.google_translate_say
         entity_id: media_player.living_room_speaker
-        data_template:
+        data:
           message: "Good Morning! It's {{ now().time().isoformat(timespec='minutes') }} and the temperature outside is {{ states.sensor.netatmo_garden_temperature.state_with_unit }}"
 
 

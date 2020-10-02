@@ -60,6 +60,10 @@ rpi_camera:
 #   - username: !secret enedis_user
 #     password: !secret enedis_password
 
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+
 shelly:
   discovery: True  #add all devices (default)
   igmp_fix: True

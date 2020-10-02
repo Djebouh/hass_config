@@ -82,7 +82,7 @@ automation:
       topic: poolassistant/event/cl_regul_injection_automation/start
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Pool regulation"
           message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
@@ -99,7 +99,7 @@ automation:
       topic: poolassistant/event/cl_regul_injection/stop
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Pool regulation"
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
@@ -117,7 +117,7 @@ automation:
       topic: poolassistant/event/ph_regul_injection_automation/start
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Pool regulation"
           message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
@@ -134,7 +134,7 @@ automation:
       topic: poolassistant/event/ph_regul_injection/stop
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Pool regulation"
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
@@ -152,7 +152,7 @@ automation:
       topic: poolassistant/alert/cl_regul_max_reached
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Pool regulation"
           message: 'Today, total injection duration was {{ trigger.payload_json["cumulated_duration"] }}, current redox is {{ trigger.payload_json["current_redox"]}}mV, target redox is {{ trigger.payload_json["target_redox"]}}mV'
           data:

@@ -65,7 +65,7 @@ automation:
       topic: plant_scanner/#
     action:
       - service: mqtt_plant.add_plant
-        data_template:
+        data:
           type: "{{ trigger.payload.split('/')[0] }}"
           mac: "{{ trigger.payload.split('/')[1] }}"
   - alias: 'Plant - monitor ESP'
@@ -74,7 +74,7 @@ automation:
       topic: ESP/#
     action:
       - service: mqtt.publish
-        data_template:
+        data:
           topic: "homeassistant/binary_sensor/ESP_{{ trigger.topic.split('/')[1] |replace(':','_') }}/config"
           retain: false
           payload: >-
@@ -106,7 +106,7 @@ automation:
 #       topic: MiFlora/+/moisture
 #     action:
 #       - service: mqtt.publish
-#         data_template:
+#         data:
 #           topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_moisture/config"
 #           retain: false
 #           payload: >-
@@ -118,7 +118,7 @@ automation:
 #               "force_update": "true"
 #             }
 #       - service: mqtt.publish
-#         data_template:
+#         data:
 #           topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_temperature/config"
 #           retain: false
 #           payload: >-
@@ -130,7 +130,7 @@ automation:
 #               "force_update": "true"
 #             }
 #       - service: mqtt.publish
-#         data_template:
+#         data:
 #           topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_light/config"
 #           retain: false
 #           payload: >-
@@ -142,7 +142,7 @@ automation:
 #               "force_update": "true"
 #             }
 #       - service: mqtt.publish
-#         data_template:
+#         data:
 #           topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_conductivity/config"
 #           retain: false
 #           payload: >-
@@ -154,7 +154,7 @@ automation:
 #               "force_update": "true"
 #             }
 #       - service: mqtt.publish
-#         data_template:
+#         data:
 #           topic: "homeassistant/sensor/MiFlora_{{ trigger.topic.split('/')[1] |replace(':','_') }}_battery/config"
 #           retain: false
 #           payload: >-

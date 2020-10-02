@@ -21,7 +21,7 @@ sensor:
 #     alias: Vacuum downstairs
 #     sequence:
 #       - service: vacuum.xiaomi_clean_zone
-#         data_template:
+#         data:
 #           entity_id: vacuum.aspibot
 #           repeats: 0
 #           zone:
@@ -57,7 +57,7 @@ automation:
       data:
         message: 'Laundry is over.'
     - service: notify.ALL_MOBILES
-      data_template:
+      data:
         title: Laundry completed
         message: The laundry is over
     - service: automation.turn_on

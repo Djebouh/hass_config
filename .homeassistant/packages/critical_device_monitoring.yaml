@@ -148,14 +148,14 @@ automation:
         state: 'on'
     action:
       - service: notify.notify
-        data_template:
+        data:
           title: "Critical devices monitoring"
           message: "{{ states('sensor.status_critical_devices') }}"
           data:
             apns_headers:
               'apns-collapse-id': 'critical_device_alert'
       - service: persistent_notification.create
-        data_template:
+        data:
           title: "Critical devices failures"
           message: "{{ states('sensor.status_critical_devices') }}"
           notification_id: critical_device_alert
