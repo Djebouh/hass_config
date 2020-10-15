@@ -15,11 +15,13 @@ homekit:
       - cover.shutters_living
       - cover.sun_awning
       - sensor.netatmo_garden_temperature
-      - climate.netatmo_living_room
+      # - climate.netatmo_living_room
       - scene.cosy
       - scene.movie
       - sensor.pool_water_temperature
       - media_player.samsung_q7
+      - light.light_bedroom
+      - sensor.temperature_bedroom
   entity_config:
     light.light_living:
       name: Salon
@@ -31,6 +33,10 @@ homekit:
       name: piscine
     light.lights_trees:
       name: arbres
+    light.light_porch:
+      name: porche
+    light.light_bedroom:
+      name: chambre
     scene.movie:
       name: ambiance cinema
     scene.cosy:
@@ -40,11 +46,13 @@ homekit:
     cover.sun_awning:
       name: auvent
     sensor.pool_water_temperature:
-      name: temperature piscine
+      name: temperature de la piscine
     sensor.netatmo_garden_temperature:
-      name: temperature jardin
-    climate.netatmo_living_room:
-      name: temperature maison
+      name: temperature du jardin
+    sensor.temperature_bedroom:
+      name: temperature de la chambre
+    # climate.netatmo_living_room:
+    #   name: temperature du salon
     media_player.samsung_q7:
       name: television
 
@@ -58,30 +66,30 @@ google_assistant:
   expose_by_default: false
   entity_config:
     light.light_living:
-      name: LUMIERE DU SALON
+      name: lumiere du salon
       expose: true
-      room: SALON
+      room: salon
       # aliases:
       #   - lumiere du salon
       #   - living room light
     light.light_bar:
-      name: LUMIERE DU BAR
+      name: lumiere du bar
       expose: true
-      room: SALON
+      room: salon
       # aliases:
       #   - lumiere du bar
       #   - bar light
     light.light_kitchen:
-      name: LUMIERE DE LA CUISINE
+      name: lumiere de la cuisine
       expose: true
-      room: SALON
+      room: salon
       # aliases:
       #   - lumiere de la cuisine
       #   - kitchen light
     lock.front_door:
-      name: PORTE D'ENTREE
+      name: porte d'entree
       expose: true
-      room: SALON
+      room: salon
       aliases:
         # - porte d'entree
         # - front door
@@ -89,18 +97,18 @@ google_assistant:
         - porte
         - porte principale
     lock.polycontrol_danalock_v3_btze_locked:
-      name: PORTE DE LA BUANDERIE
+      name: porte de la buanderie
       expose: true
-      room: BUANDERIE
+      room: buanderie
       aliases:
         # - porte de la buanderie
         # - back door
         # - laundry door
         - porte de derrière
     cover.shutters_living:
-      name: VOLETS ROULANTS
+      name: volets roulants
       expose: true
-      room: SALON
+      room: salon
       aliases:
         - volet
         # - volets roulants
@@ -108,37 +116,37 @@ google_assistant:
     cover.sun_awning:
       name: Auvent
       expose: true
-      room: JARDIN
+      room: jardin
       aliases:
         # - store
         - store
         # - awning
     light.light_lou_desk:
-      name: LUMIERE DU BUREAU DE LOU
+      name: lumiere du bureau de Lou
       expose: true
-      room: CHAMBRE DE LOU
+      room: chambre de Lou
       # aliases:
       #   - lumiere du bureau de Lou
       #   - Lou's desk light
     light.light_lou_ceiling:
       expose: true
-      name: LUMIERE PRINCIPALE DE LA CHAMBRE DE LOU
-      room: CHAMBRE DE LOU
+      name: lumiere principale de la chambre de Lou
+      room: chambre de Lou
       # aliases:
       #   - lumiere principale de la chambre de Lou
       #   - Lou's ceiling light
       #   - Lou's bedroom main light
     light.light_bedroom:
       expose: true
-      name: LUMIERE DE LA CHAMBRE
-      room: CHAMBRE
+      name: lumiere de la chambre
+      room: chambre
       # aliases:
       #   - lumiere de la chambre
       #   - bedroom light
     climate.netatmo_living_room:
       expose: true
-      name: TEMPERATURE DU SALON
-      room: SALON
+      name: temperature du salon
+      room: salon
       aliases:
         # - temperature maison
         - temperature interieure
@@ -146,37 +154,43 @@ google_assistant:
         # - temperature inside
     light.light_garage:
       expose: true
-      name: LUMIERE DU GARAGE
-      room: GARAGE
+      name: lumiere du garage
+      room: garage
       # aliases:
       #   - lumiere du garage
       #   - garage light
     light.light_laundry:
       expose: true
-      name: LUMIERE DE LA BUANDERIE
-      room: BUANDERIE
+      name: lumiere de la buanderie
+      room: buanderie
       # aliases:
       #   - lumiere de la buanderie
       #   - laundry light
     light.light_pool:
       expose: true
-      name: LUMIERE DE LA PISCINE
-      room: JARDIN
+      name: lumiere de la picine
+      room: piscine
       # aliases:
       #   - lumiere de la piscine
       #   - pool light
     light.lights_trees:
       expose: true
-      name: LUMIERE DES ARBRES
-      room: JARDIN
+      name: eclairage des arbres
+      room: jardin
       aliases:
         - lumiere exterieure
         # - lumiere du jardin
       #   - trees light
+    light.light_porch:
+      expose: true
+      name: eclairage du porche
+      room: jardin
+      aliases:
+        - lumiere d'entree
     sensor.netatmo_garden_temperature:
       expose: true
-      room: JARDIN
-      name: TEMPERATURE EXTERIEURE
+      room: jardin
+      name: temperature exterieure
       aliases:
         - temperature du jardin
       #   - temperature exterieure
@@ -184,28 +198,32 @@ google_assistant:
       #   - temperature outside
     sensor.pool_water_temperature:
       expose: true
-      name: TEMPERATURE DE LA PISCINE
-      room: JARDIN
+      name: temperature de la piscine
+      room: piscine
       # aliases:
       #   - temperature piscine
+    sensor.temperature_bedroom:
+      expose: true
+      name: temperature de la chambre
+      room: chambre
     scene.cosy:
       expose: true
-      name: AMBIANCE COSY
-      room: SALON
+      name: ambiance cosy
+      room: salon
       # aliases:
       #   - ambiance cosy
       #   - cosy mode
     scene.movie:
       expose: true
-      name: AMBIANCE CINEMA
-      room: SALON
+      name: ambiance cinema
+      room: salon
       # aliases:
       #   - ambiance cinema
       #   - movie mode
     media_player.samsung_q7:
       expose: true
-      name: TELEVISION
-      room: SALON
+      name: television
+      room: salon
       aliases:
         # - television
         - tele

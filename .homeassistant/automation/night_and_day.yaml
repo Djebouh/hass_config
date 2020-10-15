@@ -1,0 +1,126 @@
+
+############################################################
+# Theme management
+############################################################
+- alias: Set HA theme for day and night
+  trigger:
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id: sun.sun
+    to: above_horizon
+  - platform: state
+    entity_id: sun.sun
+    to: below_horizon
+  action:
+  - service: frontend.set_theme
+    data:
+      name: >
+        {% if states.sun.sun.state == "above_horizon" %}
+          default
+        {% else %}
+          blue_night
+        {% endif %}
+
+
+############################################################
+# Control Night Mode
+############################################################
+- alias: Start Night Mode
+  initial_state: 'on'
+  trigger:
+  - platform: event
+    event_type: 2MN_AFTER_HASS_START
+  - platform: state
+    entity_id: group.presence
+    to: "home"
+  - platform: time
+    at: '22:30:01'
+  condition:
+  - condition: state
+    entity_id: input_boolean.night_mode
+    state: 'off'
+  - condition: time
+    after: '22:30:00'
+    before: 06:30:00
+  - condition: state
+    entity_id: group.presence
+    state: "home"
+  action:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.night_mode
+
+- alias: Stop Night Mode
+  initial_state: 'on'
+  trigger:
+  - platform: event
+    event_type: 2MN_AFTER_HASS_START
+  - platform: state
+    entity_id: group.presence
+    from: "home"
+  - platform: time
+    at: 06:30:01
+  condition:
+  - condition: state
+    entity_id: input_boolean.night_mode
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: time
+      after: 06:30:00
+      before: '22:30:00'
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: group.presence
+          state: 'home'
+  action:
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.night_mode
+
+
+############################################################
+# Control automations and Night Mode
+############################################################
+
+- alias: Start automation during Night Mode
+  initial_state: 'on'
+  trigger:
+  - platform: state
+    entity_id: input_boolean.night_mode
+    to: 'on'
+  action:
+  - service: automation.turn_on
+    entity_id:
+    - automation.alert_activate_safe_home
+    - automation.autolight_gateway
+    # - automation.ios_notif_close_doors_at_night_at_midnight
+    - automation.housekeeping_auto_close_doors_at_night
+    # - automation.ios_notif_notify_door_not_locked_at_night_being_upstairs
+    - automation.ios_notif_notify_door_not_locked_at_night
+  - service: automation.turn_off
+    entity_id:
+    - automation.heating_stop_when_doors_are_open
+    - automation.vacuum_start
+
+- alias: Stop automation during Night Mode
+  initial_state: 'on'
+  trigger:
+  - platform: state
+    entity_id: input_boolean.night_mode
+    to: 'off'
+  action:
+  - service: automation.turn_off
+    entity_id:
+    - automation.alert_activate_safe_home
+    - automation.autolight_gateway
+    # - automation.ios_notif_close_doors_at_night_at_midnight
+    - automation.housekeeping_auto_close_doors_at_night
+    # - automation.ios_notif_notify_door_not_locked_at_night_being_upstairs
+    # - automation.ios_notif_notify_door_not_locked_at_night_no_movement
+    - automation.ios_notif_notify_door_not_locked_at_night
+  - service: automation.turn_on
+    entity_id:
+    - automation.heating_stop_when_doors_are_open
+    - automation.vacuum_start
+

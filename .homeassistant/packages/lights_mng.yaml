@@ -283,7 +283,7 @@ scene:
         state: on
 
   - name: Dodo
-    icon: mdi:hotel
+    icon: mdi:bed-king-outline
     entities:
       light.light_bedroom:
         state: off
