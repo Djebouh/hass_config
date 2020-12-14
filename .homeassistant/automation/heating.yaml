@@ -9,13 +9,17 @@
     entity_id: group.openings
     to: 'on'
     for:
-      minutes: 2
+      minutes: 3
   condition:
-    condition: not
-    conditions:
-      - condition: state
-        entity_id: climate.netatmo_living_room
-        state: 'off'
+    - condition: state
+      entity_id: climate.netatmo_living_room
+      attribute: preset_mode
+      state: 'Schedule'
+    # condition: not
+    # conditions:
+    #   - condition: state
+    #     entity_id: climate.netatmo_living_room
+    #     state: 'off'
   action:
     - service: climate.set_preset_mode
       data:
@@ -31,17 +35,17 @@
       entity_id: group.openings
       to: 'off'
       for:
-        minutes: 1
+        minutes: 3
     - platform: event
       event_type: 2MN_AFTER_HASS_START
-  condition:
-    - condition: state
-      entity_id: climate.netatmo_living_room
-      attribute: preset_mode
-      state: 'away'
-    - condition: state
-      entity_id: group.openings
-      state: 'off'
+  # condition:
+  #   - condition: state
+  #     entity_id: climate.netatmo_living_room
+  #     attribute: preset_mode
+  #     state: 'away'
+  #   - condition: state
+  #     entity_id: group.openings
+  #     state: 'off'
   action:
     - service: climate.set_preset_mode
       data:
@@ -144,15 +148,15 @@
 - alias: Heating - Stop boost
   # initial_state: 'off'
   trigger:
-  - platform: time
-    at: '18:00:05'
-  - platform: state
-    entity_id: group.presence
-    to: "not_home"
-  - platform: state
-    entity_id: climate.netatmo_living_room
-    attribute: preset_mode
-    to: 'Schedule'
+    - platform: time
+      at: '18:00:05'
+    - platform: state
+      entity_id: group.presence
+      to: "not_home"
+    - platform: state
+      entity_id: climate.netatmo_living_room
+      attribute: preset_mode
+      to: 'Schedule'
   action:
     - service: automation.turn_off
       entity_id: automation.heating_stop_boost

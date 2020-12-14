@@ -64,30 +64,30 @@ spotify:
   client_id: !secret spotify_client_id
   client_secret: !secret spotify_client_secret
 
-shelly:
-  discovery: True  #add all devices (default)
-  igmp_fix: True
-  mdns: True
-  scan_interval: 30
-  devices:  #configure devices
-    # - id: "008100"
-    #   name: "shutters living"
-    #   entity_id: shutters_living
-    - id: "7ae030"
-      name: "plug xiaomi gateway"
-      entity_id: plug_xiaomi_gateway
-    # - id: "e631d5-1"
-    #   name: "light@Pool"
-    #   light_switch: true  #add this switch as a light
-    #   entity_id: light_pool
-    # - id: "e631d5-2"
-    #   name: "lights@Trees"
-    #   light_switch: true  #add this switch as a light
-    #   entity_id: lights_trees
-    # - id: "24CE1A"
-    #   name: "light@Porch"
-    #   light_switch: true  #add this switch as a light
-    #   entity_id: light_porch
+# shelly:
+#   discovery: True  #add all devices (default)
+#   igmp_fix: True
+#   mdns: True
+#   scan_interval: 30
+#   devices:  #configure devices
+#     # - id: "008100"
+#     #   name: "shutters living"
+#     #   entity_id: shutters_living
+#     - id: "7ae030"
+#       name: "plug xiaomi gateway"
+#       entity_id: plug_xiaomi_gateway
+#     # - id: "e631d5-1"
+#     #   name: "light@Pool"
+#     #   light_switch: true  #add this switch as a light
+#     #   entity_id: light_pool
+#     # - id: "e631d5-2"
+#     #   name: "lights@Trees"
+#     #   light_switch: true  #add this switch as a light
+#     #   entity_id: lights_trees
+#     # - id: "24CE1A"
+#     #   name: "light@Porch"
+#     #   light_switch: true  #add this switch as a light
+#     #   entity_id: light_porch
 
 # rachio:
 #   api_key: !secret rachio_api_key

@@ -1,4 +1,5 @@
 homeassistant:
+  legacy_templates: false
   # # Name of the location where Home Assistant is running
   # name: !secret hass_name
   # # Location required to calculate the time the sun rises and sets
@@ -174,12 +175,12 @@ binary_sensor:
       motion_home:
         friendly_name: Motion
         device_class: motion
-        entity_id: group.motion_home
+        # entity_id: group.motion_home
         value_template: "{{ not(is_state('group.motion_home', 'off')) }}"
       vegetal_wall_watering:
         friendly_name: vegetal wall
         device_class: moisture
-        entity_id: sensor.laundry_machines
+        # entity_id: sensor.laundry_machines
         value_template: >-
           {%- set laundry_power = states('sensor.laundry_machines') | float -%}
           {{  (laundry_power > 10) and (laundry_power < 20) }}

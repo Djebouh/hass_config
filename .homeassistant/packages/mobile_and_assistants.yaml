@@ -12,7 +12,7 @@ homekit:
       - light.light_kitchen
       - light.light_pool
       - light.lights_trees
-      - cover.shutters_living
+      - cover.shutters_living_secured
       - cover.sun_awning
       - sensor.netatmo_garden_temperature
       # - climate.netatmo_living_room
@@ -41,7 +41,7 @@ homekit:
       name: ambiance cinema
     scene.cosy:
       name: ambiance cosy
-    cover.shutters_living:
+    cover.shutters_living_secured:
       name: volet
     cover.sun_awning:
       name: auvent
@@ -105,7 +105,7 @@ google_assistant:
         # - back door
         # - laundry door
         - porte de derrière
-    cover.shutters_living:
+    cover.shutters_living_secured:
       name: volets roulants
       expose: true
       room: salon
@@ -313,6 +313,7 @@ automation:
             push:
               sound: none
               category: nightmode
+              thread-id: "night-on"
 
   - alias: 'Notif - Good Morning iOS'
     trigger:
@@ -330,10 +331,7 @@ automation:
             push:
               sound: none
               category: shutters_open
-              # {{ "category: shutters_open" if is_state('group.opening_sliding_window', 'on')  }}
-              # {% if is_state('group.opening_sliding_window', 'on') %}
-              #   category: shutters_open
-              # {% endif %}
+              thread-id: "good-morning"
               
 
   - alias: 'Notif - Good Morning Google Home'

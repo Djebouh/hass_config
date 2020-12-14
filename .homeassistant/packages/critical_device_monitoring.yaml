@@ -76,7 +76,7 @@ binary_sensor:
       problem_critical_devices:
         friendly_name: "Critical devices status"
         value_template: "{{ not(is_state('sensor.status_critical_devices', 'ok')) }}"
-        entity_id: sensor.status_critical_devices
+        # entity_id: sensor.status_critical_devices
         device_class: problem
 
 sensor:
@@ -99,27 +99,27 @@ sensor:
           {% endfor -%}
           {% endmacro %}
           {{ check_critical_devices() }}
-        entity_id:
-          - binary_sensor.motion_outside_porch
-          - binary_sensor.motion_bar
-          - binary_sensor.motion_living
-          - binary_sensor.motion_garage
-          - binary_sensor.motion_laundry
-          - binary_sensor.motion_stairs
-          - zwave.polycontrol_danalock_v3_btze
-          - lock.polycontrol_danalock_v3_btze_locked
-          - binary_sensor.opening_shutters_living
-          - binary_sensor.opening_window_dining_left
-          - binary_sensor.opening_window_dining_right
-          - binary_sensor.opening_window_living
-          - binary_sensor.opening_window_kitchen
-          - binary_sensor.opening_catflap
-          - binary_sensor.opening_door_entrance
-          - binary_sensor.opening_door_garage
-          - binary_sensor.opening_door_laundry
-          - binary_sensor.smoke_sensor
-          - camera.xiaofang
-          - lock.front_door
+        # entity_id:
+        #   - binary_sensor.motion_outside_porch
+        #   - binary_sensor.motion_bar
+        #   - binary_sensor.motion_living
+        #   - binary_sensor.motion_garage
+        #   - binary_sensor.motion_laundry
+        #   - binary_sensor.motion_stairs
+        #   - zwave.polycontrol_danalock_v3_btze
+        #   - lock.polycontrol_danalock_v3_btze_locked
+        #   - binary_sensor.opening_shutters_living
+        #   - binary_sensor.opening_window_dining_left
+        #   - binary_sensor.opening_window_dining_right
+        #   - binary_sensor.opening_window_living
+        #   - binary_sensor.opening_window_kitchen
+        #   - binary_sensor.opening_catflap
+        #   - binary_sensor.opening_door_entrance
+        #   - binary_sensor.opening_door_garage
+        #   - binary_sensor.opening_door_laundry
+        #   - binary_sensor.smoke_sensor
+        #   - camera.xiaofang
+        #   - lock.front_door
           
 
 

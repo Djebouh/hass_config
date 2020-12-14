@@ -186,11 +186,11 @@
         message: Xiaomi gateway is unavailable!
         title: System Issue
     - service: switch.turn_off
-      entity_id: switch.shelly_plug_xiaomi_gateway
+      entity_id: switch.xiaomi_gateway_plug
     - delay:
         minutes: 1
     - service: switch.turn_on
-      entity_id: switch.shelly_plug_xiaomi_gateway
+      entity_id: switch.xiaomi_gateway_plug
     - delay:
         minutes: 1
     - service: shell_command.reboot_pi

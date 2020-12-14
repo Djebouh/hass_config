@@ -44,16 +44,16 @@ cover:
     devices:
       RTS_0F0F0F_0:
         name: zz sun awning internal
-  - platform: mqtt
-    name: "zz shutters living internal"
-    # name: "shutters living"
-    device_class: shutter
-    command_topic: "shellies/shellyswitch25-008100/roller/0/command"
-    qos: 0
-    payload_open: "open"
-    payload_close: "close"
-    payload_stop: "stop"
-    retain: false 
+  # - platform: mqtt
+  #   name: "zz shutters living internal"
+  #   # name: "shutters living"
+  #   device_class: shutter
+  #   command_topic: "shellies/shellyswitch25-008100/roller/0/command"
+  #   qos: 0
+  #   payload_open: "open"
+  #   payload_close: "close"
+  #   payload_stop: "stop"
+  #   retain: false 
   - platform: template
     covers:
       shutters_living:
@@ -70,13 +70,13 @@ cover:
           {% endif %}
         open_cover:
           service: cover.open_cover
-          entity_id: cover.zz_shutters_living_internal
+          entity_id: cover.shellyswitch25_008100
         close_cover:
           service: cover.close_cover
-          entity_id: cover.zz_shutters_living_internal
+          entity_id: cover.shellyswitch25_008100
         stop_cover:
           service: cover.stop_cover
-          entity_id: cover.zz_shutters_living_internal
+          entity_id: cover.shellyswitch25_008100
       sun_awning:
         friendly_name: "sun awning"
         device_class: shade
@@ -92,6 +92,24 @@ cover:
         stop_cover:
           service: cover.stop_cover
           entity_id: cover.zz_sun_awning_internal
+      shutters_living_secured:
+        friendly_name: "Secured Shutters living"
+        device_class: shutter
+        position_template: "{{ state_attr('cover.shutters_living', 'current_position') }}"
+        open_cover:
+          - condition: state
+            entity_id: group.opening_sliding_window
+            state: 'off'
+          - service: cover.open_cover
+            entity_id: cover.shutters_living
+          # service: switch.turn_on
+          # entity_id: switch.lock_diningwindow
+        close_cover:
+          service: cover.close_cover
+          entity_id: cover.shutters_living
+        stop_cover:
+          service: cover.stop_cover
+          entity_id: cover.shutters_living
 
 
 timer:
@@ -150,7 +168,7 @@ switch:
         friendly_name: "lock@MainDoor"
         value_template: >-
           {{ not ( is_state('sensor.door_front', 'locked') ) }}
-        entity_id: sensor.door_front
+        # entity_id: sensor.door_front
         turn_on:
           service: lock.unlock
           entity_id: lock.front_door
@@ -164,7 +182,7 @@ switch:
         friendly_name: "lock@LaundryDoor"
         value_template: >-
           {{ not ( is_state('sensor.door_laundry', 'locked') ) }}
-        entity_id: sensor.door_laundry
+        # entity_id: sensor.door_laundry
         turn_on:
           service: lock.unlock
           entity_id: lock.polycontrol_danalock_v3_btze_locked
@@ -178,15 +196,17 @@ switch:
         friendly_name: "lock@DiningWindow"
         value_template: >-
           {{ not ( is_state('group.opening_sliding_window', 'off')) and not ( is_state('binary_sensor.opening_shutters_living', 'off') ) }}
-        entity_id:
-        - group.opening_sliding_window
-        - binary_sensor.opening_shutters_living
+        # entity_id:
+        # - group.opening_sliding_window
+        # - binary_sensor.opening_shutters_living
         turn_on:
-        - condition: state
-          entity_id: group.opening_sliding_window
-          state: 'off'
-        - service: cover.open_cover
-          entity_id: cover.shutters_living
+          - service: cover.open_cover
+            entity_id: cover.shutters_living_secured
+        # - condition: state
+        #   entity_id: group.opening_sliding_window
+        #   state: 'off'
+        # - service: cover.open_cover
+        #   entity_id: cover.shutters_living
         turn_off:
         - condition: template
           value_template: '{{not is_state("binary_sensor.opening_shutters_living", "off") }}'
@@ -202,10 +222,10 @@ switch:
           {{ is_state('switch.lock_maindoor', 'on') or
             is_state('switch.lock_laundrydoor', 'on') or 
             is_state('switch.lock_diningwindow', 'on') }}
-        entity_id:
-        - switch.lock_maindoor
-        - switch.lock_laundrydoor
-        - switch.lock_diningwindow
+        # entity_id:
+        # - switch.lock_maindoor
+        # - switch.lock_laundrydoor
+        # - switch.lock_diningwindow
         turn_on:
           service: switch.turn_on
           entity_id: switch.lock_maindoor
@@ -235,9 +255,9 @@ sensor:
           {% else %}
             undefined
           {% endif %}
-        entity_id:
-        - binary_sensor.opening_door_entrance
-        - lock.front_door
+        # entity_id:
+        # - binary_sensor.opening_door_entrance
+        # - lock.front_door
 
       door_laundry:
         friendly_name: "Laundry door"
@@ -253,19 +273,18 @@ sensor:
           {% else %}
             undefined
           {% endif %}
-        entity_id:
-        - binary_sensor.opening_door_laundry
-        - lock.polycontrol_danalock_v3_btze_locked
+        # entity_id:
+        # - binary_sensor.opening_door_laundry
+        # - lock.polycontrol_danalock_v3_btze_locked
 
 
 binary_sensor:
   - platform: template
     sensors:
-
       closed_and_locked:
         friendly_name: "Home closed and locked"
         device_class: lock
-        entity_id: group.locks_and_doors
+        # entity_id: group.locks_and_doors
         value_template: "{{ not(is_state('group.locks_and_doors', 'off')) }}"
 
 
@@ -494,6 +513,7 @@ automation:
                 # volume: 1.0
               # sound: "US-EN-Alexa-Front-Door-Opened.wav"
               category: safehome
+              thread-id: "safehome"
       - service: timer.start
         entity_id: timer.no_message_for_lock
 
@@ -705,8 +725,8 @@ automation:
         after: '06:30:00'
         before: '08:35:00'
     action:
-      - service: switch.turn_on
-        entity_id: switch.lock_diningwindow
+      - service: cover.open_cover
+        entity_id: cover.shutters_living_secured
 
 
   - alias: Autoshutters - close shutters 1h after sunset or at 22:15
@@ -810,6 +830,9 @@ automation:
           message: >
             "It will be hot today ({{states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit}}),"
             " with limited risk of rain ({{states.sensor.dark_sky_precip_probability_0d.state_with_unit}})"
+          data:
+            push:
+              thread-id: "openowning"
 
 
   - alias: Autoawning - Roll up as rain arrives
@@ -877,10 +900,13 @@ automation:
       entity_id: binary_sensor.opening_window_bathroom
       state: 'on'
     action:
-    - service: notify.ALL_MOBILES
-      data:
-        title: The window of the bathroom is still open
-        message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+      - service: notify.ALL_MOBILES
+        data:
+          title: The window of the bathroom is still open
+          message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+          data:
+            push:
+              thread-id: "bathroom"
 
 
   ############################################################
@@ -909,7 +935,10 @@ automation:
       entity_id: binary_sensor.opening_window_bathroom_lou
       state: 'on'
     action:
-    - service: notify.ALL_MOBILES
-      data:
-        title: The window of Lou's bathroom is still open
-        message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+      - service: notify.ALL_MOBILES
+        data:
+          title: The window of Lou's bathroom is still open
+          message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+          data:
+            push:
+              thread-id: "bathroom"
