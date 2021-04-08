@@ -31,12 +31,15 @@ group:
     - binary_sensor.motion_laundry
   #  - binary_sensor.motion_outside_porch
 
-
-input_boolean:
-  notify_intrusion:
-    name: Notify when there is motion detected at home
-    initial: 'on'
-
+binary_sensor:
+  - platform: template
+    sensors:
+      opening_catflap_exit:
+        friendly_name: "Catflap exit"
+        value_template: >-
+          {{ is_state('binary_sensor.opening_catflap_out', 'off') }}
+        device_class: opening
+        icon_template: 'mdi:cat' 
 
 timer:
   force_show_webcam:
@@ -54,11 +57,19 @@ script:
   'webcam_snapshot':
     alias: Take Webcam Snapshots
     sequence:
-      - service: shell_command.take_snapshot_webcam
+      # - service: shell_command.take_snapshot_webcam
+      - service: camera.snapshot
+        data:
+          entity_id: camera.netatmo_chimneye
+          filename: '/home/homeassistant/tmp/webcam_images/netatmo_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
+      - service: camera.snapshot
+        data:
+          entity_id: camera.raspberry_pi_camera
+          filename: '/home/homeassistant/tmp/webcam_images/raspi_{{ now().strftime("%Y%m%d-%H%M%S") }}.jpg'
       - service: shell_command.transfer_snapshot
-      - delay:
-          seconds: 10
-      - service: shell_command.transfer_snapshot
+      # - delay:
+      #     seconds: 10
+      # - service: shell_command.transfer_snapshot
 
 
   'show_webcam':
@@ -125,19 +136,23 @@ automation:
   - alias: Alert - Activate Monitoring
     initial_state: 'on'
     trigger:
-      platform: state
-      entity_id: binary_sensor.motion_home
-      from: 'on'
-      to: 'off'
-      for:
-        minutes: 10
+      - platform: state
+        entity_id: binary_sensor.motion_home
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 10
+      - platform: state
+        entity_id: group.openings
+        from: 'on'
+        to: 'off'
+        for:
+          minutes: 10
     condition:
       condition: state
       state: 'not_home'
       entity_id: group.presence
     action:
-      - service: input_boolean.turn_on
-        entity_id: input_boolean.notify_intrusion
       - service: automation.turn_on
         entity_id: automation.alert_monitor_intrusion
 
@@ -154,33 +169,13 @@ automation:
     action:
       - service: automation.turn_off
         entity_id: automation.alert_monitor_intrusion
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.notify_intrusion
 
-
-  ############################################################
-  # Stop notification is door is unlocked
-  ############################################################
-  - alias: Alert - Stop Notification
-    initial_state: 'on'
-    trigger:
-      platform: state
-      entity_id: lock.front_door
-      to: 'unlocked'
-    condition:
-      condition: state
-      state: 'on'
-      entity_id: input_boolean.notify_intrusion
-    action:
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.notify_intrusion
 
 
   ############################################################
   # monitor and alert if intrusion when detection
   ############################################################
   - alias: Alert - Monitor intrusion
-    initial_state: 'on'
     trigger:
       platform: event
       event_type: xiaomi_aqara.motion
@@ -193,6 +188,9 @@ automation:
         data:
           entity_id: automation.alert_monitor_intrusion
           stop_actions: false
+      - service: script.webcam_snapshot
+      - delay:
+          seconds: 10
       - service: script.webcam_snapshot
       - delay:
           seconds: 90
@@ -216,9 +214,6 @@ automation:
         for:
           seconds: 60
       - service: script.webcam_snapshot
-      - condition: state
-        entity_id: input_boolean.notify
-        state: 'on'
       - service: notify.ALL_MOBILES
         data:
           title: "No one@Home but presence detected"
@@ -379,5 +374,86 @@ automation:
             push:
               sound: "US-EN-Morgan-Freeman-Starting-Movie-Mode.wav"
               category: privacy
+
+
+  ############################################################
+  # Netatmo update presence with presence detection
+  ############################################################
+
+  - alias: 'Netatmo - set presence for Lou'
+    mode: single
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: person.lou
+      - platform: time_pattern
+        hours: '/6'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: person.lou
+            state: 'home'
+          sequence:
+          - service: netatmo.set_persons_home
+            entity_id: camera.netatmo_chimneye
+            data:
+              persons: Lou
+        default:
+          - service: netatmo.set_person_away
+            entity_id: camera.netatmo_chimneye
+            data:
+              person: Lou
+
+  - alias: 'Netatmo - set presence for Jerome'
+    mode: single
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: person.jerome
+      - platform: time_pattern
+        hours: '/6'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: person.jerome
+            state: 'home'
+          sequence:
+          - service: netatmo.set_persons_home
+            entity_id: camera.netatmo_chimneye
+            data:
+              persons: Jerome
+        default:
+          - service: netatmo.set_person_away
+            entity_id: camera.netatmo_chimneye
+            data:
+              person: Jerome
+
+  - alias: 'Netatmo - set presence for Corinne'
+    mode: single
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: person.corinne
+      - platform: time_pattern
+        hours: '/6'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: person.corinne
+            state: 'home'
+          sequence:
+          - service: netatmo.set_persons_home
+            entity_id: camera.netatmo_chimneye
+            data:
+              persons: Corinne
+        default:
+          - service: netatmo.set_person_away
+            entity_id: camera.netatmo_chimneye
+            data:
+              person: Corinne
+
 
 

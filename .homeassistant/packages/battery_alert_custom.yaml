@@ -36,36 +36,6 @@ homeassistant:
     device_tracker.jerome_s_iphone:
       battery_sensor_creation_disabled: true
 
-    switch.wall_switch_ln_left_158d0001d629ab:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_158d00022acf25:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_ln_right_158d0001d629ab:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_158d0001a414b9:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_158d00034ff3ae:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_ln_158d000273b63a:
-      battery_sensor_creation_disabled: true
-
-    switch.wallswitch_shutters_down:
-      battery_sensor_creation_disabled: true
-
-    switch.wallswitch_shutters_up:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_ln_left_158d0002323b17:
-      battery_sensor_creation_disabled: true
-
-    switch.wall_switch_ln_right_158d0002323b17:
-      battery_sensor_creation_disabled: true
-
     vacuum.aspibot:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
@@ -122,6 +92,7 @@ homeassistant:
     plant.parrot_pot_0ef7:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
+      
     sensor.parrot_pot_0ef7_battery:
       battery_alert_disabled: true
 
@@ -191,16 +162,192 @@ homeassistant:
     sensor.battery_state_3:
       battery_alert_disabled: true
 
-    sensor.netatmo_garden_battery:
+    sensor.netatmo_l_olivaie_de_biot_living_room_garden_battery_percent:
       battery_alert_disabled: true
 
-    sensor.netatmo_rain_gauge_battery:
+    sensor.netatmo_l_olivaie_de_biot_living_room_rain_gauge_battery:
       battery_alert_disabled: true
 
-    sensor.netatmo_living_room_battery:
+    sensor.netatmo_l_olivaie_de_biot_living_room_battery:
       battery_alert_disabled: true
 
     sensor.polycontrol_danalock_v3_btze_battery:
       battery_sensor_creation_disabled: true
       battery_alert_disabled: true
 
+    switch.wall_switch_ln_left_158d0001d629ab:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_158d00022acf25:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_ln_right_158d0001d629ab:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_158d0001a414b9:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_158d00034ff3ae:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_ln_158d000273b63a:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_shutters_down:
+      battery_sensor_creation_disabled: true
+
+    switch.wallswitch_shutters_up:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_ln_left_158d0002323b17:
+      battery_sensor_creation_disabled: true
+
+    switch.wall_switch_ln_right_158d0002323b17:
+      battery_sensor_creation_disabled: true
+
+    sensor.pressure_158d0001a35da7:
+      battery_sensor_creation_disabled: true
+
+    sensor.pressure_158d0001a36047:
+      battery_sensor_creation_disabled: true
+
+    sensor.humidity_158d0001216e99:
+      battery_sensor_creation_disabled: true
+
+    sensor.humidity_158d0001a35da7:
+      battery_sensor_creation_disabled: true
+
+    sensor.humidity_158d0001a36047:
+      battery_sensor_creation_disabled: true
+
+    sensor.battery_158d00010a813f:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00011a04e2:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001216e99:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d000122ffe1:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00012d946b:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d000149bb20:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00014d2c7f:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00016daf67:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00016db038:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00016db083:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d000183c9fa:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d000187117b:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001a24b9b:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001a35da7:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001a36047:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001ab23b1:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001ab23bb:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001ab23be:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001ab23c6:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001ab4265:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001b86ee0:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001b8f9b0:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001b91e70:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001c2fe63:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001d835a3:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0001dad316:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0002019633:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0002b12442:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0003ce02be:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d0003d4a2de:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d000423a5d5:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.battery_158d00043169a9:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true
+
+    sensor.bed_activity_158d0002b12442:
+      battery_sensor_creation_disabled: true
+      battery_alert_disabled: true

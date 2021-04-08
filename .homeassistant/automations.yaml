@@ -1,50 +1,136 @@
-- id: '1607955993058'
-  alias: Motion-activated Light
+- id: '1609006720161'
+  alias: MimieTracker  - onHouseOpening
   description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      no_motion_wait: '120'
-      motion_entity: binary_sensor.motion_bar
-      light_target:
-        entity_id: light.light_bar
-- id: '1607956243965'
-  alias: Motion-activated Light testbar
+  trigger:
+  - platform: state
+    entity_id: group.openings
+    to: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.where_is_mimie
+        state: inside
+      sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.where_is_mimie
+          option: was_inside
+    - conditions:
+      - condition: state
+        entity_id: input_select.where_is_mimie
+        state: outside
+      sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.where_is_mimie
+          option: was_outside
+    default: []
+  mode: single
+- id: '1609007466359'
+  alias: MimieTracker  - onMotionInside
   description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      no_motion_wait: '120'
-      motion_entity: binary_sensor.motion_bar
-      light_target:
-        entity_id: light.light_bar
-- id: '1607956628910'
-  alias: Motion-activated Light mytest
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.motion_home
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: group.presence
+    state: not_home
+  - condition: state
+    entity_id: group.openings
+    state: 'off'
+  action:
+  - service: input_select.select_option
+    data:
+      entity_id: input_select.where_is_mimie
+      option: inside
+  mode: single
+- id: '1609007781545'
+  alias: MimieTracker  - onFlapOpen
   description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      no_motion_wait: 177
-      motion_entity: binary_sensor.motion_bar
-      light_target:
-        entity_id: light.light_bar
-- id: '1607979424385'
-  alias: Motion-activated Light testme
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.opening_catflap
+    to: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.where_is_mimie
+        state: inside
+      sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.where_is_mimie
+          option: outside
+    - conditions:
+      - condition: state
+        entity_id: input_select.where_is_mimie
+        state: outside
+      sequence:
+      - service: input_select.select_option
+        data:
+          entity_id: input_select.where_is_mimie
+          option: inside
+    default: []
+  - delay: 00:00:30
+  mode: single
+- id: '1609606304717'
+  alias: MimieTracker  - onFlapOpen 2
   description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      no_motion_wait: '120'
-      motion_entity: binary_sensor.motion_bar
-      light_target:
-        entity_id: light.light_living
-- id: '1607979577736'
-  alias: Motion-activated Light testme
-  description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      no_motion_wait: '120'
-      motion_entity: binary_sensor.motion_bar
-      light_target:
-        entity_id: light.light_living
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.opening_catflap
+    from: 'off'
+    to: 'on'
+    for: 0:00:02
+  condition: []
+  action:
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.opening_catflap_out
+      from: 'on'
+      to: 'off'
+    - platform: state
+      entity_id: binary_sensor.opening_catflap
+      from: 'off'
+      to: 'on'
+    timeout: 00:00:30
+    continue_on_timeout: true
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ wait.trigger.entity_id == ''binary_sensor.opening_catflap_out''
+          }}'
+      sequence:
+      - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.opening_catflap
+          from: 'on'
+          to: 'off'
+          for: 0:00:05
+        continue_on_timeout: false
+        timeout: 00:02:00
+      - service: input_select.select_option
+        data:
+          option: outside
+        entity_id: input_select.where_is_mimie
+    default:
+    - wait_for_trigger:
+      - platform: state
+        entity_id: binary_sensor.opening_catflap
+        from: 'on'
+        to: 'off'
+        for: 0:00:10
+      continue_on_timeout: true
+      timeout: 00:00:20
+    - service: input_select.select_option
+      data:
+        option: inside
+      entity_id: input_select.where_is_mimie
+  mode: restart
+  

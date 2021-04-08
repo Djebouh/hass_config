@@ -8,8 +8,9 @@
     platform: state
     entity_id: group.openings
     to: 'on'
+    from: 'off'
     for:
-      minutes: 3
+      minutes: 5
   condition:
     - condition: state
       entity_id: climate.netatmo_living_room
@@ -21,21 +22,21 @@
     #     entity_id: climate.netatmo_living_room
     #     state: 'off'
   action:
+    - service: automation.turn_on
+      entity_id: automation.heating_restart_when_doors_are_closed
     - service: climate.set_preset_mode
       data:
         entity_id: climate.netatmo_living_room
         preset_mode: away
-    - service: automation.turn_on
-      entity_id: automation.heating_restart_when_doors_are_closed
 
 - alias: Heating - Restart when doors are closed
-  # initial_state: 'off'
   trigger:
     - platform: state
       entity_id: group.openings
       to: 'off'
+      from: 'on'
       for:
-        minutes: 3
+        minutes: 2
     - platform: event
       event_type: 2MN_AFTER_HASS_START
   # condition:
@@ -51,6 +52,8 @@
       data:
         entity_id: climate.netatmo_living_room
         preset_mode: Schedule
+    - service: automation.turn_off
+      entity_id: automation.heating_restart_when_doors_are_closed
 
 - alias: Heating - Stop monitoring when thermostat on away
   initial_state: 'on'
@@ -70,11 +73,11 @@
       entity_id: climate.netatmo_living_room
       attribute: preset_mode
       to: 'Schedule'
+      for:
+        minutes: 3
   action:
   - service: automation.turn_on
     entity_id: automation.heating_stop_when_doors_are_open
-  - service: automation.turn_off
-    entity_id: automation.heating_restart_when_doors_are_closed
 
 
 
@@ -89,9 +92,13 @@
     - platform: state
       entity_id: group.presence
       to: "home"
+      for:
+        minutes: 5
     - platform: state
       entity_id: group.openings
       to: 'off'
+      for:
+        minutes: 5
     - platform: state
       entity_id: climate.netatmo_living_room
       attribute: preset_mode
@@ -100,10 +107,14 @@
       entity_id: climate.netatmo_living_room
       attribute: current_temperature
       below: 20.7
+      for:
+        minutes: 5
     - platform: numeric_state
       entity_id: climate.netatmo_living_room
       attribute: temperature
       below: 21
+      for:
+        minutes: 5
   condition:
     - condition: time
       after: '9:00:00'
@@ -142,7 +153,7 @@
     - service: tts.google_translate_say
       entity_id: media_player.living_room_speaker
       data:
-        message: "Brrr, it's only {{ states.sensor.netatmo_living_room_temperature.state_with_unit }}, boost heating NOW !"
+        message: "Brrr, it's only {{ states.sensor.netatmo_l_olivaie_de_biot_living_room_temperature.state_with_unit }}, boost heating NOW !"
 
 
 - alias: Heating - Stop boost
@@ -153,6 +164,8 @@
     - platform: state
       entity_id: group.presence
       to: "not_home"
+      for:
+        minutes: 5
     - platform: state
       entity_id: climate.netatmo_living_room
       attribute: preset_mode
@@ -165,15 +178,17 @@
         - condition: state
           entity_id: climate.netatmo_living_room
           state: 'off'
+    - condition: state
+      entity_id: climate.netatmo_living_room
+      attribute: preset_mode
+      state: 'manual'
     - service: notify.ALL_MOBILES
       data:
         message: >-
           It is
-          {{ states.sensor.netatmo_living_room_temperature.state_with_unit }} inside,
-          {{ states.sensor.netatmo_garden_temperature.state_with_unit }} outside.
+          {{ states.sensor.netatmo_l_olivaie_de_biot_living_room_temperature.state_with_unit }} inside,
+          {{ states.sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature.state_with_unit }} outside.
         title: Thermostat back to schedule mode
-    - condition: template
-      value_template: "{{ is_state_attr('climate.netatmo_living_room', 'preset_mode', 'manual') }}"
     - service: climate.set_preset_mode
       data:
         entity_id: climate.netatmo_living_room

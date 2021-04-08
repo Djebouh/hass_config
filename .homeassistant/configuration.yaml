@@ -15,7 +15,9 @@ homeassistant:
   customize: !include customize.yaml
   # Customization file
   packages: !include_dir_named packages
-  allowlist_external_dirs: /home/homeassistant/tmp/webcam_images/
+  allowlist_external_dirs:
+    - /home/homeassistant/tmp/webcam_images/
+    - /home/homeassistant/tmp/
 
 # Enables the frontend
 frontend:
@@ -28,7 +30,6 @@ config:
 system_health:
 
 updater:
-  include_used_components: true
 
 logger:
   default: info
@@ -66,7 +67,7 @@ http:
   # api_password: !secret http_password
   ssl_certificate: !secret dynu_ssl_certificate
   ssl_key: !secret dynu_ssl_key
-  base_url: https://hass-biot.myddns.rocks:8123
+  # base_url: https://hass-biot.myddns.rocks:8123
 
 mobile_app:
 
@@ -131,28 +132,12 @@ zone:
     radius: 80
     icon: mdi:worker
 
-
-# zwave:
-#   usb_path: /dev/zwaveusbstick
-#   network_key: !secret zwave_key
-
-
-rflink:
-  port: /dev/rflink
-
-
-# mqtt:
-#   broker: localhost
-#   discovery: true
-#   discovery_prefix: homeassistant
-
-
 shell_command:
   reboot_pi: 'sudo reboot'
 
 tts:
   - platform: google_translate
-
+    base_url: https://hass-biot.myddns.rocks
 
 input_boolean:
   night_mode:
@@ -161,11 +146,7 @@ input_boolean:
     icon: mdi:sleep
 
 
-# breaking_changes:
-
 # stream:
-
-
 
 binary_sensor:
   # - platform: rachio
@@ -177,13 +158,6 @@ binary_sensor:
         device_class: motion
         # entity_id: group.motion_home
         value_template: "{{ not(is_state('group.motion_home', 'off')) }}"
-      vegetal_wall_watering:
-        friendly_name: vegetal wall
-        device_class: moisture
-        # entity_id: sensor.laundry_machines
-        value_template: >-
-          {%- set laundry_power = states('sensor.laundry_machines') | float -%}
-          {{  (laundry_power > 10) and (laundry_power < 20) }}
 
   - platform: command_line
     name: vpn status
@@ -214,6 +188,6 @@ script:
 # group: !include groups.yaml
 # scene: !include scenes.yaml
 # script: !include scripts.yaml
-# automation: !include automations.yaml
-automation: !include_dir_merge_list automation/
+automation old: !include_dir_merge_list automation/
+automation: !include automations.yaml
 

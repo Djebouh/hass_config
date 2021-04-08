@@ -50,8 +50,7 @@ group:
       - binary_sensor.motion_garage
       - binary_sensor.motion_laundry
       - binary_sensor.motion_stairs
-      - zwave.polycontrol_danalock_v3_btze
-      - lock.polycontrol_danalock_v3_btze_locked
+      - lock.z_wave_danalock_current_lock_mode
       - binary_sensor.opening_shutters_living
       - binary_sensor.opening_window_dining_left
       - binary_sensor.opening_window_dining_right
@@ -107,7 +106,7 @@ sensor:
         #   - binary_sensor.motion_laundry
         #   - binary_sensor.motion_stairs
         #   - zwave.polycontrol_danalock_v3_btze
-        #   - lock.polycontrol_danalock_v3_btze_locked
+        #   - lock.z_wave_danalock_current_lock_mode
         #   - binary_sensor.opening_shutters_living
         #   - binary_sensor.opening_window_dining_left
         #   - binary_sensor.opening_window_dining_right

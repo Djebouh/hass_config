@@ -26,10 +26,10 @@ netatmo:
   client_id: !secret netatmo_id
   client_secret: !secret netatmo_secret
 
-lock:
-  - platform: nuki
-    host: !secret nuki_bridge_ip
-    token: !secret nuki_token
+# lock:
+#   - platform: nuki
+#     host: !secret nuki_bridge_ip
+#     token: !secret nuki_token
 
 ffmpeg:
 
@@ -54,7 +54,7 @@ rpi_camera:
   image_height: 972
   image_quality: 75
   timelapse: 2000
-  file_path: /home/homeassistant/tmp/webcam_images/raspi.jpg
+  file_path: /home/homeassistant/tmp/raspi.jpeg
 
 # linky:
 #   - username: !secret enedis_user
@@ -105,18 +105,20 @@ meteo_france:
 
 device_tracker:
   - platform: xiaomi
-    track_new_devices: false
+    # track_new_devices: yes
     # interval_seconds: 30
     consider_home: 0:05
     host: !secret xiaomi_router_ip
     password: !secret xiaomi_router_pswd
+    # new_device_defaults:
+    #   track_new_devices: true
 
 
-switch:
-  - platform: xiaomi_miio
-    name: Mimie's Spring
-    host: !secret chuangmi_plug_ip
-    token: !secret chuangmi_miio_token
+# switch:
+#   - platform: xiaomi_miio
+#     name: Mimie's Spring
+#     host: !secret chuangmi_plug_ip
+#     token: !secret chuangmi_miio_token
 
 
 sensor:

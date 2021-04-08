@@ -39,6 +39,20 @@ homeassistant:
       icon: mdi:window-closed-variant
 
 
+
+input_select:
+  where_is_mimie:
+    name: guessing where is Mimie
+    options:
+      - inside
+      - outside
+      - was_inside
+      - was_outside
+    icon: mdi:cat
+
+rflink:
+  port: /dev/rflink
+
 cover:
   - platform: rflink
     devices:
@@ -59,7 +73,6 @@ cover:
       shutters_living:
         friendly_name: "shutters@living"
         device_class: shutter
-        # value_template: "{{ not is_state('binary_sensor.opening_shutters_living', 'off') }}"
         position_template: >-
           {% if is_state('binary_sensor.opening_shutters_living', 'off') %}
             0
@@ -80,9 +93,8 @@ cover:
       sun_awning:
         friendly_name: "sun awning"
         device_class: shade
-
-        # value_template: "{{ is_state('binary_sensor.opening_awning', 'off') }}"
-        position_template: "{{ 100 if is_state('binary_sensor.opening_awning', 'off') else 10 }}"
+        # position_template: "{{ 100 if is_state('binary_sensor.opening_awning', 'off') else 10 }}"
+        position_template: 100
         open_cover:
           service: cover.open_cover
           entity_id: cover.zz_sun_awning_internal
@@ -102,8 +114,6 @@ cover:
             state: 'off'
           - service: cover.open_cover
             entity_id: cover.shutters_living
-          # service: switch.turn_on
-          # entity_id: switch.lock_diningwindow
         close_cover:
           service: cover.close_cover
           entity_id: cover.shutters_living
@@ -147,7 +157,6 @@ group:
     - binary_sensor.opening_window_kitchen
     - binary_sensor.opening_door_garage
     - binary_sensor.opening_door_laundry #laundry
-    # - switch.lock_laundrydoor #laundry
 
   locks_and_doors:
     name: locks and openings
@@ -168,7 +177,6 @@ switch:
         friendly_name: "lock@MainDoor"
         value_template: >-
           {{ not ( is_state('sensor.door_front', 'locked') ) }}
-        # entity_id: sensor.door_front
         turn_on:
           service: lock.unlock
           entity_id: lock.front_door
@@ -182,31 +190,22 @@ switch:
         friendly_name: "lock@LaundryDoor"
         value_template: >-
           {{ not ( is_state('sensor.door_laundry', 'locked') ) }}
-        # entity_id: sensor.door_laundry
         turn_on:
           service: lock.unlock
-          entity_id: lock.polycontrol_danalock_v3_btze_locked
+          entity_id: lock.z_wave_danalock_current_lock_mode
         turn_off:
         - condition: template
           value_template: '{{not is_state("sensor.door_laundry", "locked") }}'
         - service: lock.lock
-          entity_id: lock.polycontrol_danalock_v3_btze_locked
+          entity_id: lock.z_wave_danalock_current_lock_mode
 
       lock_diningwindow:
         friendly_name: "lock@DiningWindow"
         value_template: >-
           {{ not ( is_state('group.opening_sliding_window', 'off')) and not ( is_state('binary_sensor.opening_shutters_living', 'off') ) }}
-        # entity_id:
-        # - group.opening_sliding_window
-        # - binary_sensor.opening_shutters_living
         turn_on:
           - service: cover.open_cover
             entity_id: cover.shutters_living_secured
-        # - condition: state
-        #   entity_id: group.opening_sliding_window
-        #   state: 'off'
-        # - service: cover.open_cover
-        #   entity_id: cover.shutters_living
         turn_off:
         - condition: template
           value_template: '{{not is_state("binary_sensor.opening_shutters_living", "off") }}'
@@ -222,10 +221,6 @@ switch:
           {{ is_state('switch.lock_maindoor', 'on') or
             is_state('switch.lock_laundrydoor', 'on') or 
             is_state('switch.lock_diningwindow', 'on') }}
-        # entity_id:
-        # - switch.lock_maindoor
-        # - switch.lock_laundrydoor
-        # - switch.lock_diningwindow
         turn_on:
           service: switch.turn_on
           entity_id: switch.lock_maindoor
@@ -255,27 +250,21 @@ sensor:
           {% else %}
             undefined
           {% endif %}
-        # entity_id:
-        # - binary_sensor.opening_door_entrance
-        # - lock.front_door
 
       door_laundry:
         friendly_name: "Laundry door"
         value_template: >-
           {% if is_state('binary_sensor.opening_door_laundry', 'on') %}
             open
-          {% elif is_state('lock.polycontrol_danalock_v3_btze_locked', 'locked') %}
+          {% elif is_state('lock.z_wave_danalock_current_lock_mode', 'locked') %}
             locked
-          {% elif is_state('lock.polycontrol_danalock_v3_btze_locked', 'unlocked') %}
+          {% elif is_state('lock.z_wave_danalock_current_lock_mode', 'unlocked') %}
             unlocked
           {% elif is_state('binary_sensor.opening_door_laundry', 'off') %}
             closed
           {% else %}
             undefined
           {% endif %}
-        # entity_id:
-        # - binary_sensor.opening_door_laundry
-        # - lock.polycontrol_danalock_v3_btze_locked
 
 
 binary_sensor:
@@ -284,7 +273,6 @@ binary_sensor:
       closed_and_locked:
         friendly_name: "Home closed and locked"
         device_class: lock
-        # entity_id: group.locks_and_doors
         value_template: "{{ not(is_state('group.locks_and_doors', 'off')) }}"
 
 
@@ -509,9 +497,6 @@ automation:
             push:
               sound:
                 name: "US-EN-Alexa-Front-Door-Opened.wav"
-                # critical: 1
-                # volume: 1.0
-              # sound: "US-EN-Alexa-Front-Door-Opened.wav"
               category: safehome
               thread-id: "safehome"
       - service: timer.start
@@ -583,28 +568,6 @@ automation:
       - event: HOUSE_TO_LOCK
         event_data:
           context: "House not locked, while you may be on your way to bed"
-
-
-  # - alias: iOS Notif - notify door not locked at night, no movement
-  #   initial_state: 'off'
-  #   trigger:
-  #     platform: state
-  #     entity_id: binary_sensor.motion_home
-  #     to: 'off'
-  #     for:
-  #       minutes: 20
-  #   condition:
-  #     - condition: time
-  #       after: '22:00:01'
-  #       before: '00:05:00'
-  #     - condition: state
-  #       entity_id: binary_sensor.closed_and_locked
-  #       state: 'on'
-  #   action:
-  #     - event: HOUSE_TO_LOCK
-  #       event_data:
-  #         context: "House not locked, there is no movement !"
-
 
   # - alias: iOS Notif - close doors at night, at midnight
   - alias: Housekeeping - auto close doors at night
@@ -799,7 +762,6 @@ automation:
   ############################################################
 
   - alias: Autoawning - Open awning
-    # initial_state: 'on'
     trigger:
       - platform: time
         at: '10:00:00'
@@ -815,7 +777,7 @@ automation:
         entity_id: sensor.dark_sky_daytime_high_temperature_0d
         above: 28
       - condition: state
-        entity_id: sensor.netatmo_rain_gauge_sum_rain_1
+        entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_rain_gauge_rain_last_hour
         state: '0'
       - condition: state
         entity_id: cover.sun_awning
@@ -839,13 +801,11 @@ automation:
     initial_state: 'on'
     trigger:
       - platform: numeric_state
-        entity_id: sensor.netatmo_rain_gauge_rain
+        entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_rain_gauge_rain
         above: 0
       - platform: numeric_state
         entity_id: sensor.dark_sky_precip_intensity_0h
         above: 50
-        # for:
-        #   minutes: 15
     condition:
       - condition: numeric_state
         entity_id: cover.sun_awning
@@ -887,14 +847,14 @@ automation:
       for:
         minutes: 20
     - platform: numeric_state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       below: '15'
     - platform: state
       entity_id: group.locks_and_doors
       to: 'off'
     condition:
     - condition: numeric_state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       below: '15'
     - condition: state
       entity_id: binary_sensor.opening_window_bathroom
@@ -903,7 +863,7 @@ automation:
       - service: notify.ALL_MOBILES
         data:
           title: The window of the bathroom is still open
-          message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+          message: 'The temperature outside is at {{ states.sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature.state_with_unit }}'
           data:
             push:
               thread-id: "bathroom"
@@ -922,14 +882,14 @@ automation:
       for:
         minutes: 20
     - platform: numeric_state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       below: '15'
     - platform: state
       entity_id: group.locks_and_doors
       to: 'off'
     condition:
     - condition: numeric_state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       below: '15'
     - condition: state
       entity_id: binary_sensor.opening_window_bathroom_lou
@@ -938,7 +898,7 @@ automation:
       - service: notify.ALL_MOBILES
         data:
           title: The window of Lou's bathroom is still open
-          message: 'The temperature outside is at {{ states.sensor.netatmo_garden_temperature.state_with_unit }}'
+          message: 'The temperature outside is at {{ states.sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature.state_with_unit }}'
           data:
             push:
               thread-id: "bathroom"

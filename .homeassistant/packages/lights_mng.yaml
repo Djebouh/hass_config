@@ -691,7 +691,7 @@ automation:
   # Motion detection in living, low light at night
   ############################################################
   - alias: Autolight - Gateway
-    initial_state: 'off'
+    # initial_state: 'off'
     trigger:
       - platform: event
         event_type: xiaomi_aqara.motion
@@ -881,6 +881,42 @@ automation:
     action:
       - service: input_boolean.turn_off
         entity_id: input_boolean.block_autolight_living
+
+  - alias: Autolight - Switch off lights downstairs at 9am
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        at: '09:05:00'
+      - platform: state
+        entity_id: binary_sensor.motion_bar
+        to: 'off'
+        for:
+          minutes: 15
+      - platform: state
+        entity_id: binary_sensor.motion_living
+        to: 'off'
+        for:
+          minutes: 15
+    condition:
+      - condition: state
+        entity_id: light.lights_downstairs
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.motion_bar
+        state: 'off'
+        for:
+          minutes: 15
+      - condition: state
+        entity_id: binary_sensor.motion_living
+        state: 'off'
+        for:
+          minutes: 15
+      - condition: time
+        after: '09:00:00'
+        before: '09:35:00'
+    action:
+      service: light.turn_off
+      entity_id: light.lights_downstairs
 
 
   ############################################################
@@ -1149,31 +1185,15 @@ automation:
   ############################################################
   # Motion detection in trees
   ############################################################
-  - alias: Autolight - Trees
+
+  - alias: Autolight - Porch
     initial_state: 'on'
     trigger:
       - platform: event
         event_type: xiaomi_aqara.motion
         event_data:
           entity_id: binary_sensor.motion_outside_porch
-      - platform: state
-        entity_id:  group.doors_monitored_by_safehome
-        to: 'on'
-        for:
-          seconds: 1
-      - platform: state
-        entity_id:
-          - device_tracker.corinnes_iphone
-          - device_tracker.jerome_s_iphone
-        to: 'home'
-        for:
-          minutes: 1
     condition:
-      - condition: state
-        state: 'off'
-        entity_id: light.lights_trees
-        for:
-          seconds: 10
       - condition: state
         state: 'off'
         entity_id: light.light_porch
@@ -1190,13 +1210,50 @@ automation:
     action:
       - service: light.turn_on
         entity_id:
-          - light.lights_trees
           - light.light_porch
-      - entity_id: automation.autolight_trees_stop
+      - entity_id: automation.autolight_garden_stop
         service: automation.turn_on
 
 
-  - alias: Autolight - Trees Stop
+  - alias: Autolight - Garden
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id:  group.doors_monitored_by_safehome
+        to: 'on'
+        for:
+          seconds: 1
+      - platform: state
+        entity_id:
+          - device_tracker.corinnes_iphone
+          - device_tracker.jerome_s_iphone
+        to: 'home'
+        for:
+          seconds: 20
+    condition:
+      - condition: state
+        state: 'off'
+        entity_id: light.lights_trees
+        for:
+          seconds: 10
+      - condition: or
+        conditions:
+        - condition: numeric_state
+          below: '2'
+          entity_id: sensor.illumination_outside_north
+        - condition: state
+          state: 'below_horizon'
+          entity_id: sun.sun
+    action:
+      - service: light.turn_on
+        entity_id:
+          - light.lights_trees
+          - light.light_porch
+      - entity_id: automation.autolight_garden_stop
+        service: automation.turn_on
+
+
+  - alias: Autolight - Garden Stop
     # initial_state: 'off'
     trigger:
       - platform: state
@@ -1214,7 +1271,7 @@ automation:
         for:
           seconds: 20
       - platform: state
-        entity_id: automation.autolight_trees_stop
+        entity_id: automation.autolight_garden_stop
         to: 'on'
         for:
           minutes: 3
@@ -1230,7 +1287,7 @@ automation:
           - light.lights_trees
           - light.light_porch
 
-  - alias: Autolight - Trees Stop - Housekeeping
+  - alias: Autolight - Garden Stop - Housekeeping
     # initial_state: 'off'
     trigger:
       - platform: state
@@ -1240,7 +1297,7 @@ automation:
         to: 'off'
     action:
       - service: automation.turn_off
-        entity_id: automation.autolight_trees_stop
+        entity_id: automation.autolight_garden_stop
 
 
   ############################################################
@@ -1288,7 +1345,7 @@ automation:
         - automation.autolight_garage_stop
         # - automation.autolight_laundry_stop
         - automation.autolight_stairs_stop
-        - automation.autolight_trees_stop
+        - automation.autolight_garden_stop
     action:
       service: >
         {% if trigger.to_state.state == 'on' %}

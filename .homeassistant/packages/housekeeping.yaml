@@ -2,11 +2,11 @@
 ## Vacuum and Laundry
 ################################################################
 
-vacuum:
-  - platform: xiaomi_miio
-    host: !secret rockrobo_vacuum_ip
-    token: !secret rockrobo_token
-    name: AspiBot
+# vacuum:
+#   - platform: xiaomi_miio
+#     host: !secret rockrobo_vacuum_ip
+#     token: !secret rockrobo_token
+#     name: AspiBot
 
 
 sensor:
@@ -38,6 +38,10 @@ sensor:
 #       - service: vacuum.return_to_base
 #         entity_id: vacuum.aspibot
 
+input_text:
+  laundry_machine:
+    name: active laundry machine
+
 
 automation:
   ############################################################
@@ -52,32 +56,60 @@ automation:
       for:
         seconds: 130
     action:
-    - service: tts.google_translate_say
-      entity_id: media_player.living_room_speaker
-      data:
-        message: 'Laundry is over.'
-    - service: notify.ALL_MOBILES
-      data:
-        title: Laundry completed
-        message: The laundry is over
-    - service: automation.turn_on
-      entity_id: automation.laundry_monitor_start_of_laundry_machines_run
-    - service: automation.turn_off
-      entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
+      - service: tts.google_translate_say
+        entity_id: media_player.living_room_speaker
+        data:
+          message: "{{ states('input_text.laundry_machine') }} is over."
+      - service: notify.ALL_MOBILES
+        data:
+          title: Laundry completed
+          message: "{{ states('input_text.laundry_machine') }} is over."
+          data:
+            push:
+              thread-id: "laundry_monitor"
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.laundry_machine
+          value: "Off"
+      - service: automation.turn_on
+        entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+      - service: automation.turn_off
+        entity_id:
+          - automation.laundry_monitor_stop_of_laundry_machines_run
+          - automation.laundry_monitor_dryer
 
   - alias: Laundry - Monitor start of laundry machines run
     initial_state: 'on'
     trigger:
       platform: numeric_state
       entity_id: sensor.laundry_machines
-      above: '150'
+      above: '1000'
       for:
         seconds: 130
     action:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.laundry_machine
+          value: "Laundry"
       - service: automation.turn_on
-        entity_id: automation.laundry_monitor_stop_of_laundry_machines_run
+        entity_id:
+          - automation.laundry_monitor_stop_of_laundry_machines_run
+          - automation.laundry_monitor_dryer
       - service: automation.turn_off
         entity_id: automation.laundry_monitor_start_of_laundry_machines_run
+
+  - alias: Laundry - Monitor Dryer
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.laundry_machines
+      above: '2400'
+      for:
+        seconds: 190
+    action:
+      - service: input_text.set_value
+        data:
+          entity_id: input_text.laundry_machine
+          value: "Dryer"
 
 
   ############################################################

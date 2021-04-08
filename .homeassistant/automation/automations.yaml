@@ -208,12 +208,12 @@
       for:
         minutes: 20
     - platform: state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       to: 'unavailable'
       for:
         minutes: 20
     - platform: state
-      entity_id: sensor.netatmo_living_room_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_temperature
       to: 'unavailable'
       for:
         minutes: 20
@@ -226,10 +226,10 @@
       entity_id: climate.netatmo_living_room
       state: 'unavailable'
     - condition: state
-      entity_id: sensor.netatmo_garden_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
       state: 'unavailable'
     - condition: state
-      entity_id: sensor.netatmo_living_room_temperature
+      entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_temperature
       state: 'unavailable'
   action:
     - service: persistent_notification.create

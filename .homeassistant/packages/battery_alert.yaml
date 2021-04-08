@@ -422,7 +422,6 @@ automation:
   trigger:
     - platform: time_pattern
       minutes: '/15'
-      seconds: 00
     - platform: state
       entity_id:
         - input_number.battery_alert_threshold_min
@@ -586,6 +585,7 @@ automation:
 
 - alias: battery_sensor_from_attributes
   initial_state: 'on'
+  mode: parallel
   trigger:
     - platform: event
       event_type: state_changed

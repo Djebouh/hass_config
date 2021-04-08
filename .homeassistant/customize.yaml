@@ -1,29 +1,20 @@
-device_tracker.jeromes_iphone:
-  friendly_name: Jérôme
-  icon: mdi:gender-male
 person.jerome:
   friendly_name: Jérôme
   icon: mdi:gender-male
-device_tracker.redminote5redmi:
-  friendly_name: Lou
-  icon: mdi:human-male-girl
 person.lou:
   friendly_name: Lou
   icon: mdi:human-male-girl
-group.motion_living:
-  device_class: moving
-# sensor.netatmo_living_room_temperature:
-#   icon: mdi:temperature-celsius
-# sensor.netatmo_garden_temperature:
-#   icon: mdi:thermometer-lines
-binary_sensor.opening_catflap:
-  icon: mdi:cat
-device_tracker.corinnesiphone:
-  friendly_name: Corinne
-  icon: mdi:gender-female
 person.corinne:
   friendly_name: Corinne
   icon: mdi:gender-female
+group.motion_living:
+  device_class: moving
+# sensor.netatmo_l_olivaie_de_biot_living_room_temperature:
+#   icon: mdi:temperature-celsius
+# sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature:
+#   icon: mdi:thermometer-lines
+binary_sensor.opening_catflap:
+  icon: mdi:cat
 scene.bar_bright:
   icon: mdi:food-fork-drink
 # scene.living_movie:
