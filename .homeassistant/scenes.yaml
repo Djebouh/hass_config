@@ -1,0 +1,17 @@
+- id: 'tv_pub'
+  name: TV - Pub
+  entities:
+    media_player.samsung_q7:
+      volume_level: 0.07
+      state: 'on'
+- id: 'tv_movie'
+  name: TV - Movie
+  entities:
+    media_player.samsung_q7:
+      volume_level: 0.13
+      state: 'on'
+- id: 'tv_off'
+  name: TV - Off
+  entities:
+    media_player.samsung_q7:
+      state: 'off'

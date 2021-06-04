@@ -8,5 +8,6 @@
   "dependencies": [],
   "codeowners": [
     "@djebouh"
-  ]
+  ],
+    "version": "0.0.1"
 }

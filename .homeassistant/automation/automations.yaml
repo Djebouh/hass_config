@@ -168,7 +168,7 @@
       entity_id: binary_sensor.smoke_sensor
       to: 'unavailable'
       for:
-        minutes: 3
+        minutes: 10
     - platform: event
       event_type: 2MN_AFTER_HASS_START
   condition:
@@ -186,11 +186,11 @@
         message: Xiaomi gateway is unavailable!
         title: System Issue
     - service: switch.turn_off
-      entity_id: switch.xiaomi_gateway_plug
+      entity_id: switch.shellyplug_s_7ae030
     - delay:
         minutes: 1
     - service: switch.turn_on
-      entity_id: switch.xiaomi_gateway_plug
+      entity_id: switch.shellyplug_s_7ae030
     - delay:
         minutes: 1
     - service: shell_command.reboot_pi

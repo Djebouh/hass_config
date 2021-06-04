@@ -28,9 +28,9 @@ homeassistant:
 #       model: ceiling10
 
 light:
-  - platform: switch
-    name: light@Garage
-    entity_id: switch.wall_switch_158d00022acf25
+  # - platform: switch
+  #   name: light@Garage
+  #   entity_id: switch.wall_switch_158d00022acf25
   - platform: switch
     name: light@Laundry
     entity_id: switch.wall_switch_158d00034ff3ae
@@ -43,24 +43,24 @@ light:
   - platform: switch
     name: light@Bar
     entity_id: switch.wall_switch_ln_left_158d0001d629ab
-  - platform: switch
-    name: light@Stairs
-    entity_id: switch.wall_switch_ln_158d000273b63a
+  # - platform: switch
+  #   name: light@Stairs
+  #   entity_id: switch.wall_switch_ln_158d000273b63a
   - platform: switch
     name: light@Lou_Ceiling
     entity_id: switch.wall_switch_ln_left_158d0002323b17
   - platform: switch
     name: light@Lou_Desk
     entity_id: switch.wall_switch_ln_right_158d0002323b17
-  - platform: switch
-    name: light@Pool
-    entity_id: switch.shellyswitch25_e631d5_channel_1
-  - platform: switch
-    name: lights@Trees
-    entity_id: switch.shellyswitch25_e631d5_channel_2
-  - platform: switch
-    name: light@Porch
-    entity_id: switch.shelly1_24ce1a
+  # - platform: switch
+  #   name: light@Pool
+  #   entity_id: switch.shellyswitch25_e631d5_channel_1
+  # - platform: switch
+  #   name: lights@Trees
+  #   entity_id: switch.shellyswitch25_e631d5_channel_2
+  # - platform: switch
+  #   name: light@Porch
+  #   entity_id: switch.shelly1_24ce1a
 
 
   - platform: template
@@ -165,9 +165,9 @@ light:
       - light.light_kitchen
       - light.light_living
       - light.gateway_light
-      - light.light_garage
+      - light.garage
       - light.light_laundry
-      - light.light_stairs
+      - light.stairs
       - light.light_bedroom
       - light.light_lou_bed
       - light.light_lou_ceiling
@@ -321,9 +321,11 @@ script:
     fields:
       hue:
         description: "The hue of the targeted ambiance"
+        required: true
         example: 13
       saturation:
         description: "The saturation of the targeted ambiance"
+        required: true
         example: 100
     sequence:
       - service: light.turn_off
@@ -343,13 +345,16 @@ script:
   'light_set_livingroom_ambiance':
     alias: Set the ambiance of the living room
     description: 'Turn off all lights of the living room but the ambilight of the pendant. The ambilight are set to the specified ambiance'
+    icon: mdi:television-ambient-light
     mode: restart
     fields:
       hue:
         description: "The hue of the targeted ambiance"
+        required: true
         example: 13
       saturation:
         description: "The saturation of the targeted ambiance"
+        required: true
         example: 100
     sequence:
       - service: script.light_turn_bar_to_ambilight
@@ -463,7 +468,7 @@ automation:
         click_type: long_click_press
     action:
       service: light.toggle
-      entity_id: light.light_stairs
+      entity_id: light.stairs
 
   ############################################################
   # Lou's Bedroom light configuration
@@ -558,7 +563,7 @@ automation:
         click_type: long_click_press
     action:
       service: light.toggle
-      entity_id: light.light_stairs
+      entity_id: light.stairs
 
 
   ############################################################
@@ -574,7 +579,7 @@ automation:
         click_type: single
     action:
       service: light.toggle
-      entity_id: light.light_stairs
+      entity_id: light.stairs
 
 
   ############################################################
@@ -590,7 +595,7 @@ automation:
         click_type: single
     action:
       service: light.toggle
-      entity_id: light.light_stairs
+      entity_id: light.stairs
 
 
   - alias: Switch Stairs 2 - Switch on stairs and turn off downstairs
@@ -608,11 +613,11 @@ automation:
         entity_id: light.lights_downstairs
         state: 'on'
       - condition: state
-        entity_id: light.light_stairs
+        entity_id: light.stairs
         state: 'off'
     action:
       - service: light.turn_on
-        entity_id: light.light_stairs
+        entity_id: light.stairs
       - entity_id: automation.autolight_stairs_stop
         service: automation.turn_on
       - delay:
@@ -634,7 +639,7 @@ automation:
         entity_id: light.lights_downstairs
         state: 'off'
       - condition: state
-        entity_id: light.light_stairs
+        entity_id: light.stairs
         state: 'on'
     action:
       - service: light.turn_on
@@ -642,7 +647,7 @@ automation:
       - delay:
           seconds: 2
       - service: light.turn_off
-        entity_id: light.light_stairs
+        entity_id: light.stairs
 
 
   ############################################################
@@ -652,7 +657,7 @@ automation:
     initial_state: 'on'
     trigger:
       platform: state
-      entity_id: light.light_garage
+      entity_id: light.garage
       to: 'off'
     condition:
       - condition: state
@@ -680,11 +685,11 @@ automation:
       to: 'on'
     condition:
       - condition: state
-        entity_id: light.light_garage
+        entity_id: light.garage
         state: 'off'
     action:
       service: light.turn_on
-      entity_id: light.light_garage
+      entity_id: light.garage
 
 
   ############################################################
@@ -935,7 +940,7 @@ automation:
     condition:
       - condition: state
         state: 'off'
-        entity_id: light.light_garage
+        entity_id: light.garage
         for:
           seconds: 10
       - condition: and
@@ -947,7 +952,7 @@ automation:
           below: '100'
           entity_id: sensor.illumination_laundry
     action:
-      - entity_id: light.light_garage
+      - entity_id: light.garage
         service: light.turn_on
       - entity_id: automation.autolight_garage_stop
         service: automation.turn_on
@@ -991,7 +996,7 @@ automation:
         state: 'off'
     action:
       - service: light.turn_off
-        entity_id: light.light_garage
+        entity_id: light.garage
       - service: light.turn_off
         entity_id: light.light_laundry
       
@@ -1014,7 +1019,7 @@ automation:
         event_data:
           entity_id: binary_sensor.switch_light_garage
       - platform: state
-        entity_id: light.light_garage
+        entity_id: light.garage
         to: 'off'
       - platform: state
         entity_id: light.light_laundry
@@ -1038,11 +1043,11 @@ automation:
           minutes: 15
     condition:
       - condition: state
-        entity_id: light.light_garage
+        entity_id: light.garage
         state: 'on'
     action:
       - service: light.turn_off
-        entity_id: light.light_garage
+        entity_id: light.garage
 
 
 
@@ -1127,7 +1132,7 @@ automation:
         state: 'off'
       - condition: state
         state: 'off'
-        entity_id: light.light_stairs
+        entity_id: light.stairs
         for:
           seconds: 10
       - condition: or
@@ -1144,7 +1149,7 @@ automation:
           state: 'below_horizon'
           entity_id: sun.sun
     action:
-      - entity_id: light.light_stairs
+      - entity_id: light.stairs
         service: light.turn_on
       - entity_id: automation.autolight_stairs_stop
         service: automation.turn_on
@@ -1168,13 +1173,13 @@ automation:
         state: 'off'
     action:
       - service: light.turn_off
-        entity_id: light.light_stairs
+        entity_id: light.stairs
 
   - alias: Autolight - Stairs Stop - Housekeeping
     # initial_state: 'off'
     trigger:
       - platform: state
-        entity_id: light.light_stairs
+        entity_id: light.stairs
         to: 'off'
     action:
       - service: automation.turn_off
@@ -1196,7 +1201,7 @@ automation:
     condition:
       - condition: state
         state: 'off'
-        entity_id: light.light_porch
+        entity_id: light.porch
         for:
           seconds: 10
       - condition: or
@@ -1210,7 +1215,7 @@ automation:
     action:
       - service: light.turn_on
         entity_id:
-          - light.light_porch
+          - light.porch
       - entity_id: automation.autolight_garden_stop
         service: automation.turn_on
 
@@ -1230,10 +1235,13 @@ automation:
         to: 'home'
         for:
           seconds: 20
+      - platform: state
+        entity_id: light.netatmo_catstalker
+        to: 'on'
     condition:
       - condition: state
         state: 'off'
-        entity_id: light.lights_trees
+        entity_id: light.trees
         for:
           seconds: 10
       - condition: or
@@ -1247,8 +1255,8 @@ automation:
     action:
       - service: light.turn_on
         entity_id:
-          - light.lights_trees
-          - light.light_porch
+          - light.trees
+          - light.porch
       - entity_id: automation.autolight_garden_stop
         service: automation.turn_on
 
@@ -1275,6 +1283,11 @@ automation:
         to: 'on'
         for:
           minutes: 3
+      - platform: state
+        entity_id: light.netatmo_catstalker
+        to: 'off'
+        for:
+          seconds: 5
       - platform: event
         event_type: 2MN_AFTER_HASS_START
     condition:
@@ -1284,16 +1297,16 @@ automation:
     action:
       - service: light.turn_off
         entity_id:
-          - light.lights_trees
-          - light.light_porch
+          - light.trees
+          - light.porch
 
   - alias: Autolight - Garden Stop - Housekeeping
     # initial_state: 'off'
     trigger:
       - platform: state
         entity_id:
-          - light.lights_trees
-          - light.light_porch  
+          - light.trees
+          - light.porch  
         to: 'off'
     action:
       - service: automation.turn_off

@@ -387,7 +387,7 @@ automation:
       - platform: state
         entity_id: person.lou
       - platform: time_pattern
-        hours: '/6'
+        hours: '/1'
     action:
       - choose:
         - conditions:
@@ -412,7 +412,7 @@ automation:
       - platform: state
         entity_id: person.jerome
       - platform: time_pattern
-        hours: '/6'
+        hours: '/1'
     action:
       - choose:
         - conditions:
@@ -437,7 +437,7 @@ automation:
       - platform: state
         entity_id: person.corinne
       - platform: time_pattern
-        hours: '/6'
+        hours: '/1'
     action:
       - choose:
         - conditions:

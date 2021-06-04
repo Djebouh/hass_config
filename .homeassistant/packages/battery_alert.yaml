@@ -430,37 +430,7 @@ automation:
     - condition: template
       value_template: &low_battery_check >
         {% macro battery_level() %}
-        {% for entity_id in states.group.battery_status.attributes.entity_id if (
-          not is_state_attr(entity_id, 'battery_alert_disabled', true)
-          and states(entity_id) is not none
-          and (
-            (
-              (
-                states(entity_id) is number
-                or states(entity_id) | length == states(entity_id)| int | string | length
-                or states(entity_id) | length == states(entity_id)| float | string | length
-              )
-              and states(entity_id) | int < states.input_number.battery_alert_threshold_max.state | int
-              and states(entity_id) | int > states.input_number.battery_alert_threshold_min.state | int
-            )
-            or states(entity_id) | lower == 'low'
-            or states(entity_id) | lower == 'unknown'
-            or states(entity_id) | lower == 'unavailable'
-          )
-        ) -%}
-          {{ state_attr(entity_id, "friendly_name") }} ({{ states(entity_id) }})
-        {% endfor -%}
-        {% endmacro %}
-        {{ battery_level() | trim != "" }}
-    - service: input_boolean.turn_on
-      data:
-        entity_id: input_boolean.low_batteries
-    - service: persistent_notification.create
-      data:
-        title: "Low Battery Levels"
-        notification_id: low_battery_alert
-        message: &message >
-          {% macro battery_level() %}
+        {% if states.group.battery_status.attributes is defined %}
           {% for entity_id in states.group.battery_status.attributes.entity_id if (
             not is_state_attr(entity_id, 'battery_alert_disabled', true)
             and states(entity_id) is not none
@@ -481,6 +451,40 @@ automation:
           ) -%}
             {{ state_attr(entity_id, "friendly_name") }} ({{ states(entity_id) }})
           {% endfor -%}
+        {% endif %}
+        {% endmacro %}
+        {{ battery_level() | trim != "" }}
+    - service: input_boolean.turn_on
+      data:
+        entity_id: input_boolean.low_batteries
+    - service: persistent_notification.create
+      data:
+        title: "Low Battery Levels"
+        notification_id: low_battery_alert
+        message: &message >
+          {% macro battery_level() %}
+          {% if states.group.battery_status.attributes is defined %}
+            {% for entity_id in states.group.battery_status.attributes.entity_id if (
+              not is_state_attr(entity_id, 'battery_alert_disabled', true)
+              and states(entity_id) is not none
+              and (
+                (
+                  (
+                    states(entity_id) is number
+                    or states(entity_id) | length == states(entity_id)| int | string | length
+                    or states(entity_id) | length == states(entity_id)| float | string | length
+                  )
+                  and states(entity_id) | int < states.input_number.battery_alert_threshold_max.state | int
+                  and states(entity_id) | int > states.input_number.battery_alert_threshold_min.state | int
+                )
+                or states(entity_id) | lower == 'low'
+                or states(entity_id) | lower == 'unknown'
+                or states(entity_id) | lower == 'unavailable'
+              )
+            ) -%}
+              {{ state_attr(entity_id, "friendly_name") }} ({{ states(entity_id) }})
+            {% endfor -%}
+          {% endif %}
           {% endmacro %}
           {{ battery_level() }}
 
@@ -748,7 +752,7 @@ automation:
             not is_state_attr(item.entity_id, 'hidden', true)
             and (
               is_state_attr(item.entity_id, 'device_class', 'battery')
-              or 'battery' in item.attributes.icon | lower
+              or ( item.attributes.icon is defined and 'battery' in item.attributes.icon | lower)
               or (item.entity_id | lower).endswith('_bat')
               or (item.name | lower).endswith('_bat')
               ) or (

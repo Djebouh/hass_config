@@ -61,8 +61,8 @@ group:
       - binary_sensor.opening_door_garage
       - binary_sensor.opening_door_laundry
       - binary_sensor.smoke_sensor
-      - camera.xiaofang
-      - lock.front_door
+      # - camera.xiaofang
+      # - lock.front_door
 
 
 

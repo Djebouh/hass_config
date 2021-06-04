@@ -9,8 +9,8 @@ homekit:
       - light.light_living
       - light.light_bar
       - light.light_kitchen
-      - light.light_pool
-      - light.lights_trees
+      - light.pool
+      - light.trees
       - cover.shutters_living_secured
       - cover.sun_awning
       - sensor.netatmo_l_olivaie_de_biot_living_room_garden_temperature
@@ -28,11 +28,11 @@ homekit:
       name: Bar
     light.light_kitchen:
       name: Cuisine
-    light.light_pool:
+    light.pool:
       name: piscine
-    light.lights_trees:
+    light.trees:
       name: arbres
-    light.light_porch:
+    light.porch:
       name: porche
     light.light_bedroom:
       name: chambre
@@ -151,7 +151,7 @@ google_assistant:
       #   - temperature interieure
         # - temparature at home
         # - temperature inside
-    light.light_garage:
+    light.garage:
       expose: true
       name: lumiere du garage
       room: garage
@@ -165,14 +165,14 @@ google_assistant:
       # aliases:
       #   - lumiere de la buanderie
       #   - laundry light
-    light.light_pool:
+    light.pool:
       expose: true
       name: lumiere de la picine
       room: piscine
       # aliases:
       #   - lumiere de la piscine
       #   - pool light
-    light.lights_trees:
+    light.trees:
       expose: true
       name: eclairage des arbres
       room: jardin
@@ -180,7 +180,7 @@ google_assistant:
         - lumiere exterieure
         # - lumiere du jardin
       #   - trees light
-    light.light_porch:
+    light.porch:
       expose: true
       name: eclairage du porche
       room: jardin
@@ -227,6 +227,16 @@ google_assistant:
         # - television
         - tele
         - TV
+    scene.tv_pub:
+      expose: true
+      name: son tele calme
+      room: salon
+      aliases:
+        - son tele pub
+    scene.tv_movie:
+      expose: true
+      name: son tele normal
+      room: salon
 
 
 notify:

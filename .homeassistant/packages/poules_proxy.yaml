@@ -1,0 +1,134 @@
+################################################################
+## Proxy to the raspberry in charge of the coop
+################################################################
+cover:
+  - platform: mqtt
+    name: "Coop door"
+    device_class: door
+    command_topic: "coopassistant/cover/coop_door/set"
+    state_topic: "coopassistant/cover/coop_door/state"
+    state_open: "open"
+    state_opening: "opening"
+    state_closed: "closed"
+    state_closing: "closing"
+    state_stopped: "stopped"
+    qos: 0
+    retain: false
+    optimistic: false
+  - platform: mqtt
+    name: "Coop gate"
+    device_class: garage
+    command_topic: "coopassistant/cover/coop_gate/set"
+    state_topic: "coopassistant/cover/coop_gate/state"
+    state_open: "open"
+    state_opening: "opening"
+    state_closed: "closed"
+    state_closing: "closing"
+    state_stopped: "stopped"
+    qos: 0
+    retain: false
+    optimistic: false
+
+sensor:
+  - platform: mqtt
+    name: ping coop
+    state_topic: "homeassistant/sensor/coop_ping"
+  - platform: mqtt
+    name: coop state
+    state_topic: "coopassistant/sensor/coop_state/state"
+    icon: mdi:home-modern
+  - platform: mqtt
+    name: coop camera token
+    state_topic: "coopassistant/sensor/camera_token/state"
+  - platform: mqtt
+    name: coop next auto-opening
+    state_topic: "coopassistant/sensor/next_auto_opening/state"
+    icon: mdi:home-assistant
+  - platform: mqtt
+    name: coop next auto-closing
+    state_topic: "coopassistant/sensor/next_auto_closing/state"
+    icon: mdi:home-assistant
+
+mqtt_statestream:
+  base_topic: coopassistant
+  include:
+    entities:
+      - binary_sensor.brightness
+
+camera:
+  - platform: generic
+    name: coop
+    still_image_url: "http://192.168.31.95:8123/api/camera_proxy/camera.raspberry_pi_camera?token={{states('sensor.coop_camera_token')}}"
+
+automation:
+  - alias: COOP - Notification on Error on Opening
+    trigger:
+      platform: mqtt
+      topic: coopassistant/alert/opening_issue
+    action:
+    - service: notify.notify
+      data:
+        title: Issue in the coop
+        message: '{{ trigger.payload }}'
+        data:
+          url: "/lovelace/garden"
+          clickAction: "/lovelace/garden"
+          push:
+            sound: none
+            thread-id: poules
+  - alias: COOP - Notification on Error on automation
+    trigger:
+      platform: mqtt
+      topic: coopassistant/alert/automation_issue
+    action:
+    - service: notify.notify
+      data:
+        title: Issue in the coop
+        message: '{{ trigger.payload }}'
+        data:
+          url: "/lovelace/garden"
+          clickAction: "/lovelace/garden"
+          push:
+            sound: none
+            thread-id: poules
+  - alias: COOP - Notification on SafeCOOP Automation
+    trigger:
+      platform: mqtt
+      topic: coopassistant/autocoop
+    action:
+    - service: notify.notify
+      data:
+        title: Magic Coop
+        message: >-
+          {% if trigger.payload == "auto_open" %}
+            Be back home before {{ states('sensor.coop_next_auto_closing') }}
+          {% else %}
+            Doors will open on {{ states('sensor.coop_next_auto_opening') }}
+          {% endif %}
+        data:
+          subtitle: >-
+            {% if trigger.payload == "auto_open" %}
+              Good morning chicks, doors opening!
+            {% else %}
+              Good night chicks, stand clear of the closing doors!
+            {% endif %}
+          url: "/lovelace/garden"
+          clickAction: "/lovelace/garden"
+          push:
+            sound: none
+            thread-id: poules
+  - alias: COOP - Monitor Ping
+    description: ''
+    trigger:
+    - platform: state
+      entity_id: sensor.ping_coop
+      for: 00:06:00
+    condition: []
+    action:
+    - service: notify.all_mobiles
+      data:
+        message: No news from COOP
+        data:
+          url: "/lovelace/garden"
+          clickAction: "/lovelace/garden"
+    mode: single

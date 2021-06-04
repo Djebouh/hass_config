@@ -49,25 +49,23 @@ input_select:
       - was_inside
       - was_outside
     icon: mdi:cat
+  catflap:
+    name: Cat movements
+    options:
+      - entering
+      - exiting
+      - idle
+    initial: idle
+    icon: mdi:cat
 
-rflink:
-  port: /dev/rflink
+# rflink:
+#   port: /dev/rflink
 
 cover:
-  - platform: rflink
-    devices:
-      RTS_0F0F0F_0:
-        name: zz sun awning internal
-  # - platform: mqtt
-  #   name: "zz shutters living internal"
-  #   # name: "shutters living"
-  #   device_class: shutter
-  #   command_topic: "shellies/shellyswitch25-008100/roller/0/command"
-  #   qos: 0
-  #   payload_open: "open"
-  #   payload_close: "close"
-  #   payload_stop: "stop"
-  #   retain: false 
+  # - platform: rflink
+  #   devices:
+  #     RTS_0F0F0F_0:
+  #       name: zz sun awning internal
   - platform: template
     covers:
       shutters_living:
@@ -176,7 +174,8 @@ switch:
       lock_maindoor:
         friendly_name: "lock@MainDoor"
         value_template: >-
-          {{ not ( is_state('sensor.door_front', 'locked') ) }}
+          # {{ not ( is_state('sensor.door_front', 'locked') ) }}
+          {{ not ( is_state('sensor.door_front', 'closed') ) }}
         turn_on:
           service: lock.unlock
           entity_id: lock.front_door
@@ -581,13 +580,13 @@ automation:
       - platform: time
         at: '00:30:01'
       - platform: state
-        entity_id: light.lights_trees
+        entity_id: light.trees
         to: 'off'
         from: 'on'
         for:
           minutes: 20
       - platform: state
-        entity_id: light.light_pool
+        entity_id: light.pool
         to: 'off'
         from: 'on'
         for:
@@ -605,10 +604,10 @@ automation:
         for:
           minutes: 20
       - condition: state
-        entity_id: light.lights_trees
+        entity_id: light.trees
         state: 'off'
       - condition: state
-        entity_id: light.light_pool
+        entity_id: light.pool
         state: 'off'
     action:
       - event: HOUSE_TO_LOCK
@@ -707,13 +706,13 @@ automation:
         for:
           seconds: 5
       - platform: state
-        entity_id: light.lights_trees
+        entity_id: light.trees
         to: 'off'
         from: 'on'
         for:
           seconds: 5
       - platform: state
-        entity_id: light.light_pool
+        entity_id: light.pool
         to: 'off'
         from: 'on'
         for:
@@ -729,10 +728,10 @@ automation:
         after: sunset
         after_offset: "00:45:00"
       - condition: state
-        entity_id: light.lights_trees
+        entity_id: light.trees
         state: 'off'
       - condition: state
-        entity_id: light.light_pool
+        entity_id: light.pool
         state: 'off'
     action:
       - service: cover.close_cover
@@ -902,3 +901,40 @@ automation:
           data:
             push:
               thread-id: "bathroom"
+
+
+  - alias: Stop shutters living after timeout
+    initial_state: 'on'
+    trigger:
+    - platform: state
+      entity_id: cover.shellyswitch25_008100
+      to: 'opening'
+      for:
+        seconds: 30
+    - platform: state
+      entity_id: cover.shellyswitch25_008100
+      to: 'closing'
+      for:
+        seconds: 30
+    action:
+      - service: cover.stop_cover
+        entity_id: cover.shellyswitch25_008100
+
+
+  - alias: Stop shutters awning after timeout
+    initial_state: 'on'
+    trigger:
+    - platform: state
+      entity_id: cover.zz_sun_awning_internal
+      to: 'opening'
+      for:
+        seconds: 90
+    - platform: state
+      entity_id: cover.zz_sun_awning_internal
+      to: 'closing'
+      for:
+        seconds: 90
+    action:
+      - service: cover.stop_cover
+        entity_id: cover.zz_sun_awning_internal
+

@@ -80,7 +80,7 @@
   - delay: 00:00:30
   mode: single
 - id: '1609606304717'
-  alias: MimieTracker  - onFlapOpen 2
+  alias: CatTracker  - onFlapOpen
   description: ''
   trigger:
   - platform: state
@@ -119,6 +119,15 @@
         data:
           option: outside
         entity_id: input_select.where_is_mimie
+      - service: input_select.select_option
+        data:
+          option: exiting
+        entity_id: input_select.catflap
+      - delay: 00:00:01
+      - service: input_select.select_option
+        data:
+          option: idle
+        entity_id: input_select.catflap
     default:
     - wait_for_trigger:
       - platform: state
@@ -132,5 +141,29 @@
       data:
         option: inside
       entity_id: input_select.where_is_mimie
+    - service: input_select.select_option
+      data:
+        option: entering
+      entity_id: input_select.catflap
+    - delay: 00:00:01
+    - service: input_select.select_option
+      data:
+        option: idle
+      entity_id: input_select.catflap
   mode: restart
-  
+- id: '1621248504881'
+  alias: Notify Lou
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: person.lou
+    to: home
+    for: 00:05:00
+  condition: []
+  action:
+  - service: tts.google_translate_say
+    data:
+      entity_id: media_player.living_room_speaker
+      message: Coucou ma puce, tu penses a aller ramasser les Fraises STP
+      language: fr
+  mode: single

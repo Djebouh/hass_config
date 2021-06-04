@@ -31,17 +31,17 @@ netatmo:
 #     host: !secret nuki_bridge_ip
 #     token: !secret nuki_token
 
-ffmpeg:
+# ffmpeg:
 
-camera:
-  - platform: ffmpeg
-    name: Xiaofang
-    input: !secret xiaofang_camera_input
-    extra_arguments: -an
+# camera:
+#   - platform: ffmpeg
+#     name: Xiaofang
+#     input: !secret xiaofang_camera_input
+#     extra_arguments: -an
 
-  - platform: mjpeg
-    name: espcam
-    mjpeg_url: http://192.168.31.76/
+#   - platform: mjpeg
+#     name: espcam
+#     mjpeg_url: http://192.168.31.76/
 
   # - platform: generic
   #   name: Some Image
@@ -49,12 +49,12 @@ camera:
   #   stream_source: rtsp://194.218.96.92:554
   #   # verify_ssl: false
 
-rpi_camera:
-  image_width: 1296
-  image_height: 972
-  image_quality: 75
-  timelapse: 2000
-  file_path: /home/homeassistant/tmp/raspi.jpeg
+# rpi_camera:
+#   image_width: 1296
+#   image_height: 972
+#   image_quality: 75
+#   timelapse: 2000
+#   file_path: /home/homeassistant/tmp/raspi.jpeg
 
 # linky:
 #   - username: !secret enedis_user
@@ -110,8 +110,8 @@ device_tracker:
     consider_home: 0:05
     host: !secret xiaomi_router_ip
     password: !secret xiaomi_router_pswd
-    # new_device_defaults:
-    #   track_new_devices: true
+    new_device_defaults:
+      track_new_devices: false
 
 
 # switch:
@@ -123,8 +123,8 @@ device_tracker:
 
 sensor:
 
-  - platform: rpi_power
-    text_state: true
+  # - platform: rpi_power
+  #   text_state: true
 
 
   - platform: darksky

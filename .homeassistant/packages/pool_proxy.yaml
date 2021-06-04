@@ -1,5 +1,5 @@
 ################################################################
-## Proxy to the other raspberry, handling pool automation
+## Proxy to the raspberry handling pool automation
 ################################################################
 
 sensor:
@@ -87,6 +87,7 @@ automation:
           message: 'Current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
             subtitle: 'Chlor injection started'
+            url: "/lovelace/pool"
             clickAction: '/lovelace/pool'
             push:
               sound: none
@@ -104,6 +105,7 @@ automation:
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current redox is {{ trigger.payload_json["current_redox"]}}mV'
           data:
             subtitle: 'Chlor injection stopped'
+            url: "/lovelace/pool"
             clickAction: "/lovelace/pool"
             push:
               sound: none
@@ -122,6 +124,7 @@ automation:
           message: 'Current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
             subtitle: 'Acid injection started'
+            url: "/lovelace/pool"
             clickAction: "/lovelace/pool"
             push:
               sound: none
@@ -139,6 +142,7 @@ automation:
           message: 'Injection duration was {{ trigger.payload_json["duration"] | timestamp_custom("%Mmn%Ss") }}, current ph is {{ trigger.payload_json["current_ph"]}}'
           data:
             subtitle: 'Acid injection stopped'
+            url: "/lovelace/pool"
             clickAction: "/lovelace/pool"
             push:
               sound: none
@@ -157,5 +161,6 @@ automation:
           message: 'Today, total injection duration was {{ trigger.payload_json["cumulated_duration"] }}, current redox is {{ trigger.payload_json["current_redox"]}}mV, target redox is {{ trigger.payload_json["target_redox"]}}mV'
           data:
             clickAction: "/lovelace/pool"
+            url: "/lovelace/pool"
             subtitle: 'ALERT: The max Cl+ daily injection is reached, the regulation is stopped'
 

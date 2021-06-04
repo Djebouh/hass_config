@@ -38,7 +38,8 @@ logger:
     # homeassistant.components.rachio: debug
     # homeassistant.custom_components.parrot_pot: debug
     # custom_components.parrot_pot: debug
-    custom_components.mqtt_plant: debug
+    # custom_components.mqtt_plant: debug
+    # miio: debug
     # homeassistant.custom_components.rachio: debug
     aiohttp: error
     # xiaomi_gateway: debug
@@ -58,16 +59,13 @@ history:
 
 recorder:
   purge_keep_days: 5
-  # purge_interval: 1
   exclude:
     domains:
       - battery_alert
 
 http:
-  # api_password: !secret http_password
   ssl_certificate: !secret dynu_ssl_certificate
   ssl_key: !secret dynu_ssl_key
-  # base_url: https://hass-biot.myddns.rocks:8123
 
 mobile_app:
 
@@ -99,6 +97,9 @@ logbook:
       - device_tracker.jerome_s_iphone
       - sensor.geocoded_location
       - sensor.geocoded_location_2
+      - automation.netatmo_set_presence_for_corinne
+      - automation.netatmo_set_presence_for_jerome
+      - automation.netatmo_set_presence_for_lou
     domains:
       - battery_alert
       - switch
@@ -142,28 +143,28 @@ tts:
 input_boolean:
   night_mode:
     name: Night Mode
-    # initial: 'off'
     icon: mdi:sleep
 
 
 # stream:
 
 binary_sensor:
-  # - platform: rachio
-
-  - platform: template
-    sensors:
-      motion_home:
-        friendly_name: Motion
-        device_class: motion
-        # entity_id: group.motion_home
-        value_template: "{{ not(is_state('group.motion_home', 'off')) }}"
 
   - platform: command_line
     name: vpn status
     device_class: connectivity
     scan_interval: 600
     command: /home/pi/scripts/check_vpn.sh
+
+
+template:
+  binary_sensor:
+    - name: motion home
+      state: "{{ not(is_state('group.motion_home', 'off')) }}"
+      device_class: motion
+    - name: brightness
+      state: "{{ states('sensor.illumination_outside_north') | int > 1 }}"
+      device_class: light
 
 switch:
   - platform: mqtt
@@ -176,18 +177,12 @@ switch:
     optimistic: false
     retain: false
 
-script:
-  'reboot_pi':
-    alias: Reboot my Pi
-    sequence:
-      - service: shell_command.reboot_pi
-
 # switch: !include switch.yaml
 # light: !include light.yaml
 # sensor: !include sensor.yaml
 # group: !include groups.yaml
-# scene: !include scenes.yaml
-# script: !include scripts.yaml
+scene: !include scenes.yaml
+script: !include scripts.yaml
 automation old: !include_dir_merge_list automation/
 automation: !include automations.yaml
 
