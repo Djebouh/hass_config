@@ -42,6 +42,8 @@ logger:
     # miio: debug
     # homeassistant.custom_components.rachio: debug
     aiohttp: error
+    # ffmpeg: debug
+    # haffmpeg.core: debug
     # xiaomi_gateway: debug
     # rachiopy: debug
     # custom_components.shelly: debug
@@ -165,6 +167,9 @@ template:
     - name: brightness
       state: "{{ states('sensor.illumination_outside_north') | int > 1 }}"
       device_class: light
+  sensor:
+    - name: where is Mimie
+      state: "{{ state_attr('binary_sensor.pet_mimie', 'where') }}"
 
 switch:
   - platform: mqtt

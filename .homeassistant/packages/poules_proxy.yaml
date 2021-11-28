@@ -39,7 +39,7 @@ sensor:
     icon: mdi:home-modern
   - platform: mqtt
     name: coop camera token
-    state_topic: "coopassistant/sensor/camera_token/state"
+    state_topic: "coopassistant/sensor/camera_token_fix/state"
   - platform: mqtt
     name: coop next auto-opening
     state_topic: "coopassistant/sensor/next_auto_opening/state"
@@ -58,7 +58,7 @@ mqtt_statestream:
 camera:
   - platform: generic
     name: coop
-    still_image_url: "http://192.168.31.95:8123/api/camera_proxy/camera.raspberry_pi_camera?token={{states('sensor.coop_camera_token')}}"
+    still_image_url: "http://192.168.31.95:8123/api/camera_proxy/camera.coop?token={{states('sensor.coop_camera_token')}}"
 
 automation:
   - alias: COOP - Notification on Error on Opening
@@ -81,9 +81,9 @@ automation:
       platform: mqtt
       topic: coopassistant/alert/automation_issue
     action:
-    - service: notify.notify
+    - service: notify.ALL_MOBILES
       data:
-        title: Issue in the coop
+        title: Issue in the coop, reboot  COOP
         message: '{{ trigger.payload }}'
         data:
           url: "/lovelace/garden"
@@ -91,10 +91,22 @@ automation:
           push:
             sound: none
             thread-id: poules
-  - alias: COOP - Notification on SafeCOOP Automation
+    - service: mqtt.publish
+      data:
+        topic: coopassistant/run/shutdown
+        payload_template: '{{ now() }}'
+    - delay:
+        minutes: 2
+    - service: switch.turn_off
+      entity_id: switch.coop_automation
+    - delay:
+        minutes: 5
+    - service: switch.turn_on
+      entity_id: switch.coop_automation
+  - alias: COOP - Notification on SafeCOOP Automation start
     trigger:
       platform: mqtt
-      topic: coopassistant/autocoop
+      topic: coopassistant/autocoop/start
     action:
     - service: notify.notify
       data:
@@ -111,6 +123,34 @@ automation:
               Good morning chicks, doors opening!
             {% else %}
               Good night chicks, stand clear of the closing doors!
+            {% endif %}
+          url: "/lovelace/garden"
+          clickAction: "/lovelace/garden"
+          push:
+            sound: none
+            thread-id: poules
+  - alias: COOP - Notification on SafeCOOP Automation final state
+    trigger:
+      platform: mqtt
+      topic: coopassistant/autocoop/result
+    action:
+    - service: notify.notify
+      data:
+        title: Magic Coop
+        message: >-
+          {% if trigger.payload_json["action"] == "open" %}
+            Be back home before {{ states('sensor.coop_next_auto_closing') }}
+          {% else %}
+            Doors will open on {{ states('sensor.coop_next_auto_opening') }}
+          {% endif %}
+        data:
+          subtitle: >-
+            {% if trigger.payload_json["error"] == "True" %}
+              OUPS, failed to {{ trigger.payload_json["action"] }}! {{ trigger.payload_json["state"] }}
+            {% elif trigger.payload_json["action"] == "open" %}
+              Good morning chicks! {{ trigger.payload_json["state"] }}
+            {% else %}
+              Good night chicks! {{ trigger.payload_json["state"] }}
             {% endif %}
           url: "/lovelace/garden"
           clickAction: "/lovelace/garden"

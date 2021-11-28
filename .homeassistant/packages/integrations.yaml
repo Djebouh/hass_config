@@ -12,19 +12,32 @@
 #      key: !secret mi_gateway_key
 #      mac: !secret mi_gateway_mac
 
-samsungtv_smart:
-  - host: !secret samsung_tv_ip
-    name: Samsung Q7
-    api_key: !secret smartthings_token
-    device_id: !secret smartthings_di
-    mac: !secret samsungtv_mac
-    # show_channel_number: true
-    scan_app_http: false
+# ssdp:
+
+# samsungtv:
+#   - host: !secret samsung_tv_ip
+#     turn_on_action:
+#       - service: wake_on_lan.send_magic_packet
+#         data:
+#           mac: !secret samsungtv_mac
+
+# samsungtv_smart:
+#   - host: !secret samsung_tv_ip
+#     name: Samsung Q7
+#     api_key: !secret smartthings_token
+#     device_id: !secret smartthings_di
+#     mac: !secret samsungtv_mac
+#     # show_channel_number: true
+#     scan_app_http: false
 
 
 netatmo:
   client_id: !secret netatmo_id
   client_secret: !secret netatmo_secret
+
+# surepetcare:
+#   username: !secret PETCARE_LOGIN
+#   password: !secret PETCARE_PASSWORD
 
 # lock:
 #   - platform: nuki
@@ -32,11 +45,12 @@ netatmo:
 #     token: !secret nuki_token
 
 # ffmpeg:
+#   ffmpeg_bin: /usr/bin/ffmpeg
 
 # camera:
 #   - platform: ffmpeg
-#     name: Xiaofang
-#     input: !secret xiaofang_camera_input
+#     name: kitchen eye
+#     input: -rtsp_transport tcp -i rtsp://192.168.31.94/unicast
 #     extra_arguments: -an
 
 #   - platform: mjpeg
@@ -99,8 +113,8 @@ spotify:
 #     api_key: !secret dark_sky_key
 #     mode: daily
 
-meteo_france:
-  - city: '06410'
+# meteo_france:
+#   - city: '06410'
 
 
 device_tracker:

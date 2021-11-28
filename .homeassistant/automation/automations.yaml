@@ -111,29 +111,29 @@
 ############################################################
 # Notify on power problem
 ############################################################
-- alias: Power Problem Notification
-  initial_state: 'on'
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.rpi_power_status
-    value_template: '{{ state.attributes.value }}'
-    above: 0
-    for:
-      minutes: 5
-  action:
-  - service: persistent_notification.create
-    data:
-      message: >-
-        RPI Power reported {{ states.sensor.rpi_power_status.state }}.
-        The state had changed from {{ trigger.from_state.state }}
-      title: Power Supply Issue
-      notification_id: power_alert
-  - service: notify.ALL_MOBILES
-    data:
-      message: >-
-        RPI Power reported {{ states.sensor.rpi_power_status.state }}.
-        The state had  changed from {{ trigger.from_state.state }}
-      title: Power Supply Issue
+# - alias: Power Problem Notification
+#   initial_state: 'on'
+#   trigger:
+#   - platform: numeric_state
+#     entity_id: sensor.rpi_power_status
+#     value_template: '{{ state.attributes.value }}'
+#     above: 0
+#     for:
+#       minutes: 5
+#   action:
+#   - service: persistent_notification.create
+#     data:
+#       message: >-
+#         RPI Power reported {{ states.sensor.rpi_power_status.state }}.
+#         The state had changed from {{ trigger.from_state.state }}
+#       title: Power Supply Issue
+#       notification_id: power_alert
+#   - service: notify.ALL_MOBILES
+#     data:
+#       message: >-
+#         RPI Power reported {{ states.sensor.rpi_power_status.state }}.
+#         The state had  changed from {{ trigger.from_state.state }}
+#       title: Power Supply Issue
 
 ############################################################
 # notify when HACS updates are available

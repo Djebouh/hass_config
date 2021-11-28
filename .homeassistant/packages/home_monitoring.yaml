@@ -4,6 +4,14 @@
 ## Do not display camera on HASS when someone is at home
 ################################################################
 
+
+
+# camera:
+#   - platform: generic
+#     name: kitchen eye
+#     still_image_url: "http://192.168.31.95:8123/api/camera_proxy/camera.coop?token={{states('sensor.coop_camera_token')}}"
+#     stream_source: "rtsp://192.168.31.94/unicast"
+
 group:
   presence:
     name: Anyone @home
@@ -31,15 +39,6 @@ group:
     - binary_sensor.motion_laundry
   #  - binary_sensor.motion_outside_porch
 
-binary_sensor:
-  - platform: template
-    sensors:
-      opening_catflap_exit:
-        friendly_name: "Catflap exit"
-        value_template: >-
-          {{ is_state('binary_sensor.opening_catflap_out', 'off') }}
-        device_class: opening
-        icon_template: 'mdi:cat' 
 
 timer:
   force_show_webcam:

@@ -9,11 +9,11 @@
 #     name: AspiBot
 
 
-sensor:
-  - platform: broadlink_power
-    host: !secret broadlink_plug_ip
-    mac: !secret broadlink_plug_mac
-    name: 'Laundry Machines'
+# sensor:
+#   - platform: broadlink_power
+#     host: !secret broadlink_plug_ip
+#     mac: !secret broadlink_plug_mac
+#     name: 'Laundry Machines'
 
 
 # script:
@@ -51,7 +51,7 @@ automation:
     # initial_state: 'off'
     trigger:
       platform: numeric_state
-      entity_id: sensor.laundry_machines
+      entity_id: sensor.plug_sp3s_current_power
       below: '10'
       for:
         seconds: 130
@@ -82,7 +82,7 @@ automation:
     initial_state: 'on'
     trigger:
       platform: numeric_state
-      entity_id: sensor.laundry_machines
+      entity_id: sensor.plug_sp3s_current_power
       above: '1000'
       for:
         seconds: 130
@@ -101,7 +101,7 @@ automation:
   - alias: Laundry - Monitor Dryer
     trigger:
       platform: numeric_state
-      entity_id: sensor.laundry_machines
+      entity_id: sensor.plug_sp3s_current_power
       above: '2400'
       for:
         seconds: 190
@@ -115,8 +115,7 @@ automation:
   ############################################################
   # Vacuum cleaner automation
   ############################################################
-  - alias: Vacuum - Start
-    initial_state: 'on'
+  - alias: Vacuum - Start when not home
     trigger:
     - platform: state
       entity_id: group.presence
@@ -141,5 +140,5 @@ automation:
     - service: vacuum.start
       entity_id: vacuum.aspibot
     - service: automation.turn_off
-      entity_id: automation.vacuum_start
+      entity_id: automation.vacuum_start_when_not_home
 

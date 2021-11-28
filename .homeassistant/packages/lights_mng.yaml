@@ -104,7 +104,7 @@ light:
             (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == 240) }}
         level_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'brightness') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 0 }}"
         color_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'hs_color') if is_state('light.pendantwindow_light_ambilight', 'on') else '240, 78'}}"
-        temperature_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'color_temp') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 285 }}"
+        # temperature_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'color_temp') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 285 }}"
         icon_template: mdi:filmstrip
         turn_on:
           - service: script.light_set_livingroom_ambiance
@@ -136,7 +136,7 @@ light:
             (states.light.pendantwindow_light_ambilight.attributes.hs_color[0] | round == 13) }}
         level_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'brightness') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 0 }}"
         color_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'hs_color') if is_state('light.pendantwindow_light_ambilight', 'on') else '13, 100'}}"
-        temperature_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'color_temp') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 285 }}"
+        # temperature_template: "{{ state_attr('light.pendantwindow_light_ambilight', 'color_temp') | int if is_state('light.pendantwindow_light_ambilight', 'on') else 285 }}"
         icon_template: mdi:sofa
         turn_on:
           - service: script.light_set_livingroom_ambiance
@@ -295,6 +295,8 @@ scene:
     icon: mdi:bed-king-outline
     entities:
       light.light_bedroom:
+        state: off
+      light.stairs:
         state: off
 
   - name: lock Home
@@ -1230,8 +1232,8 @@ automation:
           seconds: 1
       - platform: state
         entity_id:
-          - device_tracker.corinnes_iphone
-          - device_tracker.jerome_s_iphone
+          - person.corinne
+          - person.jerome
         to: 'home'
         for:
           seconds: 20
@@ -1270,8 +1272,8 @@ automation:
         from: 'on'
       - platform: state
         entity_id:
-          - device_tracker.corinnes_iphone
-          - device_tracker.jerome_s_iphone
+          - person.corinne
+          - person.jerome
         to: 'not_home'
       - platform: state
         entity_id:  group.doors_monitored_by_safehome

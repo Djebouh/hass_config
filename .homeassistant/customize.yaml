@@ -25,10 +25,10 @@ scene.bar_bright:
 #   icon: mdi:cup
 switch.mimies_spring:
   icon: mdi:water
-switch.laundry_machines:
-  icon: mdi:washing-machine
-sensor.laundry_machines:
-  icon: mdi:washing-machine
+# switch.laundry_machines:
+#   icon: mdi:washing-machine
+# sensor.laundry_machines:
+#   icon: mdi:washing-machine
 device_tracker.ble_de44d527ab76:
   friendly_name: Mimie
   icon: mdi:cat

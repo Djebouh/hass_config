@@ -40,32 +40,32 @@ homeassistant:
 
 
 
-input_select:
-  where_is_mimie:
-    name: guessing where is Mimie
-    options:
-      - inside
-      - outside
-      - was_inside
-      - was_outside
-    icon: mdi:cat
-  catflap:
-    name: Cat movements
-    options:
-      - entering
-      - exiting
-      - idle
-    initial: idle
-    icon: mdi:cat
+# input_select:
+#   where_is_mimie:
+#     name: guessing where is Mimie
+#     options:
+#       - inside
+#       - outside
+#       - was_inside
+#       - was_outside
+#     icon: mdi:cat
+#   catflap:
+#     name: Cat movements
+#     options:
+#       - entering
+#       - exiting
+#       - idle
+#     initial: idle
+#     icon: mdi:cat
 
-# rflink:
-#   port: /dev/rflink
+rflink:
+  port: /dev/rflink
 
 cover:
-  # - platform: rflink
-  #   devices:
-  #     RTS_0F0F0F_0:
-  #       name: zz sun awning internal
+  - platform: rflink
+    devices:
+      RTS_0F0F0F_0:
+        name: zz sun awning internal
   - platform: template
     covers:
       shutters_living:
@@ -91,8 +91,7 @@ cover:
       sun_awning:
         friendly_name: "sun awning"
         device_class: shade
-        # position_template: "{{ 100 if is_state('binary_sensor.opening_awning', 'off') else 10 }}"
-        position_template: 100
+        position_template: "{{ 100 if is_state('binary_sensor.opening_awning', 'off') else 10 }}"
         open_cover:
           service: cover.open_cover
           entity_id: cover.zz_sun_awning_internal
@@ -174,8 +173,7 @@ switch:
       lock_maindoor:
         friendly_name: "lock@MainDoor"
         value_template: >-
-          # {{ not ( is_state('sensor.door_front', 'locked') ) }}
-          {{ not ( is_state('sensor.door_front', 'closed') ) }}
+          {{ not ( is_state('sensor.door_front', 'locked') ) }}
         turn_on:
           service: lock.unlock
           entity_id: lock.front_door
@@ -191,12 +189,12 @@ switch:
           {{ not ( is_state('sensor.door_laundry', 'locked') ) }}
         turn_on:
           service: lock.unlock
-          entity_id: lock.z_wave_danalock_current_lock_mode
+          entity_id: lock.z_wave_controlled_door_lock_with_bluetooth_smart
         turn_off:
         - condition: template
           value_template: '{{not is_state("sensor.door_laundry", "locked") }}'
         - service: lock.lock
-          entity_id: lock.z_wave_danalock_current_lock_mode
+          entity_id: lock.z_wave_controlled_door_lock_with_bluetooth_smart
 
       lock_diningwindow:
         friendly_name: "lock@DiningWindow"
@@ -255,9 +253,9 @@ sensor:
         value_template: >-
           {% if is_state('binary_sensor.opening_door_laundry', 'on') %}
             open
-          {% elif is_state('lock.z_wave_danalock_current_lock_mode', 'locked') %}
+          {% elif is_state('lock.z_wave_controlled_door_lock_with_bluetooth_smart', 'locked') %}
             locked
-          {% elif is_state('lock.z_wave_danalock_current_lock_mode', 'unlocked') %}
+          {% elif is_state('lock.z_wave_controlled_door_lock_with_bluetooth_smart', 'unlocked') %}
             unlocked
           {% elif is_state('binary_sensor.opening_door_laundry', 'off') %}
             closed
@@ -775,22 +773,26 @@ automation:
       - condition: numeric_state
         entity_id: sensor.dark_sky_daytime_high_temperature_0d
         above: 28
-      - condition: state
+      - condition: numeric_state
         entity_id: sensor.netatmo_l_olivaie_de_biot_living_room_rain_gauge_rain_last_hour
-        state: '0'
-      - condition: state
+        below: 1
+      - condition: numeric_state
         entity_id: cover.sun_awning
         attribute: current_position
-        state: '100'
+        above: 90
     action:
       - service: cover.close_cover
+        entity_id: cover.sun_awning
+      - delay:
+          seconds: 10
+      - service: cover.stop_cover
         entity_id: cover.sun_awning
       - service: notify.ALL_MOBILES
         data:
           title: "Rolling awning down"
           message: >
-            "It will be hot today ({{states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit}}),"
-            " with limited risk of rain ({{states.sensor.dark_sky_precip_probability_0d.state_with_unit}})"
+            It will be hot today ({{states.sensor.dark_sky_daytime_high_temperature_0d.state_with_unit}}), 
+            with limited risk of rain ({{states.sensor.dark_sky_precip_probability_0d.state_with_unit}})
           data:
             push:
               thread-id: "openowning"

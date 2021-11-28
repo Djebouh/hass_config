@@ -50,7 +50,7 @@ group:
       - binary_sensor.motion_garage
       - binary_sensor.motion_laundry
       - binary_sensor.motion_stairs
-      - lock.z_wave_danalock_current_lock_mode
+      - lock.z_wave_controlled_door_lock_with_bluetooth_smart
       - binary_sensor.opening_shutters_living
       - binary_sensor.opening_window_dining_left
       - binary_sensor.opening_window_dining_right
@@ -61,8 +61,8 @@ group:
       - binary_sensor.opening_door_garage
       - binary_sensor.opening_door_laundry
       - binary_sensor.smoke_sensor
+      - lock.front_door
       # - camera.xiaofang
-      # - lock.front_door
 
 
 
